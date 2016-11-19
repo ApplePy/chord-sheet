@@ -6,8 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./edit-screen.component.css']
 })
 export class EditScreenComponent implements OnInit {
-  list: Number[] = [];
-  constructor() { for(let i: Number = 0; i < 1000; i++) {this.list.push(i)}}
+  list: number[] = [];
+  constructor() { for(let i: number = 0; i < 1000; i += 1) {this.list.push(i)}}
 
   ngOnInit() {
   }
