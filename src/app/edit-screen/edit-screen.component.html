@@ -1,35 +1,47 @@
-<form id="upload_form" class="ui form">
+<form id="upload_form" class="ui form" (reset)="reset($event)" (submit)="submit($event)">
+
+  <!-- Header with editable title -->
   <h1 class="ui header">
     Edit
     <span class="ui transparent input">
-    <input name="title" id="title" type="text" [(ngModel)]="title"/>
-  </span>
+      <input name="title" title="title" id="title" type="text" [(ngModel)]="title" [placeholder]="placeholder"/>
+    </span>
   </h1>
 
+  <!-- Upload file capability -->
   <div class="field">
     <label>Upload ChordPro Track:</label>
-    <input type="file" ng2FileSelect [uploader]="uploader" (change)="onChange($event)"/>
+    <input type="file" (change)="onChange($event)"/>
   </div>
 
-  <div *ngIf="uploader.queue.length == 0" class="field">
-    <h2>OR</h2>
+  <h3 *ngIf="file_contents.length == 0">OR</h3>
+
+  <!-- Manually type in chord pro text. -->
+  <div *ngIf="file_contents.length == 0" class="ui segment">
     <div class="ui stackable divided grid">
       <div class="ui two column row">
+
+        <!-- Text box -->
         <div class="left floated column">
           <div class="field">
             <label>Enter ChordPro Text Here:</label>
-            <textarea title="chordpro_text" name="chords" form="upload_form"></textarea>
+            <textarea title="chords" name="chords" form="upload_form" autocomplete="off"></textarea>
           </div>
         </div>
 
+        <!-- Output preview -->
         <div class="right floated column">
-          <app-chord-display></app-chord-display>
+          <app-chord-display></app-chord-display> <!-- TODO: Figure out how to pass entered text to display. -->
         </div>
+
       </div>
     </div>
 
   </div>
 
-  <button class="ui button" type="reset" (click)="reset($event)">Clear</button>
-  <button class="ui button green" type="submit">Submit</button>
+  <!-- Control buttons -->
+  <div class="field">
+    <button class="ui button" type="reset">Clear</button>
+    <button class="ui button green" type="submit">Submit</button>
+  </div>
 </form>
