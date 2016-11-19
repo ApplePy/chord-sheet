@@ -1,3 +1,35 @@
-<ul *ngFor="let num of list">
-  <li>{{num}}</li>
-</ul>
+<form id="upload_form" class="ui form">
+  <h1 class="ui header">
+    Edit
+    <span class="ui transparent input">
+    <input name="title" id="title" type="text" [(ngModel)]="title"/>
+  </span>
+  </h1>
+
+  <div class="field">
+    <label>Upload ChordPro Track:</label>
+    <input type="file" ng2FileSelect [uploader]="uploader" (change)="onChange($event)"/>
+  </div>
+
+  <div *ngIf="uploader.queue.length == 0" class="field">
+    <h2>OR</h2>
+    <div class="ui stackable divided grid">
+      <div class="ui two column row">
+        <div class="left floated column">
+          <div class="field">
+            <label>Enter ChordPro Text Here:</label>
+            <textarea title="chordpro_text" name="chords" form="upload_form"></textarea>
+          </div>
+        </div>
+
+        <div class="right floated column">
+          <app-chord-display></app-chord-display>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="ui button" type="reset" (click)="reset($event)">Clear</button>
+  <button class="ui button green" type="submit">Submit</button>
+</form>

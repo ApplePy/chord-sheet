@@ -8,13 +8,17 @@ import { AppComponent } from './app.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { EditScreenComponent } from './edit-screen/edit-screen.component';
+import {FileSelectDirective} from "ng2-file-upload";
+import { ChordDisplayComponent } from './chord-display/chord-display.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     FooterComponent,
     HeaderComponent,
-    EditScreenComponent
+    EditScreenComponent,
+    FileSelectDirective,
+    ChordDisplayComponent
   ],
   imports: [
     BrowserModule,
