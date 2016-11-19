@@ -7,12 +7,14 @@ import {SuiModule} from 'ng2-semantic-ui/ng2-semantic-ui';
 import { AppComponent } from './app.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
+import { EditScreenComponent } from './edit-screen/edit-screen.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     FooterComponent,
-    HeaderComponent
+    HeaderComponent,
+    EditScreenComponent
   ],
   imports: [
     BrowserModule,
