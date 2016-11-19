@@ -5,10 +5,14 @@ import { HttpModule } from '@angular/http';
 import {SuiModule} from 'ng2-semantic-ui/ng2-semantic-ui';
 
 import { AppComponent } from './app.component';
+import { FooterComponent } from './footer/footer.component';
+import { HeaderComponent } from './header/header.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    FooterComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
