@@ -10,7 +10,7 @@ export class EditScreenComponent implements OnInit {
   @ViewChild("uploadform") uploadform: ElementRef;  // Reference to the form
 
   _initial_title: string;                           // The title that the form initially started with
-  placeholder: string = "*Chord Sheet Name*";       // Placeholder text for the title
+  placeholder: string = "Chord Sheet Name";       // Placeholder text for the title
   title: string;                                    // Title of the new sheet
 
   file_contents: string = "";                       // Contents of the uploaded sheet
