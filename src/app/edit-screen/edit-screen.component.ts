@@ -97,11 +97,6 @@ class MessageInfo {
   protected details: string[] = [];
 
   //-------- CONSTRUCTORS --------//
-  constructor(title:string, details: string[]) {
-    this.title = title;
-    this.details = details;
-  }
-
   constructor() {}
 
   //-------- GETTERS --------//
