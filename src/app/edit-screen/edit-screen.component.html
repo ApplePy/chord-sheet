@@ -1,4 +1,5 @@
-<form id="upload_form" class="ui form" (reset)="reset($event)" (submit)="submit($event)">
+<!-- TODO: class.error error occurred does not work -->
+<form id="upload_form" class="ui form" (submit)="submit($event)"> <!-- [class.error]="error_occurred" -->
 
   <!-- Header with editable title -->
   <h1 class="ui header">
@@ -8,10 +9,20 @@
     </span>
   </h1>
 
+  <!-- Error message block -->
+  <div class="ui error message">
+    <div class="header">
+      {{error_title}}
+    </div>
+    <p>
+      {{error_detail}}
+    </p>
+  </div>
+
   <!-- Upload file capability -->
   <div class="field">
     <label>Upload ChordPro Track:</label>
-    <input type="file" (change)="onChange($event)"/>
+    <input type="file" (change)="fileUpload($event)"/>
   </div>
 
   <h3 *ngIf="file_contents.length == 0">OR</h3>
@@ -41,7 +52,23 @@
 
   <!-- Control buttons -->
   <div class="field">
-    <button class="ui button" type="reset">Clear</button>
+    <button class="ui button" type="reset" (click)="resetConfirm($event)">Clear</button>
     <button class="ui button green" type="submit">Submit</button>
+    <div class="ui toggle checkbox">
+      <label>Private</label>
+      <input type="checkbox" name="private" title="private"/>
+    </div>
   </div>
 </form>
+
+<div class="ui modal">
+  <div class="header">Header</div>
+  <div class="content">
+    <p></p>
+  </div>
+  <div class="actions">
+    <div class="ui approve button">Approve</div>
+    <div class="ui button">Neutral</div>
+    <div class="ui cancel button">Cancel</div>
+  </div>
+</div>
