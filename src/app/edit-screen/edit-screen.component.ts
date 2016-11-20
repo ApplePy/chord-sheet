@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
+declare var $: any;
 
 @Component({
   selector: 'app-edit-screen',
@@ -6,25 +7,31 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./edit-screen.component.css']
 })
 export class EditScreenComponent implements OnInit {
-  placeholder: string = "*Chord Sheet Name*";   // Placeholder text for the title
-  title: string;                                // Title of the new sheet
+  @ViewChild("uploadform") uploadform: ElementRef;  // Reference to the form
 
-  file_contents: string = "";                   // Contents of the uploaded sheet
+  _initial_title: string;                           // The title that the form initially started with
+  placeholder: string = "*Chord Sheet Name*";       // Placeholder text for the title
+  title: string;                                    // Title of the new sheet
+
+  file_contents: string = "";                       // Contents of the uploaded sheet
 
   // Error text
   error_occurred: boolean = false;
   error_title: string = "";
   error_detail: string = "";
 
+  ngOnInit(initial_title: string = "Hello World!") {
+    if (!initial_title) {
+      this.title = initial_title;
+      this._initial_title = initial_title;
+    }
+  }
+
   private setError(title: string, detail: string){
     this.error_occurred = true;
     this.error_title = title;
     this.error_detail = detail;
   }
-
-  constructor() { }
-
-  ngOnInit() { }
 
   // When file is selected for upload
   fileUpload(event: Event) {
@@ -48,6 +55,7 @@ export class EditScreenComponent implements OnInit {
       if(file.size >= Math.pow(1024, 2)) {
         this.file_contents = "";
         this.setError("File too big", "The supplied file is over 1MB.");
+        target.value = "";
         return;
       }
 
@@ -64,13 +72,23 @@ export class EditScreenComponent implements OnInit {
     }
   }
 
-  // Clear file contents when reset is triggered
-  resetConfirm(event: Event) {
-    // TODO: This doesn't work.
-    this.file_contents = "";
+  // Trigger the page's actual reset
+  triggerReset(){
+    this.uploadform.nativeElement.reset();
+    this.file_contents = '';
+    this.error_occurred = false;
+    this.title = this._initial_title;
+  }
+
+  // Ask to clear file contents when reset is triggered
+  resetConfirm() {
+    $('.ui.basic.modal').modal('show');
   }
 
   submit(event: Event) {
+    console.log('triggered');
+    $('.ui.basic.modal').modal('show');
+    event.preventDefault();
     // TODO: Validate all data before sending
   }
 }

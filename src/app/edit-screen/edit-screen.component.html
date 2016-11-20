@@ -1,4 +1,4 @@
-<form id="upload_form" class="ui form" [class.error]="error_occurred" (submit)="submit($event)"> <!--  -->
+<form #uploadform id="upload_form" class="ui form" [class.error]="error_occurred" (submit)="submit($event)">
 
   <!-- Header with editable title -->
   <h1 class="ui header">
@@ -50,7 +50,7 @@
 
   <!-- Control buttons -->
   <div class="field">
-    <button class="ui button" type="reset" (click)="resetConfirm($event)">Clear</button>
+    <button class="ui button" type="button" (click)="resetConfirm($event)">Clear</button>
     <button class="ui button green" type="submit">Submit</button>
     <div class="ui toggle checkbox">
       <input type="checkbox" name="private" title="private"/>
@@ -59,14 +59,26 @@
   </div>
 </form>
 
-<div class="ui modal">
-  <div class="header">Header</div>
-  <div class="content">
-    <p></p>
+<!-- Clear form modal -->
+<div class="ui basic modal">
+  <div class="ui basic segment center aligned">
+  <div class="ui header inverted">
+    Clear Form
+  </div>
+  <div class="content center aligned">
+      <p>Are you sure you want to reset the form?</p>
+  </div>
   </div>
   <div class="actions">
-    <div class="ui approve button">Approve</div>
-    <div class="ui button">Neutral</div>
-    <div class="ui cancel button">Cancel</div>
+    <div class="two fluid ui inverted buttons">
+      <div class="ui cancel red inverted button">
+        <i class="remove icon"></i>
+        No
+      </div>
+      <div class="ui ok green inverted button" (click)="triggerReset()">
+        <i class="checkmark icon"></i>
+        Yes
+      </div>
+    </div>
   </div>
 </div>
