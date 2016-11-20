@@ -15,22 +15,20 @@ export class EditScreenComponent implements OnInit {
 
   file_contents: string = "";                       // Contents of the uploaded sheet
 
-  // Error text
-  error_occurred: boolean = false;
-  error_title: string = "";
-  error_detail: string = "";
+  // Errors and warnings
+  error: MessageInfo = new MessageInfo();
+  warning: MessageInfo = new MessageInfo();
+
+  private clearMessages(){
+    this.error.deactivate();
+    this.warning.deactivate();
+  }
 
   ngOnInit(initial_title: string = "Hello World!") {
     if (!initial_title) {
       this.title = initial_title;
       this._initial_title = initial_title;
     }
-  }
-
-  private setError(title: string, detail: string){
-    this.error_occurred = true;
-    this.error_title = title;
-    this.error_detail = detail;
   }
 
   // When file is selected for upload
@@ -54,7 +52,7 @@ export class EditScreenComponent implements OnInit {
       // Check file limits
       if(file.size >= Math.pow(1024, 2)) {
         this.file_contents = "";
-        this.setError("File too big", "The supplied file is over 1MB.");
+        this.error.setMessage("File too big", "The supplied file is over 1MB.");
         target.value = "";
         return;
       }
@@ -63,11 +61,11 @@ export class EditScreenComponent implements OnInit {
       reader.readAsText(file, 'UTF-8');
       reader.onload = function (evt: any) {
           this.file_contents = evt.target.result;
-          this.error_occurred = false;
+          this.clearMessages();
         }.bind(this);
 
       reader.onerror = function(evt: any) {
-        this.setError("Bad file", evt.toString());
+        this.setMessages("Bad file", evt.toString());
       }.bind(this);
     }
   }
@@ -76,7 +74,7 @@ export class EditScreenComponent implements OnInit {
   triggerReset(){
     this.uploadform.nativeElement.reset();
     this.file_contents = '';
-    this.error_occurred = false;
+    this.clearMessages();
     this.title = this._initial_title;
   }
 
@@ -85,10 +83,58 @@ export class EditScreenComponent implements OnInit {
     $('.ui.basic.modal').modal('show');
   }
 
+  // Submit form
   submit(event: Event) {
-    console.log('triggered');
-    $('.ui.basic.modal').modal('show');
     event.preventDefault();
     // TODO: Validate all data before sending
+  }
+}
+
+// Class to represent warning modals  TODO: See if modals can be refactored out into a component
+class MessageInfo {
+  protected active: boolean = false;
+  protected title: string = "";
+  protected details: string[] = [];
+
+  //-------- CONSTRUCTORS --------//
+  constructor(title:string, details: string[]) {
+    this.title = title;
+    this.details = details;
+  }
+
+  constructor() {}
+
+  //-------- GETTERS --------//
+  // Get active state
+  public isActive(): boolean {
+    return this.active;
+  }
+
+  // Get title
+  public getTitle(): string {
+    return this.title;
+  }
+
+  // Get details
+  public getDetails(): string[] {
+    return this.details;
+  }
+
+  //-------- SETTERS --------//
+  // Set one error
+  public setMessage(title: string, details: string) {
+    this.setMessages(title, [details]);
+  }
+
+  // Set multiple errors
+  public setMessages(title: string, details: string[]){
+    this.active = true;
+    this.title = title;
+    this.details = details;
+  }
+
+  // Deactivate message
+  public deactivate() {
+    this.active = false;
   }
 }
