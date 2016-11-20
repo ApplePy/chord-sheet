@@ -1,4 +1,3 @@
-<!-- TODO: class.error error occurred does not work -->
 <form id="upload_form" class="ui form" [class.error]="error_occurred" (submit)="submit($event)"> <!--  -->
 
   <!-- Header with editable title -->
@@ -54,8 +53,8 @@
     <button class="ui button" type="reset" (click)="resetConfirm($event)">Clear</button>
     <button class="ui button green" type="submit">Submit</button>
     <div class="ui toggle checkbox">
-      <label>Private</label>
       <input type="checkbox" name="private" title="private"/>
+      <label>Private</label>
     </div>
   </div>
 </form>

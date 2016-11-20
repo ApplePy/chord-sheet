@@ -62,5 +62,4 @@ export class EditScreenComponent implements OnInit {
   submit(event: Event) {
     // TODO: Validate all data before sending
   }
-
 }
