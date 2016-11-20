@@ -1,5 +1,5 @@
 <!-- TODO: class.error error occurred does not work -->
-<form id="upload_form" class="ui form" (submit)="submit($event)"> <!-- [class.error]="error_occurred" -->
+<form id="upload_form" class="ui form" [class.error]="error_occurred" (submit)="submit($event)"> <!--  -->
 
   <!-- Header with editable title -->
   <h1 class="ui header">
@@ -47,7 +47,6 @@
 
       </div>
     </div>
-
   </div>
 
   <!-- Control buttons -->

@@ -40,16 +40,16 @@ export class EditScreenComponent implements OnInit {
 
       // Read file and set success and error handlers
       reader.readAsText(file, 'UTF-8');
-      reader.onload = function(evt: any) {
-        this.file_contents = evt.target.result;
-        this.error_occurred = false;
-      };
+      reader.onload = function (evt: any) {
+          this.file_contents = evt.target.result;
+          this.error_occurred = false;
+        }.bind(this);
 
       reader.onerror = function(evt: any) {
         this.error_title = "Bad file";
         this.error_detail = evt.toString();
         this.error_occurred = true;
-      };
+      }.bind(this);
     }
   }
 
