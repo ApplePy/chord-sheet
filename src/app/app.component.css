@@ -1,4 +1,12 @@
 .spacing {
   margin-top: 2em;
-  /*margin-bottom: 10vh;  !* TODO: this doesn't work, the selection buttons get hidden. *!*/
+}
+.content {
+  flex: 1;
+  margin-bottom: 1em;
+}
+:host {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
 }
