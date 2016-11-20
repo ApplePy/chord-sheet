@@ -1,4 +1,4 @@
 .spacing {
-  margin-top: 4em;
-  margin-bottom: 10vh;  /* TODO: this doesn't work, the selection buttons get hidden. */
+  margin-top: 2em;
+  /*margin-bottom: 10vh;  !* TODO: this doesn't work, the selection buttons get hidden. *!*/
 }

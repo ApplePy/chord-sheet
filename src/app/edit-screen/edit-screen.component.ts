@@ -9,12 +9,18 @@ export class EditScreenComponent implements OnInit {
   placeholder: string = "*Chord Sheet Name*";   // Placeholder text for the title
   title: string;                                // Title of the new sheet
 
-  public file_contents: string = "";            // Contents of the uploaded sheet
+  file_contents: string = "";                   // Contents of the uploaded sheet
 
   // Error text
-  public error_occurred: boolean = false;
+  error_occurred: boolean = false;
   error_title: string = "";
   error_detail: string = "";
+
+  private setError(title: string, detail: string){
+    this.error_occurred = true;
+    this.error_title = title;
+    this.error_detail = detail;
+  }
 
   constructor() { }
 
@@ -38,6 +44,13 @@ export class EditScreenComponent implements OnInit {
       let file = files[0];
       let reader = new FileReader();
 
+      // Check file limits
+      if(file.size >= Math.pow(1024, 2)) {
+        this.file_contents = "";
+        this.setError("File too big", "The supplied file is over 1MB.");
+        return;
+      }
+
       // Read file and set success and error handlers
       reader.readAsText(file, 'UTF-8');
       reader.onload = function (evt: any) {
@@ -46,9 +59,7 @@ export class EditScreenComponent implements OnInit {
         }.bind(this);
 
       reader.onerror = function(evt: any) {
-        this.error_title = "Bad file";
-        this.error_detail = evt.toString();
-        this.error_occurred = true;
+        this.setError("Bad file", evt.toString());
       }.bind(this);
     }
   }
