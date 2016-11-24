@@ -9,9 +9,11 @@
   "author": "Darryl Murray",
   "license": "SEE LICENCE IN LICENCE",
   "dependencies": {
+    "bcrypt": "^0.8.7",
     "body-parser": "^1.15.2",
     "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
+    "mongoose": "^4.7.0",
     "morgan": "^1.7.0"
   }
 }
