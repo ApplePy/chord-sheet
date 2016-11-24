@@ -1,6 +1,6 @@
 <h1>Login</h1>
 
-<form class="ui form">
+<form class="ui form" [class.error]="invalid">
   <!-- Error message block -->
   <!-- TODO: Refactor these error messages into their own components -->
   <div class="ui error message">
@@ -11,12 +11,12 @@
   </div>
 
   <div class="field">
-    <input type="text" placeholder="Username"/>
+    <input type="text" name="username" placeholder="Username" [(ngModel)]="username"/>
   </div>
   <div class="field">
-    <input type="password" placeholder="Password"/>
+    <input type="password" name="password" placeholder="Password" [(ngModel)]="password"/>
   </div>
   <div class="field">
-    <input type="button" value="Log In" class="ui button green"/>
+    <input type="submit" value="Log In" (click)="onSubmit($event)" class="ui button green"/>
   </div>
 </form>

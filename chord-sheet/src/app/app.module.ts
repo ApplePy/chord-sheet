@@ -13,7 +13,8 @@ import { ChordproValidatorService } from './services/chordpro-validator/chordpro
 import { MainScreenComponent } from './components/main-screen/main-screen.component';
 import { PrivacyComponent } from './components/privacy/privacy.component';
 import { LoginComponent } from './components/login/login.component';
-import {AppRoutingModule} from "./app-routing.module";
+import { AppRoutingModule } from "./app-routing.module";
+import { UserService } from "./services/user/user.service";
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import {AppRoutingModule} from "./app-routing.module";
     AppRoutingModule
   ],
   providers: [
+    UserService,
     ChordproValidatorService
   ],
   bootstrap: [AppComponent]
