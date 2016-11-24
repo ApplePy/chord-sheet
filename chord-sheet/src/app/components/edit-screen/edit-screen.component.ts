@@ -15,7 +15,7 @@ export class EditScreenComponent implements OnInit {
   placeholder: string = "Chord Sheet Name";         // Placeholder text for the title
   title: string;                                    // Title of the new sheet
 
-  // TODO: Merge file_contents and manual_input
+  // TODO: Merge file_contents and manual_input, and put under a model instead of leaving hanging here
   file_contents: string = "";                       // Contents of the uploaded sheet
   manual_input: string = "";                        // Contents of manual data entry
 

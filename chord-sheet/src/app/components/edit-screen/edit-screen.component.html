@@ -1,4 +1,10 @@
-<form #uploadform id="upload_form" class="ui form" [class.error]="error.isActive()" [class.warning]="warning.isActive()" (submit)="submit($event)">
+<form
+  #uploadform="ngForm"
+  id="upload_form"
+  class="ui form"
+  [class.error]="error.isActive()"
+  [class.warning]="warning.isActive()"
+  (ngSubmit)="submit($event)">
 
   <!-- Header with editable title -->
   <h1 class="ui header">
@@ -49,7 +55,12 @@
         <div class="left floated column">
           <div class="field">
             <label>Enter ChordPro Text Here:</label>
-            <textarea title="chords" name="chords" form="upload_form" autocomplete="off" [(ngModel)]="manual_input"></textarea>
+            <textarea
+              title="chords"
+              name="chords"
+              form="upload_form"
+              autocomplete="off"
+              [(ngModel)]="manual_input"></textarea>
           </div>
         </div>
 
