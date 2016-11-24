@@ -13,6 +13,7 @@ import { ChordDisplayComponent } from './components/chord-display/chord-display.
 import { ChordproValidatorService } from './services/chordpro-validator/chordpro-validator.service';
 import { MainScreenComponent } from './components/main-screen/main-screen.component';
 import { PrivacyComponent } from './components/privacy/privacy.component';
+import { LoginComponent } from './components/login/login.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { PrivacyComponent } from './components/privacy/privacy.component';
     EditScreenComponent,
     ChordDisplayComponent,
     MainScreenComponent,
-    PrivacyComponent
+    PrivacyComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -30,6 +32,10 @@ import { PrivacyComponent } from './components/privacy/privacy.component';
     HttpModule,
     SuiModule,
     RouterModule.forRoot([
+      {
+        path: "login",
+        component: LoginComponent
+      },
       {
         path: "privacy-policy",
         component: PrivacyComponent
