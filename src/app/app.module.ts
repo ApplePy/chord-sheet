@@ -5,10 +5,11 @@ import { HttpModule } from '@angular/http';
 import {SuiModule} from 'ng2-semantic-ui/ng2-semantic-ui';
 
 import { AppComponent } from './app.component';
-import { FooterComponent } from './footer/footer.component';
-import { HeaderComponent } from './header/header.component';
-import { EditScreenComponent } from './edit-screen/edit-screen.component';
-import { ChordDisplayComponent } from './chord-display/chord-display.component';
+import { FooterComponent } from './components/footer/footer.component';
+import { HeaderComponent } from './components/header/header.component';
+import { EditScreenComponent } from './components/edit-screen/edit-screen.component';
+import { ChordDisplayComponent } from './components/chord-display/chord-display.component';
+import { ChordproValidatorService } from './services/chordpro-validator/chordpro-validator.service';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,9 @@ import { ChordDisplayComponent } from './chord-display/chord-display.component';
     HttpModule,
     SuiModule
   ],
-  providers: [],
+  providers: [
+    ChordproValidatorService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
