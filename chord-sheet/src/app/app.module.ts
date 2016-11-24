@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { RouterModule } from '@angular/router';
 import {SuiModule} from 'ng2-semantic-ui/ng2-semantic-ui';
 
 import { AppComponent } from './app.component';
@@ -14,6 +13,7 @@ import { ChordproValidatorService } from './services/chordpro-validator/chordpro
 import { MainScreenComponent } from './components/main-screen/main-screen.component';
 import { PrivacyComponent } from './components/privacy/privacy.component';
 import { LoginComponent } from './components/login/login.component';
+import {AppRoutingModule} from "./app-routing.module";
 
 @NgModule({
   declarations: [
@@ -31,29 +31,7 @@ import { LoginComponent } from './components/login/login.component';
     FormsModule,
     HttpModule,
     SuiModule,
-    RouterModule.forRoot([
-      {
-        path: "login",
-        component: LoginComponent
-      },
-      {
-        path: "privacy-policy",
-        component: PrivacyComponent
-      },
-      {
-        path: "edit",
-        component: EditScreenComponent
-      },
-      {
-        path: "home",
-        component: MainScreenComponent
-      },
-      {
-        path: "",
-        redirectTo: "/home",
-        pathMatch: 'full'
-      }
-    ])
+    AppRoutingModule
   ],
   providers: [
     ChordproValidatorService
