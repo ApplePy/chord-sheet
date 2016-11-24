@@ -3,7 +3,10 @@
     <a class="header item" routerLink="/home">Home</a> <!-- TODO: Figure out how to go to / instead -->
     <a class="item" routerLink="/edit">Create Chord Sheet</a> <!-- TODO: This should be restricted, and link is bad. Fix. -->
     <div class="right menu">
-      <a class="item" routerLink="/login">Login</a>
+      <div [ngSwitch]="user.isLoggedIn()">
+        <a class="item" *ngSwitchCase="true" (click)="onLogout()">Logout</a>  <!-- TODO: Create logout page? -->
+        <a class="item" *ngSwitchCase="false" routerLink="/login">Login</a>
+      </div>
     </div>
   </nav>
 </div>

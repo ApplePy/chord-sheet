@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     // Redirect off page if logged in
-    this.user.logintoken().subscribe(result => {if (result == true) this.router.navigate(["/home"])});
+    if (this.user.isLoggedIn())this.router.navigate(["/home"]);
   }
 
   onSubmit($event: Event) {
