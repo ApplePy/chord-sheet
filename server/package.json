@@ -1,0 +1,17 @@
+{
+  "name": "chord-sheet-server",
+  "version": "1.0.0",
+  "description": "The server to serve the chord-sheet Angular 2 app.",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd ../chord-sheet; ng build; cd ../server; node index.js"
+  },
+  "author": "Darryl Murray",
+  "license": "SEE LICENCE IN LICENCE",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "morgan": "^1.7.0"
+  }
+}
