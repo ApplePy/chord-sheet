@@ -15,6 +15,8 @@ import { PrivacyComponent } from './components/privacy/privacy.component';
 import { LoginComponent } from './components/login/login.component';
 import { AppRoutingModule } from "./app-routing.module";
 import { UserService } from "./services/user/user.service";
+import { ChordsheetListComponent } from './components/chordsheet-list/chordsheet-list.component';
+import {ChordsheetService} from "./components/chordsheet-list/chordsheet.service";
 
 @NgModule({
   declarations: [
@@ -25,7 +27,8 @@ import { UserService } from "./services/user/user.service";
     ChordDisplayComponent,
     MainScreenComponent,
     PrivacyComponent,
-    LoginComponent
+    LoginComponent,
+    ChordsheetListComponent
   ],
   imports: [
     BrowserModule,
@@ -35,6 +38,7 @@ import { UserService } from "./services/user/user.service";
     AppRoutingModule
   ],
   providers: [
+    ChordsheetService,
     UserService,
     ChordproValidatorService
   ],
