@@ -9,6 +9,7 @@ var bcrypt      = require('bcrypt');
 
 // Setup db models
 var User        = require('./../models/user-model');
+var UserCookies = require('./../models/usercookie-model');
 
 
 // ---- CONSTANTS ---- //
@@ -19,14 +20,18 @@ const saltRound = 10;
 
 // Login user
 router.post("/login", function(req, res, next) {
-    var token = req.body.token;
+    var token = req.cookies.token;
     var username = req.body.username;
     var password = req.body.password;
 
+    // Common callbacks
+    var badToken    = function(){res.send({success: false})};
+    var goodToken   = function(user){res.send({success: true, username: user.username, firstname: user.firstname, lastname: user.lastname})};
+
+
     // Login by token
     if (token) {
-        // TODO: Figure out how to incorporate cookie tokens into Mongo
-        res.send({success: true});
+        getTokenOwner(token, badToken, goodToken);
     }
 
     // Login by user/pass
@@ -34,7 +39,7 @@ router.post("/login", function(req, res, next) {
 
         var comparefunc = function(users) {
             // Make sure a user was returned
-            if(users.length == 0) res.send({success: false});
+            if(users.length == 0) badToken();
             else {
                 var user = users[0];
                 console.log(user.password);
@@ -43,15 +48,21 @@ router.post("/login", function(req, res, next) {
                 // Compare the passed password and the hashed password for validity.
                 bcrypt.compare(password, user.password, function (err, bRes) {
                     if (bRes == true) {
-                        res.cookie('token', 345653);    // TODO: Generate unique token
-                        res.send({success: true});
+                        // Set the cookie before sending the success response
+                        var setCookie = function(cookie) {
+                            res.cookie('token', cookie.token, {maxAge: 1000 * 60 * 60 * 24}); // Expires in 24 hrs. // TODO: Cookie security!
+                            goodToken(user);
+                        };
+
+                        // Generate and store a new cookie
+                        setToken(user.username, function(err){res.send({success: false, reason: err})}, setCookie)
                     }
                     else res.send({success: false});
                 });
             }
         };
 
-        getUserInfo(username, true, function(){res.send({success: false})}, comparefunc, false);
+        getUserInfo(username, true, badToken, comparefunc, false);
     }
     // Bad form, reject
     else {
@@ -175,6 +186,69 @@ var getUserInfo = function(username, addpass, failure, success, returnQueryObj) 
         if (err) failure("Query failed.");
         else success(users);
     });
+};
+
+/** Sets a new cookie for a user.
+ *
+ * @param username  The username to get the new cookie.
+ * @param failure   function(err) Called when setting the cookie fails. Usually contains error text.
+ * @param success   function(user) Called when setting cookie suceeds. Contains cookie object.
+ */
+var setToken = function(username, failure, success) {
+    // Create token
+    var newCookie = new UserCookies();
+    newCookie.token = getRandomInt();
+    newCookie.owner = username;
+
+    // Save cookie
+    newCookie.save(function(err, res){
+        if (!err) success(res);
+        else failure("Token could not be saved.");
+    });
+};
+
+/** Get user associated with token.
+ *
+ * @param token     The token to search for.
+ * @param failure   function(err) Called when finding the cookie owner details fails. Contains error text.
+ * @param success   function(user) Called when finding the cookie owner succeeds. Contains the owner's details.
+ */
+var getTokenOwner = function(token, failure, success) {
+    // Check returned token for validity, and ensure user still exists
+    var stillExists = function(tokenEntry) {
+        if (tokenEntry.length == 0) failure("No token found.");
+        else if (tokenEntry.length > 1) failure("Duplicate tokens were generated.");
+        else {
+            var tokenE = tokenEntry[0];
+
+            // Ensure user still exists
+            var userExists = function(users) {
+                if(users.length != 1) failure("User for token does not exist.");
+                else success(users[0]);
+            };
+
+            getUserInfo(tokenE.owner, false, failure, userExists, false);
+        }
+    };
+
+    // Get token
+    UserCookies.find({})
+        .where('token').equals(token)
+        .select('owner')
+        .exec(function(err, tokenEntry) {
+           if (err) failure("Error connecting to DB for token search.");
+           else stillExists(tokenEntry);
+        });
+};
+
+/** Get a random int between 0 and 9999999999 (exclusive).
+ *
+ * @returns {number}
+ */
+var getRandomInt = function () {
+    min = 0;
+    max = 9999999999;
+    return Math.floor(Math.random() * (max - min)) + min;
 };
 
 module.exports = router;
