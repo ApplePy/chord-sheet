@@ -31,13 +31,13 @@ router.post("/login", function(req, res, next) {
 
     // Login by token
     if (token) {
-        getTokenOwner(token, badToken, goodToken);
+        getTokenOwner(token).then(goodToken, badToken);
     }
 
     // Login by user/pass
     else if (username && password) {
 
-        var comparefunc = function(users) {
+        var compareFunc = function(users) {
             // Make sure a user was returned
             if(users.length == 0) badToken();
             else {
@@ -55,14 +55,14 @@ router.post("/login", function(req, res, next) {
                         };
 
                         // Generate and store a new cookie
-                        setToken(user.username, function(err){res.send({success: false, reason: err})}, setCookie)
+                        setToken(user.username).then(setCookie, function(err){res.send({success: false, reason: err.message})});
                     }
                     else res.send({success: false});
                 });
             }
         };
 
-        getUserInfo(username, true, badToken, comparefunc, false);
+        getUserInfo(username, true).then(compareFunc, badToken);
     }
     // Bad form, reject
     else {
@@ -105,16 +105,7 @@ router.route('/:username')
     .get(function (req, res, next) {
         var username = req.params.username;
 
-        getUserInfo(
-            username,
-            false,
-            function (err) {
-                res.status(500).send(err)
-            },
-            function (users) {
-                res.send(users)
-            }
-        );
+        getUserInfo(username, false).then(function (users) {res.send(users)}, function (err) {res.status(500).send(err.message)});
     })
 
     // Update user information
@@ -143,9 +134,12 @@ router.route('/:username')
             }
         };
 
-        getUserInfo(username, true, function (err) {
-            res.status(500).send({success: false, more: err})
-        }, update, false);
+        getUserInfo(username, true, false)
+            .then(
+                update,
+                function (err) {
+                    res.status(500).send({success: false, more: err})
+                });
     })
 
     // Delete user
@@ -153,7 +147,7 @@ router.route('/:username')
         var username = req.params.username;
 
         // Get user, and delete.
-        getUserInfo(username, false, null, null, true).remove().exec();
+        getUserInfo(username, false, true).remove().exec();
 
         // Tell user success
         res.send({success: true});
@@ -166,13 +160,13 @@ router.route('/:username')
  *
  * @param username          The user to retrieve.
  * @param addpass           Specify if the password should be retrieved as well.
- * @param failure           function(err) called when the function fails. Contains error text. Can be null.
- * @param success           function(user) called when the function succeeds. Contains a list of user objects. Can be null.
+ * @param reject           function(err) called when the function fails. Contains error object.
+ * @param resolve           function(user) called when the function succeeds. Contains a list of user objects. Can be empty list.
  * @param returnQueryObj    Specifies if the mongoose object should be returned instead of executing. failure/success not called if true.
- * @returns {*|void|SchemaType|Query}   Returns void, or Query when returnQueryObj == true
+ * @returns {Promise|Query} Returns Promise, or Query when returnQueryObj == true
  */
-var getUserInfo = function(username, addpass, failure, success, returnQueryObj) {
-    var selectStmt = (addpass)? "username firstname lastname password": "username firstname lastname";
+var getUserInfo = function (username, addpass, returnQueryObj) {
+    var selectStmt = (addpass) ? "username firstname lastname password" : "username firstname lastname";
 
     var query = User.find({})
         .where("username").equals(username)
@@ -182,63 +176,72 @@ var getUserInfo = function(username, addpass, failure, success, returnQueryObj) 
     // Return query if requested, otherwise execute
     if (returnQueryObj)
         return query;
-    else query.exec(function (err, users) {
-        if (err) failure("Query failed.");
-        else success(users);
-    });
+    else
+        return new Promise(function (resolve, reject) {
+            query.exec(function (err, users) {
+                if (err) reject(Error("Query failed."));
+                else resolve(users);
+            });
+        });
 };
 
 /** Sets a new cookie for a user.
  *
  * @param username  The username to get the new cookie.
- * @param failure   function(err) Called when setting the cookie fails. Usually contains error text.
- * @param success   function(user) Called when setting cookie suceeds. Contains cookie object.
+ * @param reject   function(err) Called when setting the cookie fails. Contains error object.
+ * @param resolve   function(user) Called when setting cookie suceeds. Contains cookie object.
+ * @returns {Promise}
  */
-var setToken = function(username, failure, success) {
-    // Create token
-    var newCookie = new UserCookies();
-    newCookie.token = getRandomInt();
-    newCookie.owner = username;
+var setToken = function(username) {
+    return new Promise(function (resolve, reject) {
+        // Create token
+        var newCookie = new UserCookies();
+        newCookie.token = getRandomInt();
+        newCookie.owner = username;
 
-    // Save cookie
-    newCookie.save(function(err, res){
-        if (!err) success(res);
-        else failure("Token could not be saved.");
+        // Save cookie
+        newCookie.save(function (err, res) {
+            if (!err) resolve(res);
+            else reject(Error("Token could not be saved."));
+        });
     });
 };
 
 /** Get user associated with token.
  *
  * @param token     The token to search for.
- * @param failure   function(err) Called when finding the cookie owner details fails. Contains error text.
- * @param success   function(user) Called when finding the cookie owner succeeds. Contains the owner's details.
+ * @param reject   function(err) Called when finding the cookie owner details fails. Contains error text.
+ * @param resolve   function(user) Called when finding the cookie owner succeeds. Contains the owner's details.
+ * @returns {Promise}
  */
-var getTokenOwner = function(token, failure, success) {
-    // Check returned token for validity, and ensure user still exists
-    var stillExists = function(tokenEntry) {
-        if (tokenEntry.length == 0) failure("No token found.");
-        else if (tokenEntry.length > 1) failure("Duplicate tokens were generated.");
-        else {
-            var tokenE = tokenEntry[0];
+var getTokenOwner = function(token) {
+    return new Promise(function (resolve, reject) {
+        // Check returned token for validity, and ensure user still exists
+        var stillExists = function (tokenEntry) {
+            if (tokenEntry.length == 0) reject(Error("No token found."));
+            else if (tokenEntry.length > 1) reject(Error("Duplicate tokens were generated."));
+            else {
+                var tokenE = tokenEntry[0];
 
-            // Ensure user still exists
-            var userExists = function(users) {
-                if(users.length != 1) failure("User for token does not exist.");
-                else success(users[0]);
-            };
+                // Ensure user still exists
+                var userExists = function (users) {
+                    if (users.length != 1) reject(Error("User for token does not exist."));
+                    else resolve(users[0]);
+                };
 
-            getUserInfo(tokenE.owner, false, failure, userExists, false);
-        }
-    };
+                getUserInfo(tokenE.owner, false, reject, userExists, false);
+            }
+        };
 
-    // Get token
-    UserCookies.find({})
-        .where('token').equals(token)
-        .select('owner')
-        .exec(function(err, tokenEntry) {
-           if (err) failure("Error connecting to DB for token search.");
-           else stillExists(tokenEntry);
-        });
+        // Get token
+        UserCookies.find({})
+            .where('token').equals(token)
+            .select('owner')
+            .exec(function (err, tokenEntry) {
+                if (err) reject(Error("Error connecting to DB for token search."));
+                else stillExists(tokenEntry);
+            });
+    });
 };
 
 /** Get a random int between 0 and 9999999999 (exclusive).
@@ -251,4 +254,7 @@ var getRandomInt = function () {
     return Math.floor(Math.random() * (max - min)) + min;
 };
 
-module.exports = router;
+module.exports.router = router;
+module.exports.getTokenOwner = getTokenOwner;
+
+// TODO: Consider "promisifying" most of these functions.
