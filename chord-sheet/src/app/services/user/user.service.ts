@@ -58,7 +58,7 @@ export class UserService {
 
   logout() {
     this.loggedIn = false;
-    Cookie.delete('token');   // TODO: this doesn't wipe the cookie.
+    Cookie.delete('token');
   }
 
 }

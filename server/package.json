@@ -4,8 +4,10 @@
   "description": "The server to serve the chord-sheet Angular 2 app.",
   "main": "index.js",
   "scripts": {
-    "test": "cd ../chord-sheet; ng build; cd ../server; node index.js",
-    "start": "node index.js"
+    "start": "cd ../chord-sheet; ng build; cd ../server; node index.js",
+    "test": "node index.js",
+    "ng": "cd ../chord-sheet; ng build --watch",
+    "nodemon": "./node_modules/.bin/nodemon"
   },
   "author": "Darryl Murray",
   "license": "SEE LICENCE IN LICENCE",
@@ -17,5 +19,8 @@
     "mongoose": "^4.7.0",
     "mongoose-auto-increment": "^5.0.1",
     "morgan": "^1.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
   }
 }
