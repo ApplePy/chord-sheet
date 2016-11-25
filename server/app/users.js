@@ -55,7 +55,7 @@ router.post("/login", function(req, res, next) {
     }
     // Bad form, reject
     else {
-        res.send({success: false});
+        res.status(400).send({success: false});
     }
 });
 
@@ -66,7 +66,7 @@ router.get('/:username', function(req, res, next) {
     getUserInfo(
         username,
         false,
-        function(err){res.send(err)},
+        function(err){res.status(500).send(err)},
         function(users){res.send(users)}
     );
 });
@@ -78,12 +78,12 @@ router.post('/', function(req, res, next) {
         else {
             // Hash password
             bcrypt.hash(req.body.password, saltRound, function (err, hash) {
-                if (err) {res.send({success: false, reason: "Hashing error."})}
+                if (err) {res.status(500).send({success: false, reason: "Hashing error."})}
                 else {
                     user.password = hash;
                     user.save(function(err, mongoRes){
                         if (!err) res.send({success: true});
-                        else res.send({success: false, reason: "Error saving new user."});
+                        else res.status(500).send({success: false, reason: "Error saving new user."});
                     });
                 }
             });
@@ -97,18 +97,36 @@ router.post('/', function(req, res, next) {
     user.lastname = req.body.lastname;
 
     // Create user if does not already exist
-    getUserInfo(user.username, false, function(){res.send({success: false, reason: "Problem accessing DB."})}, createUser);
+    getUserInfo(user.username, false, function(){res.status(500).send({success: false, reason: "Problem accessing DB."})}, createUser);
 });
 
 // Update user information
 router.post('/:username', function(req, res, next) {        // TODO: No permission controls yet!
+
+    // Get the variables. If they don't exist or are empty, they will be ignored.
     var username = req.params.username;
     var password = req.body.password;
     var firstname = req.body.firstname;
     var lastname = req.body.lastname;
 
-    var update
+    // Update the user data and re-input
+    var update = function(users) {
+        if(users.length == 0) res.send({success: false, reason: "User not found."});
+        else {
+            var user = users[0];
+            user.password = (!password || bcrypt.compareSync(password, user.password)) ? user.password : bcrypt.hashSync(password, saltRound);
+            user.firstname = (!firstname) ? user.firstname : firstname;
+            user.lastname = (!lastname) ? user.lastname : lastname;
 
+            // Save the modified user
+            user.save(function(err, uRes) {
+                if (!err) res.send({success: true});
+                else res.status(500).send({success: false, reason: "DB update failed."});
+            });
+        }
+    };
+
+    getUserInfo(username, true, function(err){res.status(500).send({success: false, more: err})}, update, false);
 });
 
 // Delete user
