@@ -25,4 +25,16 @@ router.use(function(req, res, next) {
     res.sendStatus(501);
 });
 
+// Sanitize inputs
+// htmlEscape Source: http://stackoverflow.com/questions/1219860/html-encoding-in-javascript-jquery
+module.exports.sanitize = function (str) {
+    return str
+        .replace(/&/g, '&amp;')     // TODO: this function is not idempotent because of this line. Fix.
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\//g, '&#x2F;');
+};
+
 module.exports.router = router;

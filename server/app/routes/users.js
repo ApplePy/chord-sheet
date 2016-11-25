@@ -6,10 +6,12 @@
 var express     = require('express');
 var router      = express.Router({ mergeParams: true });
 var bcrypt      = require('bcrypt');
+var sanitize    = require('../chord_api').sanitize;
 
 // Setup db models
 var User        = require('./../models/user-model');
 var UserCookies = require('./../models/usercookie-model');
+var ChordSheet  = require('../models/chordsheet-model');
 
 
 // ---- CONSTANTS ---- //
@@ -21,7 +23,7 @@ const saltRound = 10;
 // Login user
 router.post("/login", function(req, res, next) {
     var token = req.cookies.token;
-    var username = req.body.username;
+    var username = sanitize(req.body.username);
     var password = req.body.password;
 
     // Common callbacks
@@ -42,8 +44,6 @@ router.post("/login", function(req, res, next) {
             if(users.length == 0) badToken();
             else {
                 var user = users[0];
-                console.log(user.password);
-                console.log(password);
 
                 // Compare the passed password and the hashed password for validity.
                 bcrypt.compare(password, user.password, function (err, bRes) {
@@ -91,19 +91,19 @@ router.post('/', function(req, res, next) {
 
     // Create user and set up initial info
     var user = new User();
-    user.username = req.body.username;
-    user.firstname = req.body.firstname;
-    user.lastname = req.body.lastname;
+    user.username = sanitize(req.body.username);
+    user.firstname = sanitize(req.body.firstname);
+    user.lastname = sanitize(req.body.lastname);
 
     // Create user if does not already exist
-    getUserInfo(user.username, false, function(){res.status(500).send({success: false, reason: "Problem accessing DB."})}, createUser);
+    getUserInfo(user.username, false, false).then(createUser, function(){res.status(500).send({success: false, reason: "Problem accessing DB."})});
 });
 
 
 router.route('/:username')
     // Get user information
     .get(function (req, res, next) {
-        var username = req.params.username;
+        var username = sanitize(req.params.username);
 
         getUserInfo(username, false).then(function (users) {res.send(users)}, function (err) {res.status(500).send(err.message)});
     })
@@ -112,10 +112,10 @@ router.route('/:username')
     .post(function (req, res, next) {        // TODO: No permission controls yet!
 
         // Get the variables. If they don't exist or are empty, they will be ignored.
-        var username = req.params.username;
-        var password = req.body.password;
-        var firstname = req.body.firstname;
-        var lastname = req.body.lastname;
+        var username    = sanitize(req.params.username);
+        var firstname   = sanitize(req.body.firstname);
+        var lastname    = sanitize(req.body.lastname);
+        var password    = req.body.password;
 
         // Update the user data and re-input
         var update = function (users) {
@@ -143,10 +143,13 @@ router.route('/:username')
 
     // Delete user
     .delete(function (req, res, next) {      // TODO: No permission controls yet!
-        var username = req.params.username;
+        var username = sanitize(req.params.username);
 
         // Get user, and delete.
-        getUserInfo(username, false, null, null, true).remove().exec();
+        // Delete user cookies, and delete user chordsheets
+        getUserInfo(username, false, true).remove().exec();
+        UserCookies.find({owner: username}).remove().exec();
+        ChordSheet.find({owner: username}).remove().exec();
 
         // Tell user success
         res.send({success: true});
@@ -255,5 +258,3 @@ var getRandomInt = function () {
 
 module.exports.router = router;
 module.exports.getTokenOwner = getTokenOwner;
-
-// TODO: Consider "promisifying" most of these functions.
