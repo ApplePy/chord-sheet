@@ -138,8 +138,7 @@ router.route('/:username')
             .then(
                 update,
                 function (err) {
-                    res.status(500).send({success: false, more: err})
-                });
+                    res.status(500).send({success: false, more: err})});
     })
 
     // Delete user
@@ -147,7 +146,7 @@ router.route('/:username')
         var username = req.params.username;
 
         // Get user, and delete.
-        getUserInfo(username, false, true).remove().exec();
+        getUserInfo(username, false, null, null, true).remove().exec();
 
         // Tell user success
         res.send({success: true});
@@ -229,7 +228,7 @@ var getTokenOwner = function(token) {
                     else resolve(users[0]);
                 };
 
-                getUserInfo(tokenE.owner, false, reject, userExists, false);
+                getUserInfo(tokenE.owner, false, false).then(userExists, reject);
             }
         };
 
