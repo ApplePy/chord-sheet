@@ -4,7 +4,8 @@
   "description": "The server to serve the chord-sheet Angular 2 app.",
   "main": "index.js",
   "scripts": {
-    "start": "cd ../chord-sheet; ng build; cd ../server; node index.js"
+    "test": "cd ../chord-sheet; ng build; cd ../server; node index.js",
+    "start": "node index.js"
   },
   "author": "Darryl Murray",
   "license": "SEE LICENCE IN LICENCE",

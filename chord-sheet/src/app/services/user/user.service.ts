@@ -18,7 +18,7 @@ export class UserService {
     headers.append('Content-Type', 'application/json');
 
     // Send request, and store result as logged-in variable.
-    return this.http.post("/api/login", creds, {headers: headers})  // TODO: Put host name in value inject
+    return this.http.post("/api/users/login", creds, {headers: headers})  // TODO: Put host name in value inject
       .map(res => {
         let result = res.json();
         this.loggedIn = result.success;

@@ -8,7 +8,7 @@ var router      = express.Router({ mergeParams: true });
 var bcrypt      = require('bcrypt');
 
 // Setup db models
-var User        = require('./models/user-model');
+var User        = require('./../models/user-model');
 
 
 // ---- CONSTANTS ---- //
@@ -59,18 +59,6 @@ router.post("/login", function(req, res, next) {
     }
 });
 
-// Get user information
-router.get('/:username', function(req, res, next) {
-    var username = req.params.username;
-
-    getUserInfo(
-        username,
-        false,
-        function(err){res.status(500).send(err)},
-        function(users){res.send(users)}
-    );
-});
-
 // Create new user
 router.post('/', function(req, res, next) {
     var createUser = function (users) {          // TODO: Refactor with user-exists to avoid repetition.
@@ -100,45 +88,65 @@ router.post('/', function(req, res, next) {
     getUserInfo(user.username, false, function(){res.status(500).send({success: false, reason: "Problem accessing DB."})}, createUser);
 });
 
-// Update user information
-router.post('/:username', function(req, res, next) {        // TODO: No permission controls yet!
 
-    // Get the variables. If they don't exist or are empty, they will be ignored.
-    var username = req.params.username;
-    var password = req.body.password;
-    var firstname = req.body.firstname;
-    var lastname = req.body.lastname;
+router.route('/:username')
+    // Get user information
+    .get(function (req, res, next) {
+        var username = req.params.username;
 
-    // Update the user data and re-input
-    var update = function(users) {
-        if(users.length == 0) res.send({success: false, reason: "User not found."});
-        else {
-            var user = users[0];
-            user.password = (!password || bcrypt.compareSync(password, user.password)) ? user.password : bcrypt.hashSync(password, saltRound);
-            user.firstname = (!firstname) ? user.firstname : firstname;
-            user.lastname = (!lastname) ? user.lastname : lastname;
+        getUserInfo(
+            username,
+            false,
+            function (err) {
+                res.status(500).send(err)
+            },
+            function (users) {
+                res.send(users)
+            }
+        );
+    })
 
-            // Save the modified user
-            user.save(function(err, uRes) {
-                if (!err) res.send({success: true});
-                else res.status(500).send({success: false, reason: "DB update failed."});
-            });
-        }
-    };
+    // Update user information
+    .post(function (req, res, next) {        // TODO: No permission controls yet!
 
-    getUserInfo(username, true, function(err){res.status(500).send({success: false, more: err})}, update, false);
-});
+        // Get the variables. If they don't exist or are empty, they will be ignored.
+        var username = req.params.username;
+        var password = req.body.password;
+        var firstname = req.body.firstname;
+        var lastname = req.body.lastname;
 
-// Delete user
-router.delete('/:username', function(req, res, next) {      // TODO: No permission controls yet!
-    var username = req.params.username;
+        // Update the user data and re-input
+        var update = function (users) {
+            if (users.length == 0) res.send({success: false, reason: "User not found."});
+            else {
+                var user = users[0];
+                user.password = (!password || bcrypt.compareSync(password, user.password)) ? user.password : bcrypt.hashSync(password, saltRound);
+                user.firstname = (!firstname) ? user.firstname : firstname;
+                user.lastname = (!lastname) ? user.lastname : lastname;
 
-    // Get user, and delete.
-    getUserInfo(username, false, null, null, true).remove().exec();
+                // Save the modified user
+                user.save(function (err, uRes) {
+                    if (!err) res.send({success: true});
+                    else res.status(500).send({success: false, reason: "DB update failed."});
+                });
+            }
+        };
 
-    // Tell user success
-    res.send({success: true});
-});
+        getUserInfo(username, true, function (err) {
+            res.status(500).send({success: false, more: err})
+        }, update, false);
+    })
+
+    // Delete user
+    .delete(function (req, res, next) {      // TODO: No permission controls yet!
+        var username = req.params.username;
+
+        // Get user, and delete.
+        getUserInfo(username, false, null, null, true).remove().exec();
+
+        // Tell user success
+        res.send({success: true});
+    });
 
 
 // ---- HELPER FUNCTIONS ---- //
