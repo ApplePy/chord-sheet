@@ -9,28 +9,20 @@ var bcrypt      = require('bcrypt');
 var mongoose    = require('mongoose');
 
 // Setup mongo connection
-mongoose.connect('mongodb://localhost:27017/chordpro'); // connect to our database
+module.exports.mongoose = mongoose.connect('mongodb://localhost:27017/chordpro'); // connect to our database
 
 // Import sub-routers
-var user_api    = require('./users');
+var user_api    = require('./routes/users');
+var chord_api   = require('./routes/chordsheets');
 
 // Wire up sub-routers
 router.use('/users', user_api);
+router.use('/chordsheets', chord_api);
 
 
-
-router.get('/', function(req, res, next) {
-    res.send('Got a GET request for the api');
+// Catch-all
+router.use(function(req, res, next) {
+    res.sendStatus(501);
 });
 
-router.post('/', function(req, res, next) {
-    res.send('Got a POST request for the api');
-});
-
-
-router.delete('/', function(req, res, next) {
-    res.send('Got a DELETE request for the api');
-});
-
-
-module.exports = router;
+module.exports.router = router;
