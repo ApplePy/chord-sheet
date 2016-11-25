@@ -14,7 +14,9 @@ autoIncrement.initialize(connection);
 var ChordSheetSchema = new Schema({
     songtitle: String,
     private: Boolean,
-    owner: {type: Schema.Types.ObjectId, ref: 'User'}
+    owner: String,
+    contents: String,
+    date: {type: Date, default: Date.now}
 });
 
 

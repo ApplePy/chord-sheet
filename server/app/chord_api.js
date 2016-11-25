@@ -12,7 +12,7 @@ var mongoose    = require('mongoose');
 module.exports.mongoose = mongoose.connect('mongodb://localhost:27017/chordpro'); // connect to our database
 
 // Import sub-routers
-var user_api    = require('./routes/users');
+var user_api    = require('./routes/users').router;
 var chord_api   = require('./routes/chordsheets');
 
 // Wire up sub-routers
