@@ -99,7 +99,7 @@ export class EditScreenComponent implements OnInit {
     let results = this.validator.validate(contents);
 
     // Send if no errors, otherwise display errors
-    if (!results.containsIssues()) {
+    if (!results.containsIssues() && contents.length > 0) {
       // TODO: Send data
       event.preventDefault();
     } else {
