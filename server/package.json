@@ -4,13 +4,16 @@
   "description": "The server to serve the chord-sheet Angular 2 app.",
   "main": "index.js",
   "scripts": {
-    "start": "cd ..; cd chord-sheet; ng build; cd ..; cd server; node index.js",
-    "test": "node index.js",
+    "start": "node index.js",
+    "build": "tsc",
+    "test": "cd ../chord-sheet && ng build && cd ../server && ./node_modules/.bin/ts-node index.js",
+    "test-win": "cd ..\\chord-sheet && ng build && cd ..\\server && node_modules\\.bin\\ts-node index.js",
     "ng": "cd .. && cd chord-sheet && ng build --watch",
-    "nodemon": "./node_modules/.bin/nodemon"
+    "nodemon-win": ".\\node_modules\\.bin\\nodemon --exec .\\node_modules\\.bin\\ts-node index.js --ext js,ts",
+    "nodemon": "./node_modules/.bin/nodemon --exec ./node_modules/.bin/ts-node ./index.js --ext js, ts"
   },
   "author": "Darryl Murray",
-  "license": "SEE LICENCE IN LICENCE",
+  "license": "MIT",
   "dependencies": {
     "bcrypt": "^0.8.7",
     "body-parser": "^1.15.2",
@@ -21,6 +24,9 @@
     "morgan": "^1.7.0"
   },
   "devDependencies": {
-    "nodemon": "^1.11.0"
+    "@types/node": "^6.0.51",
+    "nodemon": "^1.11.0",
+    "ts-node": "^1.7.0",
+    "typescript": "^2.0.10"
   }
 }

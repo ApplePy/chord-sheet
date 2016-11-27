@@ -50,4 +50,5 @@ jspm_packages
 
 ## Darryl Additions
 /data
-
+/tmp
+*.map
