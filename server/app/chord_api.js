@@ -11,6 +11,20 @@ var mongoose    = require('mongoose');
 // Setup mongo connection
 module.exports.mongoose = mongoose.connect('mongodb://localhost:27017/chordpro'); // connect to our database
 
+// Set up exported functions that will be used by sub-routers
+// htmlEscape Source: http://stackoverflow.com/questions/1219860/html-encoding-in-javascript-jquery
+module.exports.sanitize = function (str) {
+    if (typeof str != "string") return str;
+    return str
+        .replace(/&/g, '&amp;')     // TODO: this function is not idempotent because of this line. Fix.
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\//g, '&#x2F;');
+};
+
+
 // Import sub-routers
 var user_api    = require('./routes/users').router;
 var chord_api   = require('./routes/chordsheets');
@@ -24,17 +38,5 @@ router.use('/chordsheets', chord_api);
 router.use(function(req, res, next) {
     res.sendStatus(501);
 });
-
-// Sanitize inputs
-// htmlEscape Source: http://stackoverflow.com/questions/1219860/html-encoding-in-javascript-jquery
-module.exports.sanitize = function (str) {
-    return str
-        .replace(/&/g, '&amp;')     // TODO: this function is not idempotent because of this line. Fix.
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/\//g, '&#x2F;');
-};
 
 module.exports.router = router;
