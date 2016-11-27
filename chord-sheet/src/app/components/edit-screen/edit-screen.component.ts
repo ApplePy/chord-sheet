@@ -16,7 +16,7 @@ export class EditScreenComponent implements OnInit {
   _initial_title: string;                           // The title that the form initially started with
   placeholder: string = "Chord Sheet Name";         // Placeholder text for the title
   title: string;                                    // Title of the new sheet
-  is_private: boolean = true;
+  is_private: boolean = false;
 
   // TODO: Merge file_contents and manual_input, and put under a model instead of leaving hanging here
   file_contents: string = "";                       // Contents of the uploaded sheet

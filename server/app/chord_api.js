@@ -9,6 +9,7 @@ var bcrypt      = require('bcrypt');
 var mongoose    = require('mongoose');
 
 // Setup mongo connection
+mongoose.Promise = Promise;     // Just use JavaScript promises.
 module.exports.mongoose = mongoose.connect('mongodb://localhost:27017/chordpro'); // connect to our database
 
 // Set up exported functions that will be used by sub-routers
