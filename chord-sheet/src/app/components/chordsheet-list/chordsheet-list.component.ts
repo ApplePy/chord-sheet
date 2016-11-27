@@ -16,7 +16,7 @@ export class ChordsheetListComponent implements OnInit {
 
 
     this.chordsheetSerivce.retrieveChordSheets(true)
-      .subscribe(data => {this.chordsheets = data; console.log(data);});
+      .subscribe(data => this.chordsheets = data);
   }
 
 }

@@ -17,7 +17,7 @@ export class ChordsheetService {
 
     // Send request, and store result as logged-in variable.
     return this.http.get("/api/chordsheets", {headers: headers})
-      .map(res =>postProcess(res.json()));
+      .map(res => postProcess(res.json()));
   }
 
   private static findMatchingMeta(revision: any, allMeta: any) {
@@ -47,7 +47,7 @@ export class ChordsheetService {
       let metaEntry = ChordsheetService.findMatchingMeta(revision, data.metadata);
 
       // If the revision number matches the latest revision, add to results
-      if (revision.revision != metaEntry.latestRevision) {
+      if (revision.revision == metaEntry.latestRevision) {
         revision.revision = metaEntry.revisionCount;
         results.push(revision);
       }

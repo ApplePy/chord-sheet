@@ -44,6 +44,8 @@ var matchFuncBase = function (req, res, next) {
 
 // ---- ROUTES ---- //
 
+// TODO: Downloading the entire chordsheet database sounds like a *BAD* idea. Limit/pagination???
+
 router.route('/')
     // Get all chordsheets
     .get(function(req, res, next) {
@@ -97,7 +99,11 @@ router.route('/')
 
                 // Stop if errors found
                 if (results.errors.length > 0) {
-                    res.status(400).send({success: false, reason: "Invalid ChordPro format."});
+                    res.status(400).send({success: false,
+                        reason: "Invalid ChordPro format.",
+                        errors: results.errors,
+                        warnings: results.warnings
+                    });
                     return;
                 }
 

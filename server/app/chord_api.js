@@ -25,6 +25,13 @@ module.exports.sanitize = function (str) {
         .replace(/\//g, '&#x2F;');
 };
 
+// Set up no-caching middleware
+router.use('/*', function (req, res, next) {
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.header('Expires', '-1');
+    res.header('Pragma', 'no-cache');
+    next()
+});
 
 // Import sub-routers
 var user_api    = require('./routes/users').router;
