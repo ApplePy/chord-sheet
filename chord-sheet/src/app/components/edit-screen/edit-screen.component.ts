@@ -1,6 +1,7 @@
 import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import {ChordproValidatorService} from "../../services/chordpro-validator/chordpro-validator.service";
 import {MessageInfo} from "../../models/message-info";
+import { ChordsheetService } from "../../services/chordsheet/chordsheet.service";
 declare var $: any;
 
 @Component({

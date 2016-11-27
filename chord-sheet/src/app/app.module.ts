@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import {SuiModule} from 'ng2-semantic-ui/ng2-semantic-ui';
 
 import { AppComponent } from './app.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -16,7 +15,7 @@ import { LoginComponent } from './components/login/login.component';
 import { AppRoutingModule } from "./app-routing.module";
 import { UserService } from "./services/user/user.service";
 import { ChordsheetListComponent } from './components/chordsheet-list/chordsheet-list.component';
-import {ChordsheetService} from "./components/chordsheet-list/chordsheet.service";
+import { ChordsheetService } from "./services/chordsheet/chordsheet.service";
 
 @NgModule({
   declarations: [
@@ -34,7 +33,6 @@ import {ChordsheetService} from "./components/chordsheet-list/chordsheet.service
     BrowserModule,
     FormsModule,
     HttpModule,
-    SuiModule,
     AppRoutingModule
   ],
   providers: [
