@@ -47,7 +47,8 @@ var matchFuncBase = function (req, res, next) {
 router.route('/')
     // Get all chordsheets
     .get(function(req, res, next) {
-        var token = req.cookies.token;
+
+        var token = req.signedCookies.token;
         var matchFunc = matchFuncBase(req,res,next);
 
         // Change behaviour if the user is logged in or not
@@ -66,7 +67,7 @@ router.route('/')
 
     // Create new chordsheet/upload revision
     .post(function(req, res, next) {
-        var token = req.cookies.token;
+        var token = req.signedCookies.token;
 
         // Chordsheets can't be made if you're not logged in.
         if (!token) {
@@ -114,7 +115,7 @@ router.route('/:songtitle')
     // Get a single collection of chordsheets.
     .get(function(req, res, next) {
         var songtitle = sanitize(req.params.songtitle);
-        var token = req.cookies.token;
+        var token = req.signedCookies.token;
         var matchFunc = matchFuncBase(req,res,next);
 
         // Change behaviour if the user is logged in or not
@@ -134,7 +135,7 @@ router.route('/:songtitle')
     // Delete a chordsheet and all revisions.
     .delete(function(req, res, next) {
         var songtitle = sanitize(req.params.songtitle);
-        var token = req.cookies.token;
+        var token = req.signedCookies.token;
 
         // Chordsheets can't be made if you're not logged in.
         if (!token) {
@@ -160,7 +161,7 @@ router.route('/:username/:songtitle')
     .get(function(req, res, next) {
         var username = sanitize(req.params.username);
         var songtitle = sanitize(req.params.songtitle);
-        var token = req.cookies.token;
+        var token = req.signedCookies.token;
         var matchFunc = matchFuncBase(req,res,next);
 
         // Change behaviour if the user is logged in or not

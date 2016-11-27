@@ -50,7 +50,14 @@ router.post("/login", function(req, res, next) {
                     if (bRes == true) {
                         // Set the cookie before sending the success response
                         var setCookie = function(cookie) {
-                            res.cookie('token', cookie.token, {maxAge: 1000 * 60 * 60 * 24}); // Expires in 24 hrs. // TODO: Cookie security!
+                            res.cookie(
+                                'token',
+                                cookie.token,
+                                {
+                                    maxAge: 1000 * 60 * 60 * 24,
+                                    signed: true,
+                                    httpOnly: true
+                                }); // Expires in 24 hrs.
                             goodToken(user);
                         };
 

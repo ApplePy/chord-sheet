@@ -18,7 +18,7 @@ var bodyParser = require('body-parser'); // for parsing request URL
 app.use(logger('dev')); // set up logger and parsers
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser("myTotallySecretSecret"));
 
 // Our ReST API
 var api = require('./app/chord_api').router;
