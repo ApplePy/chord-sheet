@@ -3,10 +3,12 @@
  */
 
 // ---- REQUIRES ---- //
-var express         = require('express');
-var router          = express.Router({ mergeParams: true });
-var getTokenOwner   = require('./users').getTokenOwner;
-var sanitize        = require('../chord_api').sanitize;
+var express             = require('express');
+var router              = express.Router({ mergeParams: true });
+var getTokenOwner       = require('./users').getTokenOwner;
+var sanitize            = require('../chord_api').sanitize;
+var ChordproValid       = require('../models/chordpro-validation/chordpro-validator.service');
+var isNullOrUndefined   = require('util').isNullOrUndefined;
 
 // Setup db models
 var ChordSheet  = require('./../models/chordsheet-model');
@@ -61,7 +63,7 @@ router.route('/')
         else {
             getTokenOwner(token).then(
                 function(user) {
-                    if (!req.body.songtitle || req.body.private === undefined || !req.body.string) {
+                    if (!req.body.songtitle || isNullOrUndefined(req.body.private) || !req.body.contents) {
                         res.status(400).send({success: false, reason: "Missing mandatory parameter."});
                         return;
                     }
@@ -71,7 +73,16 @@ router.route('/')
                     sheet.songtitle = sanitize(req.body.songtitle);
                     sheet.private   = Boolean(req.body.private);
                     sheet.owner     = sanitize(user.username);
-                    sheet.contents  = sanitize(req.body.contents);     // TODO: Validate user chordsheet
+                    sheet.contents  = sanitize(req.body.contents);
+
+                    // Validate user chordsheet
+                    var validator = new ChordproValid.ChordproValidatorService();
+                    var results = validator.validate(sheet.contents);
+
+                    if (results.errors.length > 0) {
+                        res.status(400).send({success: false, reason: "Invalid ChordPro format."});
+                        return;
+                    }
 
                     // Save sheet
                     sheet.save(function(err, save){
