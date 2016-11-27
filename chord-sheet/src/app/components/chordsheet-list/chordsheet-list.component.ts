@@ -8,10 +8,15 @@ import {ChordsheetService} from "../../services/chordsheet/chordsheet.service";
 })
 export class ChordsheetListComponent implements OnInit {
 
+  chordsheets: any[] = [];
+
   constructor(private chordsheetSerivce: ChordsheetService) { }
 
   ngOnInit() {
-    this.chordsheetSerivce.retrieveChordSheets().subscribe(()=>{});
+
+
+    this.chordsheetSerivce.retrieveChordSheets(true)
+      .subscribe(data => {this.chordsheets = data; console.log(data);});
   }
 
 }
