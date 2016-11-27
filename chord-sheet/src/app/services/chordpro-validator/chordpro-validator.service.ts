@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import {Directive} from "./directive";
-import {ChordProValidatorOutput} from "./chordpro-validator-output";
-import {DirectiveDefinition} from "./directive-definition";
-import {isNullOrUndefined} from "util";
+import { Directive } from "./directive";
+import { ChordProValidatorOutput } from "./chordpro-validator-output";
+import { DirectiveDefinition } from "./directive-definition";
+import { isNullOrUndefined } from "util";
 
 /**
  * This service verifies ChordPro data.
@@ -10,7 +10,7 @@ import {isNullOrUndefined} from "util";
 @Injectable()
 export class ChordproValidatorService {
 
-  readonly extra_chars_func = function(input: Directive, definition: DirectiveDefinition, output: ChordProValidatorOutput): boolean {
+  private readonly extra_chars_func = function(input: Directive, definition: DirectiveDefinition, output: ChordProValidatorOutput): boolean {
     // Check definition directives to see if they are substrings of the input directive.
     for (let def of definition.directives) {
 

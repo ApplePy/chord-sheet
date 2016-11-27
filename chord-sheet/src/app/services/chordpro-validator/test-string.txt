@@ -1,0 +1,21 @@
+{t:Hallelujah}
+{st:Jeff Buckley}
+{c: Sheet Music by Leonord Cohen}
+#
+#This tab is for Hallelujah, as i've found i've not really gotten on with the other ones
+#here. The song is obviously picked but if you find that too difficult it also works
+#well strummed but picking the root notes of the chord with your thumb. With the G and E7
+#the start of each verse do a 2-3 up to the G and a 2-0 on the way down to the E7 on the
+#E string.
+{sot}
+{eot}
+[G]  [Em]  [G]  [Em]
+[G]I heard there was a s[Em]ecret chord
+That [G]David played and it [Em]pleased the Lord
+But [C]you don't really [D7] care for music, d[G]o ya?   [D7]
+W[G]ell it goes like this the [C]fourth, the [D7]fifth
+[Em]The minor fall and the [C]major lift
+The [D7]baffled king [B7]composing halle[Em]lujah
+{soc}
+Ha[C]llelujah, ha[Em]llelujah, ha[C]llelujah, ha[G]llelu[D7]-u-u-u-ja[G]aah     [Em]  [G]  [Em]
+{eoc}

@@ -79,7 +79,7 @@
     <button class="ui button" type="button" (click)="resetConfirm($event)">Clear</button>
     <button class="ui button green" type="submit">Submit</button>
     <div class="ui toggle checkbox">
-      <input type="checkbox" name="private" title="private"/>
+      <input type="checkbox" name="private" title="private" [(ngModel)]="is_private"/>
       <label>Private</label>
     </div>
   </div>
