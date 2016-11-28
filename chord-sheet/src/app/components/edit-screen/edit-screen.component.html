@@ -16,28 +16,13 @@
   </h1>
 
   <!-- Error message block -->
-  <!-- TODO: Refactor these error messages into their own components -->
-  <div class="ui error message">
-    <div class="header">
-      {{(error != null ? error.getTitle(): [])}}
-    </div>
-    <ul>
-      <li *ngFor="let errorMsg of error?.getDetails()">
-        {{errorMsg}}
-      </li>
-    </ul>
+  <div class="field" *ngIf="error.isActive()">
+    <app-error-message [title]="error.getTitle()" [messages]="error.getDetails()"></app-error-message>
   </div>
 
   <!-- Warning message block -->
-  <div class="ui warning message">
-    <div class="header">
-      {{warning?.getTitle()}}
-    </div>
-    <ul>
-      <li *ngFor="let warningMsg of warning?.getDetails()">
-        {{warningMsg}}
-      </li>
-    </ul>
+  <div class="field" *ngIf="warning.isActive()">
+    <app-error-message [title]="warning.getTitle()" [messages]="warning.getDetails()" [warning]="true"></app-error-message>
   </div>
 
   <!-- Upload file capability -->
@@ -83,10 +68,11 @@
       <input type="checkbox" name="private" title="private" [(ngModel)]="is_private"/>
       <label>Private</label>
     </div>
+
   </div>
 </form>
 
-<!-- Clear form modal -->
+<!-- Clear form modal --> <!-- TODO: Refactor modal out into a component for reuse on all delete functions -->
 <div class="ui basic modal">
   <div class="ui basic segment center aligned">
   <div class="ui header inverted">

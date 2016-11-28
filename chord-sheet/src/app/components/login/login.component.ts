@@ -13,7 +13,7 @@ export class LoginComponent implements OnInit {
   // State
   invalid: boolean = false;
 
-  // Data (TODO: refactor into a model?)
+  // Data
   username: string;
   password: string;
 

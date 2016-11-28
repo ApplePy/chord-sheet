@@ -2,12 +2,8 @@
 
 <form class="ui form" accept-charset="UTF-8" [class.error]="invalid">
   <!-- Error message block -->
-  <!-- TODO: Refactor these error messages into their own components -->
-  <div class="ui error message">
-    <div class="header">
-      Failed Login
-    </div>
-    <p>The supplied username or password was incorrect.</p>
+  <div class="field">
+    <app-error-message [title]="'Failed Login'" [messages]="['The supplied username or password was incorrect.']"></app-error-message>
   </div>
 
   <div class="field">
