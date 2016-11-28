@@ -113,7 +113,7 @@ router.route('/:username')
     .get(function (req, res, next) {
         var username = sanitize(req.params.username);
 
-        getUserInfo(username, false).then(function (users) {res.send(users)}, function (err) {res.status(500).send(err.message)});
+        getUserInfo(username, false).then(function (users) {res.send(users)}, function (err) {res.status(500).send({success: false, reason: err.message})});
     })
 
     // Update user information
@@ -146,7 +146,7 @@ router.route('/:username')
             .then(
                 update,
                 function (err) {
-                    res.status(500).send({success: false, more: err})});
+                    res.status(500).send({success: false, reason: err.message})});
     })
 
     // Delete user

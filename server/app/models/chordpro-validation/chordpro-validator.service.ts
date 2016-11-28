@@ -84,7 +84,7 @@ export class ChordproValidatorService {
     let lines: string[] = input.split(/\r?\n/).map(line => line.trim());
 
     // Controls
-    let parseStack: any[] = [];
+    let parseStack: Directive[] = [];
 
     for(let line of lines) {
       // Ignore comments and blank lines

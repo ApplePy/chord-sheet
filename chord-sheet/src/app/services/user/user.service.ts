@@ -3,7 +3,7 @@ import { Http, Headers, Response } from'@angular/http';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
 import {Observable} from "rxjs";
 import 'rxjs/add/operator/map';
-import Login = APIResponse.Login;
+import Success = APIResponse.Results;
 
 @Injectable()
 export class UserService {
@@ -19,9 +19,9 @@ export class UserService {
   /** Make the HTTP requests for credentials with pre-serialized data.
    *
    * @param creds
-   * @returns {Observable<Login>}
+   * @returns {Observable<Results>}
    */
-  private loginCommon(creds: string): Observable<Login> {
+  private loginCommon(creds: string): Observable<Success> {
     // Let other end know its JSON
     let headers = new Headers();
     headers.append('Content-Type', 'application/json');
@@ -37,9 +37,9 @@ export class UserService {
 
   /** Log in user via cookie token.
    *
-   * @returns {Observable<Login>}
+   * @returns {Observable<Results>}
    */
-  logintoken(): Observable<Login> {
+  logintoken(): Observable<Success> {
     // Check if there's a token to send.
     let token = Cookie.get('token');
 
@@ -60,9 +60,9 @@ export class UserService {
    *
    * @param username
    * @param password
-   * @returns {Observable<Login>}
+   * @returns {Observable<Results>}
    */
-  login(username: string, password: string): Observable<Login> {
+  login(username: string, password: string): Observable<Success> {
     // Setup credentials for sending
     let creds = JSON.stringify({username: username, password: password});
 

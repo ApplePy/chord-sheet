@@ -1,13 +1,22 @@
 import { Injectable } from '@angular/core';
 import {Http, Headers, Response} from'@angular/http';
 import 'rxjs/add/operator/map';
+import {Observable} from "rxjs";
+import Chordsheet = APIResponse.Chordsheet;
+import ChordsheetElements = APIResponse.ChordsheetElements;
+import Results = APIResponse.Results;
 
 @Injectable()
 export class ChordsheetService {
 
   constructor(private http: Http) { }
 
-  retrieveChordSheets(latestOnly: boolean = false) {
+  /** Returns all the chordsheets available to the user.
+   *
+   * @param latestOnly          Retrieve only the latest revisions of each chordsheet.
+   * @returns {Observable<ChordsheetElements.result[]>}
+   */
+  retrieveChordSheets(latestOnly: boolean = false): Observable<ChordsheetElements.result[]> {
     // Set postProcessMode
     let postProcess = (latestOnly) ? ChordsheetService.postProcessRevisionsLatest : ChordsheetService.postProcessRevisions;
 
@@ -20,9 +29,16 @@ export class ChordsheetService {
       .map(res => postProcess(res.json()));
   }
 
-  private static findMatchingMeta(revision: any, allMeta: any) {
+  /** Finds the metadata entry corresponding to a doc revision.
+   *
+   * @param revision      The chordhsheet revision.
+   * @param allMeta       All the metadata returned from the back.
+   * @returns {ChordsheetElements.metadata}
+   */
+  private static findMatchingMeta(revision: ChordsheetElements.result,
+                                  allMeta: ChordsheetElements.metadata[]): ChordsheetElements.metadata {
     // Find metadata entry
-    let metaEntry: any;
+    let metaEntry: ChordsheetElements.metadata;
     for (let entry of allMeta) {
       if (revision.owner == entry._id.owner && revision.songtitle == entry._id.songtitle) {
         // Found entry, save and stop search
@@ -37,9 +53,14 @@ export class ChordsheetService {
     return metaEntry;
   }
 
-  private static postProcessRevisionsLatest(data: any) {
+  /** Get only the latest revision of each chordsheet.
+   *
+   * @param data  The JSON object returned from the backend.
+   * @returns {ChordsheetElements.result[]}
+   */
+  private static postProcessRevisionsLatest(data: Chordsheet): ChordsheetElements.result[] {
     // Iterate through results, fixing revision numbers
-    let results: any[] = [];
+    let results: ChordsheetElements.result[] = [];
 
     for (let revision of data.results) {
 
@@ -59,8 +80,14 @@ export class ChordsheetService {
     return data.results;
   }
 
-  private static postProcessRevisions (data: any) {    // TODO: Convert to model to avoid 'any'
-    let sortByRevision = (a: any, b: any) => b.revision - a.revision;   // TODO: Convert to model to avoid 'any'
+  /** Get all revisions of each chordsheet, updating the revision number to its relative (e.g. 1,5,9 => 1,2,3).
+   *
+   * @param data  The JSON object returned from the backend.
+   * @returns {ChordsheetElements.result[]}
+   */
+  private static postProcessRevisions (data: Chordsheet): ChordsheetElements.result[] {
+    let sortByRevision = (a: ChordsheetElements.result,
+                          b: ChordsheetElements.result): number => b.revision - a.revision;
 
     // Sort in order
     data.results.sort(sortByRevision);
@@ -78,7 +105,14 @@ export class ChordsheetService {
     return data.results;
   }
 
-  uploadChordSheet(songtitle: string, not_public: boolean, contents: string) {
+  /** Upload a chordsheet to the backend.
+   *
+   * @param songtitle     The songtitle for the sheet.
+   * @param not_public    Whether the new sheet should be private.
+   * @param contents      The contents of the new sheet.
+   * @returns {Observable<Results>}
+   */
+  uploadChordSheet(songtitle: string, not_public: boolean, contents: string): Observable<Results> {
     let data = JSON.stringify({songtitle: songtitle, "private": not_public, contents: contents});
 
     // Let other end know its JSON
