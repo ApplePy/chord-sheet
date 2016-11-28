@@ -5,7 +5,7 @@
     <div class="right menu">
       <div [ngSwitch]="user.isLoggedIn()">
         <a class="item" *ngSwitchCase="true" (click)="onLogout()">Logout</a>  <!-- TODO: Create logout page? -->
-        <a class="item" *ngSwitchCase="false" routerLink="/login">Login</a>
+        <a class="item" *ngSwitchCase="false" routerLink="/login">Login/Sign Up</a>
       </div>
     </div>
   </nav>
