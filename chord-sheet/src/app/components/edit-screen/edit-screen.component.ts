@@ -3,7 +3,6 @@ import {ChordproValidatorService} from "../../services/chordpro-validator/chordp
 import {MessageInfo} from "../../models/message-info";
 import { ChordsheetService } from "../../services/chordsheet/chordsheet.service";
 import { Router } from "@angular/router";
-declare var $: any;
 
 @Component({
   selector: 'app-edit-screen',
