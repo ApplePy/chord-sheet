@@ -1,7 +1,7 @@
 <div class="ui basic segments">
 
   <!-- Create chord sheet entries -->
-  <div class="ui basic container" *ngFor="let entry of chordsheets">
+  <div *ngFor="let entry of chordsheets">
 
     <!-- Display Sheet, Owner, and Ops -->
     <div class="ui top attached segment" (click)="secondary.hidden = !secondary.hidden">
