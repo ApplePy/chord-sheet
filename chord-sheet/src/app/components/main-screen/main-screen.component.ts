@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['main-screen.component.css']
 })
 export class MainScreenComponent implements OnInit {
-  title: string = "ChordSheet";   // TODO: Refactor this into a value injector.
+  private title: string = "ChordSheet";
 
   constructor() { }
 

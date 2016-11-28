@@ -27,11 +27,11 @@ export class LoginComponent implements OnInit {
   onSubmit($event: Event) {
     this.invalid = false;
     this.user.login(this.username, this.password).subscribe(result => {
-      if (result == true) this.router.navigate(["/home"]);
+      if (result.success == true) this.router.navigate(["/home"]);
       else this.invalid = true;
     }, (err) => {   // TODO: Clean up duplication
       let result = err.json();
-      if (result == true) this.router.navigate(["/home"]);
+      if (result.success == true) this.router.navigate(["/home"]);
       else this.invalid = true;
     });
     $event.preventDefault();
