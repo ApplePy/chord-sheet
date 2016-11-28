@@ -1,0 +1,16 @@
+<div class="ui message" [class.error]="!warning" [class.warning]="warning">
+  <div class="header">
+    {{title}}
+  </div>
+
+  <!-- Message contents -->
+  <p *ngIf="messages.length == 1">{{messages[0]}}</p>
+
+  <!-- Multiple message contents -->
+  <div *ngIf="messages.length > 1">
+    <ul>
+      <li *ngFor="let message of messages">{{message}}</li>
+    </ul>
+  </div>
+
+</div>

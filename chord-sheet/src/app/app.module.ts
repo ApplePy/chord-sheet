@@ -18,6 +18,7 @@ import { UserService } from "./services/user/user.service";
 import { ChordsheetListComponent } from './components/chordsheet-list/chordsheet-list.component';
 import { ChordsheetService } from "./services/chordsheet/chordsheet.service";
 import { NotFoundComponent } from './components/not-found/not-found.component';
+import { ErrorMessageComponent } from './components/common/error-message/error-message.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
     PrivacyComponent,
     LoginComponent,
     ChordsheetListComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    ErrorMessageComponent
   ],
   imports: [
     ResponsiveModule,
