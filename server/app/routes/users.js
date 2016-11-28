@@ -22,9 +22,10 @@ const saltRound = 10;
 
 // Login user
 router.post("/login", function(req, res, next) {
-    var token = req.cookies.token;
+    var token = req.signedCookies.token;
     var username = sanitize(req.body.username);
     var password = req.body.password;
+
 
     // Common callbacks
     var badToken    = function(){res.send({success: false})};
@@ -56,7 +57,7 @@ router.post("/login", function(req, res, next) {
                                 {
                                     maxAge: 1000 * 60 * 60 * 24,
                                     signed: true,
-                                    httpOnly: true
+                                    httpOnly: false
                                 }); // Expires in 24 hrs.
                             goodToken(user);
                         };
