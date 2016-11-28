@@ -16,6 +16,7 @@ import { AppRoutingModule } from "./app-routing.module";
 import { UserService } from "./services/user/user.service";
 import { ChordsheetListComponent } from './components/chordsheet-list/chordsheet-list.component';
 import { ChordsheetService } from "./services/chordsheet/chordsheet.service";
+import { NotFoundComponent } from './components/not-found/not-found.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { ChordsheetService } from "./services/chordsheet/chordsheet.service";
     MainScreenComponent,
     PrivacyComponent,
     LoginComponent,
-    ChordsheetListComponent
+    ChordsheetListComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,
