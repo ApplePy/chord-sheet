@@ -11,13 +11,19 @@
   </div>
 
   <div class="field">
-    <input type="text" name="username" placeholder="Username" [(ngModel)]="username"/>
+    <div class="ui left icon input">
+      <input type="text" name="username" placeholder="Username" [(ngModel)]="username"/>
+      <i class="user icon"></i>
+    </div>
   </div>
   <div class="field">
-    <input type="password" name="password" placeholder="Password" [(ngModel)]="password"/>
+    <div class="ui left icon input">
+      <input type="password" name="password" placeholder="Password" [(ngModel)]="password"/>
+      <i class="lock icon"></i>
+    </div>
   </div>
   <div class="field">
-    <input type="submit" value="Log In" (click)="onSubmit($event)" class="ui button green"/>
+    <input type="submit" value="Log In" (click)="onSubmit($event)" class="ui button green submit"/>
   </div>
 </form>
 <p><em>3rd Party Authentication coming soon!</em></p>
