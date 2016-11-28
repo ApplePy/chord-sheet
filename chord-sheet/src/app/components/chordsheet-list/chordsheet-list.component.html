@@ -6,19 +6,30 @@
     <!-- Display Sheet, Owner, and Ops -->
     <div class="ui top attached segment" (click)="secondary.hidden = !secondary.hidden">
       <div class="ui two column middle aligned grid">
+        <div class="row">
 
-        <!-- Sheet Info -->
-        <div class="column">
-          <p><strong>{{entry.songtitle}}</strong></p>
-          <p><em>By: {{entry.owner}}</em></p>
+          <!-- Sheet Info -->
+          <div class="column">
+            <p><strong>{{entry.songtitle}}</strong></p>
+            <p><em>By: {{entry.owner}}</em></p>
+          </div>
+
+          <!-- Sheet Controls -->
+          <div class="computer only tablet only column">
+            <div class="ui right floated buttons">
+              <button class="ui grey button">View</button>
+              <button class="ui teal button" *ngIf="user?.isLoggedIn()">Edit</button>
+              <button class="ui negative button" *ngIf="user?.isLoggedIn()">Delete</button>
+            </div>
+          </div>
         </div>
-
-        <!-- Sheet Controls -->
-        <div class="computer only tablet only column">
-          <div class="ui right floated buttons">
-            <button class="ui grey button">View</button>
-            <button class="ui teal button">Edit</button>
-            <button class="ui negative button">Delete</button>
+        <div class="row">
+          <div class="mobile only column">
+            <div class="ui buttons">
+              <button class="ui grey button">View</button>
+              <button class="ui teal button" *ngIf="user?.isLoggedIn()">Edit</button>
+              <button class="ui negative button" *ngIf="user?.isLoggedIn()">Delete</button>
+            </div>
           </div>
         </div>
 
