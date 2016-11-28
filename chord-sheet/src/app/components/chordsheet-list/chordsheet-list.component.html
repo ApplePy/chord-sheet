@@ -1,3 +1,34 @@
-<div *ngFor="let entry of chordsheets">
-  <p>{{entry.songtitle}}</p>
+<div class="ui basic segments">
+
+  <!-- Create chord sheet entries -->
+  <div class="ui basic container" *ngFor="let entry of chordsheets">
+
+    <!-- Display Sheet, Owner, and Ops -->
+    <div class="ui top attached segment" (click)="secondary.hidden = !secondary.hidden">
+      <div class="ui two column middle aligned grid">
+
+        <!-- Sheet Info -->
+        <div class="column">
+          <p><strong>{{entry.songtitle}}</strong></p>
+          <p><em>By: {{entry.owner}}</em></p>
+        </div>
+
+        <!-- Sheet Controls -->
+        <div class="computer only tablet only column">
+          <div class="ui right floated buttons">
+            <button class="ui grey button">View</button>
+            <button class="ui teal button">Edit</button>
+            <button class="ui negative button">Delete</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Comments and posting -->
+    <div #secondary class="ui bottom attached secondary segment" hidden>  <!-- TODO: Change to NgIf -->
+      <p>test</p>
+    </div>
+
+  </div>
 </div>

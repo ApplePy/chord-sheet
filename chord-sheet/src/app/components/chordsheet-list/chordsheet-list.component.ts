@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ChordsheetService} from "../../services/chordsheet/chordsheet.service";
+import { ResponsiveModule } from 'ng2-responsive';
 
 @Component({
   selector: 'app-chordsheet-list',
