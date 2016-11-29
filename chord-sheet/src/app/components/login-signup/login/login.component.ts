@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { UserService } from "../../../services/user/user.service";
 
 @Component({
@@ -17,7 +18,7 @@ export class LoginComponent implements OnInit {
   username: string;
   password: string;
 
-  constructor(private user: UserService, private router: Router) { }
+  constructor(private user: UserService, private router: Router, private location: Location) { }
 
   ngOnInit() {
     // Redirect off page if logged in
@@ -27,7 +28,7 @@ export class LoginComponent implements OnInit {
   onSubmit($event: Event) {
     this.invalid = false;
     this.user.login(this.username, this.password).subscribe(result => {
-      if (result.success == true) this.router.navigate(["/"]);  // TODO: Redirect to previous place
+      if (result.success == true) this.location.back();
       else this.invalid = true;
     }, err => this.invalid = true);
     $event.preventDefault();

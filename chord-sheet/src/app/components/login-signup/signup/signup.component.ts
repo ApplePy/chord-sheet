@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { UserService } from "../../../services/user/user.service";
 
 @Component({
@@ -21,7 +22,7 @@ export class SignupComponent implements OnInit {
 
   serverErrorMessage: string = "";
 
-  constructor(private user: UserService, private router: Router) { }
+  constructor(private user: UserService, private router: Router, private location: Location) { }
 
   ngOnInit() {
     // Redirect off page if logged in
@@ -32,7 +33,7 @@ export class SignupComponent implements OnInit {
     this.invalid = false;
 
     this.user.signUp(this.firstname, this.lastname, this.username, this.password).subscribe(result => {
-      if (result.success == true) this.router.navigate(["/"]);  // TODO: Redirect to previous place
+      if (result.success == true) this.location.back();
       else this.invalid = true;
       this.serverErrorMessage = result.reason;
     }, err => {this.serverErrorMessage = err.json().reason; this.invalid = true});
