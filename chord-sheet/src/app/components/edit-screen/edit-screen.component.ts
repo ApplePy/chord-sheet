@@ -103,7 +103,7 @@ export class EditScreenComponent implements OnInit {
     // Send if no errors, otherwise display errors
     if (!results.containsIssues() && contents.length > 0) {
       this.sender.uploadChordSheet(this.title, this.is_private, contents).subscribe(res=>{
-        if (res.success) this.router.navigate(["/home"]);
+        if (res.success) this.router.navigate(["/"]);
         else this.error.setMessage("Upload Error", "The following message was returned from the server: " + res.reason);
       }, err => this.error.setMessage("Upload Error", "The following message was returned from the server: " + err.json().reason));
       event.preventDefault();

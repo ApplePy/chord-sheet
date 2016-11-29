@@ -21,19 +21,15 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     // Redirect off page if logged in
-    if (this.user.isLoggedIn())this.router.navigate(["/home"]);
+    this.user.isLoggedInAsync().subscribe((res: boolean) => {if (res)this.router.navigate(["/"])} );
   }
 
   onSubmit($event: Event) {
     this.invalid = false;
     this.user.login(this.username, this.password).subscribe(result => {
-      if (result.success == true) this.router.navigate(["/home"]);
+      if (result.success == true) this.router.navigate(["/"]);
       else this.invalid = true;
-    }, (err) => {   // TODO: Clean up duplication
-      let result = err.json();
-      if (result.success == true) this.router.navigate(["/home"]);
-      else this.invalid = true;
-    });
+    }, err => this.invalid = true);
     $event.preventDefault();
   }
 
