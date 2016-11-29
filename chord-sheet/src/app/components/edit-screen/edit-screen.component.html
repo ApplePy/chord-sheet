@@ -15,16 +15,6 @@
     </span>
   </h1>
 
-  <!-- Error message block -->
-  <div class="field" *ngIf="error.isActive()">
-    <app-error-message [title]="error.getTitle()" [messages]="error.getDetails()"></app-error-message>
-  </div>
-
-  <!-- Warning message block -->
-  <div class="field" *ngIf="warning.isActive()">
-    <app-error-message [title]="warning.getTitle()" [messages]="warning.getDetails()" [warning]="true"></app-error-message>
-  </div>
-
   <!-- Upload file capability -->
   <div class="field">
     <label>Upload ChordPro Track:</label>
@@ -60,6 +50,16 @@
 
       </div>
     </div>
+  </div>
+
+  <!-- Error message block -->
+  <div class="field" *ngIf="error.isActive()">
+    <app-error-message [title]="error.getTitle()" [messages]="error.getDetails()"></app-error-message>
+  </div>
+
+  <!-- Warning message block -->
+  <div class="field" *ngIf="warning.isActive()">
+    <app-error-message [title]="warning.getTitle()" [messages]="warning.getDetails()" [warning]="true"></app-error-message>
   </div>
 
   <!-- Control buttons -->
