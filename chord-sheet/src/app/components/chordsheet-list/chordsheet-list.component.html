@@ -14,7 +14,7 @@
             <p><em>By: {{entry.owner}}</em></p>
           </div>
 
-          <!-- Sheet Controls -->
+          <!-- Sheet Controls - Computer/Tablet -->
           <div class="computer only tablet only column">
             <div class="ui right floated buttons">
               <button class="ui grey button">View</button>
@@ -22,7 +22,10 @@
               <button class="ui negative button" *ngIf="user?.isLoggedIn()">Delete</button>
             </div>
           </div>
+
         </div>
+
+        <!-- Sheet Controls - Mobile -->
         <div class="row">
           <div class="mobile only column">
             <div class="ui buttons">

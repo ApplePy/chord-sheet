@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { ResponsiveModule } from 'ng2-responsive';
 
 import { AppComponent } from './app.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -37,7 +36,6 @@ import { ModalComponent } from './components/common/modal/modal.component';
     ModalComponent
   ],
   imports: [
-    ResponsiveModule,
     BrowserModule,
     FormsModule,
     HttpModule,

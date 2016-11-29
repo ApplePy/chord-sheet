@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {ChordsheetService} from "../../services/chordsheet/chordsheet.service";
-import { ResponsiveModule } from 'ng2-responsive';
 import {UserService} from "../../services/user/user.service";
 
 @Component({
