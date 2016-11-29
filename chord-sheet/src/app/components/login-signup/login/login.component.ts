@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService } from "../../services/user/user.service";
+import { UserService } from "../../../services/user/user.service";
 
 @Component({
   selector: 'app-login',
@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
   onSubmit($event: Event) {
     this.invalid = false;
     this.user.login(this.username, this.password).subscribe(result => {
-      if (result.success == true) this.router.navigate(["/"]);
+      if (result.success == true) this.router.navigate(["/"]);  // TODO: Redirect to previous place
       else this.invalid = true;
     }, err => this.invalid = true);
     $event.preventDefault();

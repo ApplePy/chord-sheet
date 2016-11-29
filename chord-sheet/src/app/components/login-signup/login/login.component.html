@@ -1,9 +1,7 @@
-<h1>Login</h1>
-
 <form class="ui form" accept-charset="UTF-8" [class.error]="invalid">
   <!-- Error message block -->
   <div class="field">
-    <app-error-message [title]="'Failed Login'" [messages]="['The supplied username or password was incorrect.']"></app-error-message>
+    <app-error-message [title]="'Failed Login'" [messages]="['The supplied username or password was incorrect.']" (click)="invalid = false"></app-error-message>
   </div>
 
   <div class="field">
@@ -12,14 +10,20 @@
       <i class="user icon"></i>
     </div>
   </div>
+
   <div class="field">
     <div class="ui left icon input">
       <input type="password" name="password" placeholder="Password" [(ngModel)]="password"/>
       <i class="lock icon"></i>
     </div>
   </div>
+
   <div class="field">
-    <input type="submit" value="Log In" (click)="onSubmit($event)" class="ui button green submit"/>
+    <button type="submit" value="Log In" (click)="onSubmit($event)" class="ui button green submit">
+      <i class="sign in icon"></i>
+      Log In
+    </button>
   </div>
+
 </form>
-<p><em>3rd Party Authentication and User Creation coming soon!</em></p>
+<p><em>3rd Party Authentication coming soon!</em></p>

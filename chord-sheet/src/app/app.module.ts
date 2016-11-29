@@ -11,7 +11,7 @@ import { ChordDisplayComponent } from './components/chord-display/chord-display.
 import { ChordproValidatorService } from './services/chordpro-validator/chordpro-validator.service';
 import { MainScreenComponent } from './components/main-screen/main-screen.component';
 import { PrivacyComponent } from './components/privacy/privacy.component';
-import { LoginComponent } from './components/login/login.component';
+import { LoginComponent } from './components/login-signup/login/login.component';
 import { AppRoutingModule } from "./app-routing.module";
 import { UserService } from "./services/user/user.service";
 import { ChordsheetListComponent } from './components/chordsheet-list/chordsheet-list.component';
@@ -19,6 +19,8 @@ import { ChordsheetService } from "./services/chordsheet/chordsheet.service";
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { ErrorMessageComponent } from './components/common/error-message/error-message.component';
 import { ModalComponent } from './components/common/modal/modal.component';
+import { SignupComponent } from './components/login-signup/signup/signup.component';
+import { LoginSignupComponent } from './components/login-signup/login-signup.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,9 @@ import { ModalComponent } from './components/common/modal/modal.component';
     ChordsheetListComponent,
     NotFoundComponent,
     ErrorMessageComponent,
-    ModalComponent
+    ModalComponent,
+    SignupComponent,
+    LoginSignupComponent
   ],
   imports: [
     BrowserModule,

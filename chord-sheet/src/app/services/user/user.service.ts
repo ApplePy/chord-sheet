@@ -148,7 +148,7 @@ export class UserService {
     headers.append('Content-Type', 'application/json');
 
     // Send request, and store result as logged-in variable.
-    this.requestInProgress = this.http.post("/api/users", creds, {headers: headers})
+    return this.http.post("/api/users", creds, {headers: headers})
       .map(res => {
         let result = res.json();
         this.loggedIn = result.success;

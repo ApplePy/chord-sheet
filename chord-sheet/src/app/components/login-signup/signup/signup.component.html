@@ -1,0 +1,42 @@
+<form class="ui form" accept-charset="UTF-8" [class.error]="invalid">
+  <!-- Error message block -->
+  <div class="field">
+    <app-error-message [title]="'Failed Sign Up'" [messages]="[serverErrorMessage]" (click)="invalid = false"></app-error-message>
+  </div>
+
+  <div class="field">
+    <div class="ui left icon input">
+      <input type="text" name="firstname" placeholder="First Name" [(ngModel)]="firstname"/>
+      <i class="terminal icon"></i>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="ui left icon input">
+      <input type="text" name="lastname" placeholder="Last Name" [(ngModel)]="lastname"/>
+      <i class="terminal icon"></i>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="ui left icon input">
+      <input type="text" name="username" placeholder="Username" [(ngModel)]="username"/>
+      <i class="user icon"></i>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="ui left icon input">
+      <input type="password" name="password" placeholder="Password" [(ngModel)]="password"/>
+      <i class="lock icon"></i>
+    </div>
+  </div>
+
+  <div class="field">
+    <button type="submit" value='Sign Up' (click)="onSubmit($event)" class="ui button green submit">
+      <i class="add user icon"></i>
+      Sign Up
+    </button>
+  </div>
+
+</form>
