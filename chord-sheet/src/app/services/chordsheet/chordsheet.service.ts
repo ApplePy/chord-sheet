@@ -123,4 +123,17 @@ export class ChordsheetService {
     return this.http.post("/api/chordsheets", data, {headers: headers})
       .map(res => res.json());
   }
+
+  /** Deletes a chordsheet.
+   *
+   * @param songtitle           The songtitle to delete. (The backend will only delete songtitles belonging to you)
+   * @returns {Observable<Results>}
+   */
+  deleteChordSheet(songtitle: string): Observable<Results> {
+    let data = JSON.stringify({songtitle: songtitle});
+
+    // Send request
+    return this.http.delete("/api/chordsheets/" + songtitle)
+      .map(res => res.json());
+  }
 }

@@ -16,6 +16,7 @@ var ChordSheet  = require('../models/chordsheet-model');
 
 // ---- CONSTANTS ---- //
 const saltRound = 10;
+const cookieName = "token";
 
 
 // ---- ROUTES ---- //
@@ -52,12 +53,12 @@ router.post("/login", function(req, res, next) {
                         // Set the cookie before sending the success response
                         var setCookie = function(cookie) {
                             res.cookie(
-                                'token',
+                                cookieName,
                                 cookie.token,
                                 {
                                     maxAge: 1000 * 60 * 60 * 24,
                                     signed: true,
-                                    httpOnly: false
+                                    httpOnly: true
                                 }); // Expires in 24 hrs.
                             goodToken(user);
                         };
@@ -74,8 +75,16 @@ router.post("/login", function(req, res, next) {
     }
     // Bad form, reject
     else {
-        res.status(400).send({success: false});
+        // NOTE: Do not set 400 on this, it causes issues on front end.
+        res.send({success: false});
     }
+});
+
+router.get("/logout", function(req, res, next) {
+    // NOTE: Since the backend isn't keeping track of session variables, no req.session work is necessary.
+    // NOTE: Since Angular is handling routing, don't send a redirect instruction.
+    res.clearCookie(cookieName);
+    res.send({success: true});
 });
 
 // Create new user

@@ -153,10 +153,14 @@ router.route('/:songtitle')
         getTokenOwner(token).then(
             function(user) {
                 // Delete matching songs
-                ChordSheet.find({owner: sanitize(user.username), songtitle: sanitize(songtitle)}).remove().exec();
-
-                // Tell user success
-                res.send({success: true});
+                ChordSheet
+                    .find({owner: sanitize(user.username), songtitle: sanitize(songtitle)})
+                    .remove()
+                    .exec(function(err, result) {
+                        // Tell user success
+                        if (!err) res.send({success: true});
+                        else res.status(500).send({success: false, reason: err.message});
+                    });
             },
             err => res.status(401).send({success: false, reason: "Invalid or expired token."})
         );

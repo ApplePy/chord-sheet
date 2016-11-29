@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, Response } from'@angular/http';
-import { Cookie } from 'ng2-cookies/ng2-cookies';
+import {Router} from "@angular/router";
 import {Observable} from "rxjs";
 import 'rxjs/add/operator/map';
 import Results = APIResponse.Results;
@@ -17,7 +17,7 @@ export class UserService {
   /** Stored the current login request that went out. */
   private requestInProgress: Observable<Results>;
 
-  constructor(private http: Http) { }
+  constructor(private http: Http, private router: Router) { }
 
   /** Make the HTTP requests for credentials with pre-serialized data.
    *
@@ -50,18 +50,15 @@ export class UserService {
    * @returns {Observable<Results>}
    */
   logintoken(): Observable<Results> {
-    // Check if there's a token to send.
-    let token = Cookie.get('token');
-
     // If the user is already logged in, or there is no token to login with, then send an observable with the login state.
-    if (!token || this.loggedIn)
+    if (this.loggedIn)
       return Observable.create(observer => {
         observer.next(this.loggedIn);
         observer.complete();
       });
 
-    // Setup credentials for sending
-    let creds = JSON.stringify({token: token});
+    // Setup credentials for sending (mostly to satisfy loginCommon)
+    let creds = JSON.stringify({token: true});
 
     return this.loginCommon(creds);
   }
@@ -120,8 +117,9 @@ export class UserService {
    *
    */
   logout() {
-    this.loggedIn = false;
-    Cookie.delete('token');
+    let logoutFunc = ()=>{this.loggedIn = false;this.router.navigate(['/'])};
+    // NOTE: Allow route guards to protect against going back to a protected route.
+    this.http.get('/api/users/logout').subscribe(logoutFunc, logoutFunc);
   }
 
   /** Allows a user to sign up.
