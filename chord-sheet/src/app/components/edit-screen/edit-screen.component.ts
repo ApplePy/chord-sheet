@@ -26,13 +26,13 @@ export class EditScreenComponent implements OnInit {
 
   constructor(private validator: ChordproValidatorService, private sender: ChordsheetService, private router: Router) { }
 
-  // Clear all error messages
+  /** Clear all error messages */
   private clearMessages(){
     this.error.deactivate();
     this.warning.deactivate();
   }
 
-  // Set up title if supplied
+  /** Set up title if supplied */
   ngOnInit(initial_title: string = "") {
     if (!initial_title) {
       this.title = initial_title;
@@ -40,7 +40,7 @@ export class EditScreenComponent implements OnInit {
     }
   }
 
-  // When file is selected for upload
+  /** When file is selected for upload */
   fileUpload(event: Event) {
 
     // Get files
@@ -79,7 +79,7 @@ export class EditScreenComponent implements OnInit {
     }
   }
 
-  // Trigger the page's actual reset
+  /** Trigger the page's actual reset */
   triggerReset(){
     this.uploadform.nativeElement.reset();
     this.file_contents = '';
@@ -87,30 +87,61 @@ export class EditScreenComponent implements OnInit {
     this.title = this._initial_title;
   }
 
-  // Ask to clear file contents when reset is triggered
+  /** Ask to clear file contents when reset is triggered. */
   resetConfirm() {
     $('.ui.basic.modal').modal('show');
   }
 
-  // Submit form
+  /** Wrapper on validate for the template.
+   *
+   * @param $event    The DOM event.
+   * @param contents  The string to evaluate.
+   */
+  validate_event($event: KeyboardEvent, contents: string) {
+    // If backspace or enter are pressed, revalidate
+    if ($event.keyCode == 13 || $event.keyCode == 8) this.validate(contents);
+  }
+
+  /** Validate contents typed in.
+   *
+   * @param contents    The contents to be validated.
+   * @returns {boolean}
+   */
+  validate(contents: string): boolean {
+    // Check validity
+    let results = this.validator.validate(contents);
+
+    // Set errors if exist
+    if(results.containsIssues()) {
+      if (results.errors.length) this.error.setMessages("Parse Errors", results.errors);
+      if (results.warnings.length) this.warning.setMessages("Parse Warnings", results.warnings);
+      return false;
+    }
+    // No errors, clean old ones
+    else {
+      this.error.deactivate();
+      this.warning.deactivate();
+    }
+
+    // An empty sheet doesn't count as valid.
+    return !(contents.length == 0);
+  }
+
+  /** Submit form.
+   *
+   * @param event   The DOM event created by triggering a form submit.
+   */
   submit(event: Event) {
 
     let contents = (this.file_contents.length > 0) ? this.file_contents : this.manual_input;
 
-    let results = this.validator.validate(contents);
-
-    // Send if no errors, otherwise display errors
-    if (!results.containsIssues() && contents.length > 0) {
+    if (this.validate(contents)) {
+      // No errors, upload
       this.sender.uploadChordSheet(this.title, this.is_private, contents).subscribe(res=>{
         if (res.success) this.router.navigate(["/"]);
         else this.error.setMessage("Upload Error", "The following message was returned from the server: " + res.reason);
       }, err => this.error.setMessage("Upload Error", "The following message was returned from the server: " + err.json().reason));
-      event.preventDefault();
-    } else {
-      // Set errors
-      if (results.errors.length) this.error.setMessages("Parse Errors", results.errors);
-      if (results.warnings.length) this.warning.setMessages("Parse Warnings", results.warnings);
-      event.preventDefault();
     }
+    event.preventDefault();
   }
 }

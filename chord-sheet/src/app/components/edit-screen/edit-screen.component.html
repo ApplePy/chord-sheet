@@ -43,10 +43,12 @@
           <div class="field">
             <label>Enter ChordPro Text Here:</label>
             <textarea
+              #chordbox
               title="chords"
               name="chords"
               form="upload_form"
               autocomplete="off"
+              (keyup)="validate_event($event, chordbox.value)"
               [(ngModel)]="manual_input"></textarea> <!-- TODO: Figure out how to check on each keypress. -->
           </div>
         </div>
