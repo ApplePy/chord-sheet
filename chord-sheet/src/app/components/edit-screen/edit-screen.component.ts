@@ -87,9 +87,9 @@ export class EditScreenComponent implements OnInit {
     this.title = this._initial_title;
   }
 
-  /** Ask to clear file contents when reset is triggered. */
-  resetConfirm() {
-    $('.ui.basic.modal').modal('show');
+  /** Check response from the modal. */
+  resetConfirm($event: boolean) {
+    if ($event == true) this.triggerReset();
   }
 
   /** Wrapper on validate for the template.

@@ -64,7 +64,7 @@
 
   <!-- Control buttons -->
   <div class="field">
-    <button class="ui button" type="button" (click)="resetConfirm($event)">Clear</button>
+    <button class="ui button" type="button" (click)="modal.show()">Clear</button>
     <button class="ui button green" type="submit">Submit</button>
     <div class="ui toggle checkbox">
       <input type="checkbox" name="private" title="private" [(ngModel)]="is_private"/>
@@ -74,26 +74,6 @@
   </div>
 </form>
 
-<!-- Clear form modal --> <!-- TODO: Refactor modal out into a component for reuse on all delete functions -->
-<div class="ui basic modal">
-  <div class="ui basic segment center aligned">
-  <div class="ui header inverted">
-    Clear Form
-  </div>
-  <div class="content center aligned">
-      <p>Are you sure you want to reset the form?</p>
-  </div>
-  </div>
-  <div class="actions">
-    <div class="two fluid ui inverted buttons">
-      <div class="ui cancel red inverted button">
-        <i class="remove icon"></i>
-        No
-      </div>
-      <div class="ui ok green inverted button" (click)="triggerReset()">
-        <i class="checkmark icon"></i>
-        Yes
-      </div>
-    </div>
-  </div>
-</div>
+<!-- Clear form modal -->
+<app-modal #modal [title]="'Clear Form'" [message]="'Are you sure you want to reset the form?'" (response)="resetConfirm($event)"></app-modal>
+

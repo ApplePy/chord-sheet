@@ -1,0 +1,22 @@
+<div class="ui basic modal">
+  <div class="ui basic segment center aligned">
+    <div class="ui header inverted">
+      {{title}}
+    </div>
+    <div class="content center aligned">
+      <p>{{message}}</p>
+    </div>
+  </div>
+  <div class="actions">
+    <div class="two fluid ui inverted buttons">
+      <div class="ui cancel red inverted button" (click)="response.emit(false)">
+        <i class="remove icon"></i>
+        {{negative}}
+      </div>
+      <div class="ui ok green inverted button" (click)="response.emit(true)">
+        <i class="checkmark icon"></i>
+        {{positive}}
+      </div>
+    </div>
+  </div>
+</div>

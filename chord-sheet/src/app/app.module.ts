@@ -19,6 +19,7 @@ import { ChordsheetListComponent } from './components/chordsheet-list/chordsheet
 import { ChordsheetService } from "./services/chordsheet/chordsheet.service";
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { ErrorMessageComponent } from './components/common/error-message/error-message.component';
+import { ModalComponent } from './components/common/modal/modal.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { ErrorMessageComponent } from './components/common/error-message/error-m
     LoginComponent,
     ChordsheetListComponent,
     NotFoundComponent,
-    ErrorMessageComponent
+    ErrorMessageComponent,
+    ModalComponent
   ],
   imports: [
     ResponsiveModule,
