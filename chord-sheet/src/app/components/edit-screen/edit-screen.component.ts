@@ -17,7 +17,6 @@ export class EditScreenComponent implements OnInit {
   title: string;                                    // Title of the new sheet
   is_private: boolean = false;
 
-  // TODO: Merge file_contents and manual_input, and put under a model instead of leaving hanging here
   file_contents: string = "";                       // Contents of the uploaded sheet
   manual_input: string = "";                        // Contents of manual data entry
 

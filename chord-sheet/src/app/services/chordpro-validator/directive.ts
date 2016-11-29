@@ -23,7 +23,7 @@ export class Directive {
     if (start === 0 && end === input.length - 1) {  // Valid directive brackets found
       // Get separator and value
       let val: string = null;
-      let separator = input.indexOf(':');   // TODO: replace with .split()?
+      let separator = input.indexOf(':');
 
       // If this a directive-only tag, move the separator to the end
       if (separator === -1) separator = end;
