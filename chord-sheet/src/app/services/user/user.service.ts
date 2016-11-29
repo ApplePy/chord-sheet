@@ -97,7 +97,7 @@ export class UserService {
 
   /** Returns the current login state of the user. If there is a login request in progress, it will wrap the request and return.
    *
-   * @returns {any}
+   * @returns {Observable<boolean>}
    */
   isLoggedInAsync(): Observable<boolean> {
     return Observable.create(observer => {
@@ -122,6 +122,38 @@ export class UserService {
   logout() {
     this.loggedIn = false;
     Cookie.delete('token');
+  }
+
+  /** Allows a user to sign up.
+   *
+   * @param firstname
+   * @param lastname
+   * @param username
+   * @param password
+   * @returns {Observable<Results>}
+   */
+  signUp(firstname: string, lastname: string, username: string, password: string): Observable<Results> {
+    // Prevent sign-up if user is already logged in
+    if (this.loggedIn)
+      return Observable.create(observer => {
+        observer.next({success: false, reason: "Requester is already logged in."});
+        observer.complete();
+      });
+
+    // Setup credentials for sending
+    let creds = JSON.stringify({firstname: firstname, lastname: lastname, username: username, password: password});
+
+    // Let other end know its JSON
+    let headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+
+    // Send request, and store result as logged-in variable.
+    this.requestInProgress = this.http.post("/api/users", creds, {headers: headers})
+      .map(res => {
+        let result = res.json();
+        this.loggedIn = result.success;
+        return result;
+      });
   }
 
 }
