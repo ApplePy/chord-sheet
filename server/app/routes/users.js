@@ -103,6 +103,9 @@ router.post('/', function(req, res, next) {
     user.firstname = sanitize(req.body.firstname);
     user.lastname = sanitize(req.body.lastname);
 
+    // Make sure all info was received
+    if (!user.username || !user.firstname || !user.lastname) return res.status(400).send({success: false, reason: "Missing parameter."});
+
     // Create user if does not already exist
     getUserInfo(user.username, false, false).then(createUser, function(){res.status(500).send({success: false, reason: "Problem accessing DB."})});
 });
