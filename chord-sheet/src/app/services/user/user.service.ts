@@ -117,8 +117,7 @@ export class UserService {
    *
    */
   logout() {
-    let logoutFunc = ()=>{this.loggedIn = false;this.router.navigate(['/'])};
-    // NOTE: Allow route guards to protect against going back to a protected route.
+    let logoutFunc = ()=>{this.loggedIn = false};
     this.http.get('/api/users/logout').subscribe(logoutFunc, logoutFunc);
   }
 

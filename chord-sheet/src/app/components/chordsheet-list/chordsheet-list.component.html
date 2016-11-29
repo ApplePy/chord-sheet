@@ -1,5 +1,9 @@
 <div class="ui basic segments">
 
+  <div class="ui basic segment" *ngIf="chordsheets.length == 0">
+    <p><em>No chordsheets available.</em></p>
+  </div>
+
   <!-- Create chord sheet entries -->
   <div *ngFor="let entry of chordsheets">
 
@@ -19,7 +23,7 @@
             <div class="ui right floated buttons">
               <button class="ui grey button">View</button>
               <button class="ui teal button" *ngIf="user?.isLoggedIn()">Edit</button>
-              <button class="ui negative button" *ngIf="user?.isLoggedIn()">Delete</button>
+              <button class="ui negative button" *ngIf="user?.isLoggedIn()" (click)="deleteModal(entry._id)">Delete</button>
             </div>
           </div>
 
@@ -31,7 +35,7 @@
             <div class="ui buttons">
               <button class="ui grey button">View</button>
               <button class="ui teal button" *ngIf="user?.isLoggedIn()">Edit</button>
-              <button class="ui negative button" *ngIf="user?.isLoggedIn()">Delete</button>
+              <button class="ui negative button" *ngIf="user?.isLoggedIn()" (click)="deleteModal(entry._id)">Delete</button>
             </div>
           </div>
         </div>
@@ -46,3 +50,4 @@
 
   </div>
 </div>
+<app-modal (response)="modalResponse($event)"></app-modal>

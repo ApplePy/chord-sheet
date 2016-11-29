@@ -82,9 +82,8 @@ router.post("/login", function(req, res, next) {
 
 router.get("/logout", function(req, res, next) {
     // NOTE: Since the backend isn't keeping track of session variables, no req.session work is necessary.
-    // NOTE: Since Angular is handling routing, don't send a redirect instruction.
     res.clearCookie(cookieName);
-    res.send({success: true});
+    res.redirect('/');
 });
 
 // Create new user
