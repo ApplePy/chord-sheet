@@ -11,6 +11,7 @@ const routes: Routes = [
   { path: "login", component: LoginSignupComponent },
   { path: "privacy-policy", component: PrivacyComponent },
   { path: "edit", component: EditScreenComponent },
+  { path: "edit/:songtitle", component: EditScreenComponent },
   { path: "", component: MainScreenComponent },
   { path: "404", component: NotFoundComponent },
   { path: '**', redirectTo: '/404' }
