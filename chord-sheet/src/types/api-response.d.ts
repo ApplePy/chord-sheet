@@ -13,6 +13,12 @@ declare namespace APIResponse {
     reason?: string
   }
 
+  interface Login extends Results {
+    "username": string,
+    "firstname": string,
+    "lastname": string
+  }
+
   /**
    * Declares the elements of the JSON object returned from the Chordsheets backend.
    */

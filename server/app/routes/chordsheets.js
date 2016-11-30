@@ -158,8 +158,12 @@ router.route('/:songtitle')
                     .remove()
                     .exec(function(err, result) {
                         // Tell user success
-                        if (!err) res.send({success: true});
-                        else res.status(500).send({success: false, reason: err.message});
+                        if (!err && result.result.n > 0)
+                            res.send({success: true});
+                        else if (!err && result.result.n == 0)
+                            res.send({success: false, reason: "Chordsheet " + sanitize(songtitle) + " not found or does not belong to you."});
+                        else
+                            res.status(500).send({success: false, reason: err.message});
                     });
             },
             err => res.status(401).send({success: false, reason: "Invalid or expired token."})

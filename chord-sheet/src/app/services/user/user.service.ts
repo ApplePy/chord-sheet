@@ -4,6 +4,7 @@ import {Router} from "@angular/router";
 import {Observable} from "rxjs";
 import 'rxjs/add/operator/map';
 import Results = APIResponse.Results;
+import Login = APIResponse.Login;
 
 @Injectable()
 export class UserService {
@@ -14,17 +15,26 @@ export class UserService {
    */
   private loggedIn: boolean = false;
 
+  // User info and getters
+  private _username: string = "";
+  private _firstname: string = "";
+  private _lastname: string = "";
+  get username(): string { return this._username }
+  get firstname(): string { return this._firstname }
+  get lastname(): string { return this._lastname }
+
+
   /** Stored the current login request that went out. */
-  private requestInProgress: Observable<Results>;
+  private requestInProgress: Observable<Login>;
 
   constructor(private http: Http, private router: Router) { }
 
   /** Make the HTTP requests for credentials with pre-serialized data.
    *
    * @param creds
-   * @returns {Observable<Results>}
+   * @returns {Observable<Login>}
    */
-  private loginCommon(creds: string): Observable<Results> {
+  private loginCommon(creds: string): Observable<Login> {
 
     // If there's already a request in-flight, don't duplicate work
     if (this.requestInProgress) return this.requestInProgress;
@@ -38,6 +48,9 @@ export class UserService {
       .map(res => {
         let result = res.json();
         this.loggedIn = result.success;
+        this._username = result.username;
+        this._firstname = result.firstname;
+        this._lastname = result.lastname;
         this.requestInProgress = null;    // Clean up in-progress marker
         return result;
       });
