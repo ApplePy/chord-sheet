@@ -13,7 +13,10 @@ export class UserService {
    *
    * @type {boolean}
    */
-  private loggedIn: boolean = false;
+  private _loggedIn: boolean = false;
+
+  get loggedIn(): boolean {return this._loggedIn}
+  set loggedIn(newVal: boolean) {this._loggedIn = newVal; this.trigger();}
 
   // User info and getters
   private _username: string = "";
@@ -22,6 +25,9 @@ export class UserService {
   get username(): string { return this._username }
   get firstname(): string { return this._firstname }
   get lastname(): string { return this._lastname }
+
+  private loggedInChangeObserver: Observable<boolean>;
+  private trigger = function(){};
 
 
   /** Stored the current login request that went out. */
@@ -110,6 +116,8 @@ export class UserService {
    * @returns {Observable<boolean>}
    */
   isLoggedInAsync(): Observable<boolean> {
+
+    // TODO: Deal with subscribe/dispose (not just here, but EVERYWHERE)
     return Observable.create(observer => {
 
       // If a request is in progress, wrap and send that
@@ -130,7 +138,7 @@ export class UserService {
    *
    */
   logout() {
-    let logoutFunc = ()=>{this.loggedIn = false};
+    let logoutFunc = ()=>{this.loggedIn = false; this._username = ""; this._firstname = ""; this._lastname = ""};
     this.http.get('/api/users/logout').subscribe(logoutFunc, logoutFunc);
   }
 
@@ -166,4 +174,19 @@ export class UserService {
       });
   }
 
+  /** Returns an observer that notifies about changed status.
+   *
+   * @returns {Observable<boolean>}
+   */
+  observeLoginStateChange() {
+    // If an observer already exists, return it
+    if(this.loggedInChangeObserver) return this.loggedInChangeObserver;
+
+    // Create new observer, patch this.trigger, and trigger observer.next
+    this.loggedInChangeObserver = Observable.create(observer=>{
+      this.trigger = () => observer.next(this.loggedIn);
+    });
+
+    return this.loggedInChangeObserver;
+  }
 }
