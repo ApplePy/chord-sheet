@@ -1,3 +1,6 @@
+<form #errorForm class="ui form" [class.error]="displayInvalid">
+  <app-error-message #chordsheetError [title]="'Delete Failed'" (click)="displayInvalid=false"></app-error-message>
+</form>
 <div class="ui basic segments">
 
   <div class="ui basic segment" *ngIf="chordsheets.length == 0">
@@ -8,22 +11,28 @@
   <div *ngFor="let entry of chordsheets">
 
     <!-- Display Sheet, Owner, and Ops -->
-    <div class="ui top attached segment" (click)="secondary.hidden = !secondary.hidden">
+    <div class="ui top attached segment" (click)="entry.secondaryState = !entry.secondaryState">
       <div class="ui two column middle aligned grid">
         <div class="row">
 
           <!-- Sheet Info -->
           <div class="column">
-            <p><strong>{{entry.songtitle}}</strong></p>
-            <p><em>By: {{entry.owner}}</em></p>
+            <p><strong>{{entry.result.songtitle}}</strong></p>
+            <p><em>By: {{entry.result.owner}}</em></p>
           </div>
 
           <!-- Sheet Controls - Computer/Tablet -->
           <div class="computer only tablet only column">
             <div class="ui right floated buttons">
-              <button class="ui grey button">View</button>
-              <button class="ui teal button" *ngIf="user?.isLoggedIn()">Edit</button>
-              <button class="ui negative button" *ngIf="user?.isLoggedIn()" (click)="deleteModal(entry._id)">Delete</button>
+              <!-- Secondary flips to counter the click event trigger on the parent div -->
+              <button class="ui grey button"
+                      (click)="entry.secondaryState = !entry.secondaryState">View</button>
+              <button class="ui teal button"
+                      *ngIf="user?.isLoggedIn() && entry.result.owner == user.username"
+                      (click)="entry.secondaryState = !entry.secondaryState">Edit</button>
+              <button class="ui negative button"
+                      *ngIf="user?.isLoggedIn() && entry.result.owner == user.username"
+                      (click)="deleteModal(entry.result._id); entry.secondaryState = !entry.secondaryState">Delete</button>
             </div>
           </div>
 
@@ -33,9 +42,15 @@
         <div class="row">
           <div class="mobile only column">
             <div class="ui buttons">
-              <button class="ui grey button">View</button>
-              <button class="ui teal button" *ngIf="user?.isLoggedIn()">Edit</button>
-              <button class="ui negative button" *ngIf="user?.isLoggedIn()" (click)="deleteModal(entry._id)">Delete</button>
+              <!-- Secondary flips to counter the click event trigger on the parent div -->
+              <button class="ui grey button"
+                      (click)="entry.secondaryState = !entry.secondaryState">View</button>
+              <button class="ui teal button"
+                      *ngIf="user?.isLoggedIn() && entry.result.owner == user.username"
+                      (click)="entry.secondaryState = !entry.secondaryState">Edit</button>
+              <button class="ui negative button"
+                      *ngIf="user?.isLoggedIn() && entry.result.owner == user.username"
+                      (click)="deleteModal(entry.result._id); entry.secondaryState = !entry.secondaryState">Delete</button>
             </div>
           </div>
         </div>
@@ -44,7 +59,7 @@
     </div>
 
     <!-- Comments and posting -->
-    <div #secondary class="ui bottom attached secondary segment" hidden>  <!-- TODO: Change to NgIf -->
+    <div #secondary class="ui bottom attached secondary segment" *ngIf="entry.secondaryState">
       <p>test</p>
     </div>
 

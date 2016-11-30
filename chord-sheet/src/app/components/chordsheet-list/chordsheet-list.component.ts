@@ -2,6 +2,8 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {ChordsheetService} from "../../services/chordsheet/chordsheet.service";
 import {UserService} from "../../services/user/user.service";
 import {ModalComponent} from "../common/modal/modal.component";
+import {ErrorMessageComponent} from "../common/error-message/error-message.component";
+import {Observable, Subscription} from "rxjs";
 
 @Component({
   selector: 'app-chordsheet-list',
@@ -10,18 +12,41 @@ import {ModalComponent} from "../common/modal/modal.component";
 })
 export class ChordsheetListComponent implements OnInit {
   @ViewChild(ModalComponent) modal: ModalComponent;
+  @ViewChild("chordsheetError") errorMsg: ErrorMessageComponent;
 
+  // Controls Chordsheet list error display
+  displayInvalid: boolean = false;
+
+  // Subscriptions
+  loginStateSubscription: Subscription;
+
+  // Data, modals
   meIndex: number = null;
-  chordsheets: APIResponse.ChordsheetElements.result[] = [];
+  chordsheets: {result: APIResponse.ChordsheetElements.result, secondaryState: boolean}[] = [];
 
   constructor(private user: UserService, private chordsheetSerivce: ChordsheetService) { }
 
   ngOnInit() {
-    // TODO: Refresh ChordSheets when user logs out
-    this.chordsheetSerivce.retrieveChordSheets(true)
+    // Refresh ChordSheets when user logs out
+    // TODO: retrieveChordSheets unsubscribe
+    let requestData = () => this.chordsheetSerivce.retrieveChordSheets(true)
       .subscribe(
-        data => this.chordsheets = data,
+        data => this.chordsheets = data.map(  // Add a secondary state to all the chordsheets
+          (element: APIResponse.ChordsheetElements.result,
+           index: number,
+           data: APIResponse.ChordsheetElements.result[])=>{return {result: element, secondaryState: false}}),
         err => console.log(err));
+
+    // Get initial tracks
+    requestData();
+
+    // When login state changes, reload chordsheets
+    this.loginStateSubscription = this.user.observeLoginStateChange().subscribe(state=>requestData(), err=>{});
+  }
+
+  ngOnDestroy() {
+    // Unsubscribe from the loginState
+    this.loginStateSubscription.unsubscribe();
   }
 
   /** Trigger the modal to warn about the delete.
@@ -30,12 +55,12 @@ export class ChordsheetListComponent implements OnInit {
    */
   deleteModal(id: string) {
     // Get element requested
-    this.meIndex = this.chordsheets.findIndex(element=> element._id == id);
+    this.meIndex = this.chordsheets.findIndex(element=> element.result._id == id);
     let modalElementDelete = this.chordsheets[this.meIndex];
 
     // Set up modal
-    this.modal.title = "Delete " + modalElementDelete.songtitle + " ?";
-    this.modal.message = "Are you sure you want to delete " + modalElementDelete.songtitle + " ?";
+    this.modal.title = "Delete " + modalElementDelete.result.songtitle + " ?";
+    this.modal.message = "Are you sure you want to delete " + modalElementDelete.result.songtitle + " ?";
     this.modal.show();
   }
 
@@ -44,25 +69,41 @@ export class ChordsheetListComponent implements OnInit {
    * @param $event  The response returned from the modal.
    */
   modalResponse($event: boolean) {
+    let displayError = errMsg => {
+      console.error("Delete failed.");
+      console.log(errMsg);
+      this.displayInvalid = true;
+      this.errorMsg.messages = [errMsg,];
+    };
+
     if ($event == true) {
       // Request delete
-      this.chordsheetSerivce.deleteChordSheet(this.chordsheets[this.meIndex].songtitle)
+      this.chordsheetSerivce.deleteChordSheet(this.chordsheets[this.meIndex].result.songtitle)
         .subscribe(
-          res => { /*NOTE: Everything's been done. Just do nothing.*/ },
-          err => {
-            if (err.json && err.json().reason) console.error(err.json().reason);
-            else {
-              console.error("Delete failed.");
-              console.debug(err);
+          res => {
+            // Reset meIndex
+            this.meIndex = null;
+
+            // Remove from list
+            if (res.success) {
+              this.chordsheets.splice(this.meIndex, 1);
+              this.displayInvalid = false;
             }
+
+            // Notify of failure
+            else displayError(res.reason);
+          },
+          err => {
+            // Reset meIndex
+            this.meIndex = null;
+
+            // If properly formatted JSON came back, print the reason
+            if (err.json && err.json().reason) displayError(err.json().reason);
+
+            // Bad JSON, dump whatever was returned.
+            else displayError(err);
           });
-
-      // Remove from list
-      this.chordsheets.splice(this.meIndex, 1);
     }
-
-    // Reset meIndex
-    this.meIndex = null;
   }
 
 }
