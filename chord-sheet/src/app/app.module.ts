@@ -21,6 +21,7 @@ import { ErrorMessageComponent } from './components/common/error-message/error-m
 import { ModalComponent } from './components/common/modal/modal.component';
 import { SignupComponent } from './components/login-signup/signup/signup.component';
 import { LoginSignupComponent } from './components/login-signup/login-signup.component';
+import {RouteGuardService} from "./services/guards/route-guard/route-guard.service";
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { LoginSignupComponent } from './components/login-signup/login-signup.com
     AppRoutingModule
   ],
   providers: [
+    RouteGuardService,
     ChordsheetService,
     UserService,
     ChordproValidatorService
