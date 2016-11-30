@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, Response } from'@angular/http';
-import {Router} from "@angular/router";
+import {Router, ActivatedRoute, UrlSegment} from "@angular/router";
 import {Observable} from "rxjs";
 import 'rxjs/add/operator/map';
 import Results = APIResponse.Results;
@@ -33,7 +33,7 @@ export class UserService {
   /** Stored the current login request that went out. */
   private requestInProgress: Observable<Login>;
 
-  constructor(private http: Http, private router: Router) { }
+  constructor(private http: Http, private router: Router, private activatedRoute: ActivatedRoute) { }
 
   /** Make the HTTP requests for credentials with pre-serialized data.
    *
@@ -138,7 +138,18 @@ export class UserService {
    *
    */
   logout() {
-    let logoutFunc = ()=>{this.loggedIn = false; this._username = ""; this._firstname = ""; this._lastname = ""};
+    let logoutFunc = ()=>{
+      this.loggedIn = false;
+      this._username = "";
+      this._firstname = "";
+      this._lastname = "";
+
+      // Redirect to current page to trigger route-guard
+      this.activatedRoute.url.subscribe(
+        (url: UrlSegment[])=>{this.router.navigate([url.toString(),])},
+        ()=>this.router.navigate(['/']));
+    };
+
     this.http.get('/api/users/logout').subscribe(logoutFunc, logoutFunc);
   }
 
