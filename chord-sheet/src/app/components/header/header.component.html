@@ -3,15 +3,15 @@
 
     <!-- Left Menu -->
     <div class="left menu">
-      <a class="header item" routerLink="/">Home</a>
-      <a class="item" *ngIf="user.isLoggedIn()" routerLink="/edit">Create Chord Sheet</a> <!-- TODO: This should be restricted, and link is bad. Fix. -->
+      <a class="header item" [routerLink]="['/']">Home</a>
+      <a class="item" *ngIf="user.isLoggedIn()" [routerLink]="['/edit']">Create Chord Sheet</a> <!-- TODO: This should be restricted, and link is bad. Fix. -->
     </div>
 
     <!-- Right Menu -->
     <div class="right menu">
       <div [ngSwitch]="user.isLoggedIn()">
         <a class="item" *ngSwitchCase="true" (click)="user.logout()">Logout</a>
-        <a class="item" *ngSwitchCase="false" routerLink="/login">Login/Sign Up</a>
+        <a class="item" *ngSwitchCase="false" [routerLink]="['/login']">Login/Sign Up</a>
       </div>
     </div>
 

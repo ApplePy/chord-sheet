@@ -26,8 +26,10 @@
             <div class="ui right floated buttons">
               <!-- Secondary flips to counter the click event trigger on the parent div -->
               <button class="ui grey button"
+                      [routerLink]="['/view/' + entry.result.songtitle]"
                       (click)="entry.secondaryState = !entry.secondaryState">View</button>
               <button class="ui teal button"
+                      [routerLink]="['/edit/' + entry.result.songtitle]"
                       *ngIf="user?.isLoggedIn() && entry.result.owner == user.username"
                       (click)="entry.secondaryState = !entry.secondaryState">Edit</button>
               <button class="ui negative button"
@@ -44,8 +46,10 @@
             <div class="ui buttons">
               <!-- Secondary flips to counter the click event trigger on the parent div -->
               <button class="ui grey button"
+                      [routerLink]="['/view/' + entry.result.songtitle]"
                       (click)="entry.secondaryState = !entry.secondaryState">View</button>
               <button class="ui teal button"
+                      [routerLink]="['/edit/' + entry.result.songtitle]"
                       *ngIf="user?.isLoggedIn() && entry.result.owner == user.username"
                       (click)="entry.secondaryState = !entry.secondaryState">Edit</button>
               <button class="ui negative button"
