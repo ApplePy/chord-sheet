@@ -11,6 +11,7 @@ var Schema          = mongoose.Schema;
 autoIncrement.initialize(connection);
 
 
+// TODO: Store contents/date as a list in the collection instead of separate docs?
 var ChordSheetSchema = new Schema({
     songtitle: String,
     private: Boolean,

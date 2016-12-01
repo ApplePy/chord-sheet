@@ -81,7 +81,7 @@ router.route('/')
         getTokenOwner(token).then(
             function(user) {
                 // Ensure that all necessary data exists
-                if (!req.body.songtitle || isNullOrUndefined(req.body.private) || !req.body.contents) {
+                if (!req.body.songtitle || typeof (req.body.private) != "boolean" || !req.body.contents) {
                     res.status(400).send({success: false, reason: "Missing mandatory parameter."});
                     return;
                 }
@@ -108,10 +108,51 @@ router.route('/')
                 }
 
                 // Save sheet
-                sheet.save(function(err, save){
-                    if (!err) res.send({success: true});
-                    else res.status(500).send({success: false, reason: err});
-                });
+                var save = () => {
+                    sheet.save(function(err, save){
+                        if (!err) res.send({success: true});
+                        else res.status(500).send({success: false, reason: err});
+                    })};
+
+
+                // Check if this is an update, and update other docs in the set otherwise
+                // TODO: Break out updates to its own API POST?
+                if (req.body.oldSongtitle || typeof (req.body.oldPrivate) == "boolean") {
+                    var findObject = {owner: user.username};
+                    var updateObject = {};
+
+                    // If the variable exists and differs from the new value, mark add to list of fields to update
+                    if (sanitize(req.body.oldSongtitle) != sanitize(req.body.songtitle)) {
+                        findObject.songtitle = sanitize(req.body.oldSongtitle);
+                        updateObject.songtitle = sanitize(req.body.songtitle);
+                    }
+                    if (typeof (req.body.oldPrivate) == "boolean" && req.body.oldPrivate != req.body.private) {
+                        findObject.private = req.body.oldPrivate;
+                        updateObject.private = req.body.private;
+                    }
+
+                    // Update objects
+                    var updateAndSave = () => {
+                        ChordSheet.update(findObject, updateObject, { multi: true }, function(err, raw) {
+                            if (err) return res.status(500).send({success: false, reason: err});
+
+                            save();
+                        })
+                    };
+
+                    // Make sure user isn't trying to change the name to a songtitle that already exists in their uploads
+                    if (sanitize(req.body.oldSongtitle) != sanitize(req.body.songtitle)) {
+                        ChordSheet.findOne({owner: user.username, songtitle: sanitize(req.body.songtitle)}, function(err, result) {
+
+                            // Check for errors and songs that already exist under that name
+                            if (err) return res.status(500).send(err);
+                            if (!result || result.length == 0) return res.status(409).send({success: false, reason: "Songtitle already in use"});
+
+                            // Trigger update
+                            updateAndSave();
+                        });
+                    } else updateAndSave();
+                } else save();
             },
             err => res.status(401).send({success: false, reason: "Invalid or expired token."})
         );
