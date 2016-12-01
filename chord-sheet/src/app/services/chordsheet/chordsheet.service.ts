@@ -24,11 +24,12 @@ export class ChordsheetService implements Resolve<Chordsheet>{
     // lives back there, just be careful with it.
     if (route.params) {
       let songtitle = route.params['songtitle'];
+      let username = (route.params['username']) ? route.params['username'] : this.user.username;
 
       // Resolver was called on the proper routes
       if (songtitle)
         // Get chordsheet and return them, or catch the error and go to the main page
-        return this.retrieveChordSheets(true, songtitle, this.user.username)
+        return this.retrieveChordSheets(true, songtitle, username)
           .map(result => result[0]);                  // TODO: On access to disallowed resource, it returns undefined. MAKE BETTER.
           // .catch(err => {
           //   console.error("Fetching chord sheet " + songtitle + " failed.");
@@ -149,10 +150,20 @@ export class ChordsheetService implements Resolve<Chordsheet>{
    * @param songtitle     The songtitle for the sheet.
    * @param not_public    Whether the new sheet should be private.
    * @param contents      The contents of the new sheet.
+   * @param oldContents   For page updates, contains the old state of the page to help the back identify the edited song.
    * @returns {Observable<Results>}
    */
-  uploadChordSheet(songtitle: string, not_public: boolean, contents: string): Observable<Results> {
-    let data = JSON.stringify({songtitle: songtitle, "private": not_public, contents: contents});
+  uploadChordSheet(songtitle: string, not_public: boolean, contents: string, oldContents?: any): Observable<Results> {
+    let objData: any = {songtitle: songtitle, "private": not_public, contents: contents};
+
+    // Add old data to objData if exists
+    if (oldContents) {
+      objData.oldSongtitle = oldContents.oldSongtitle;
+      objData.oldPrivate = oldContents.oldPrivate;
+      objData.oldContents = oldContents.oldContents;
+    }
+
+    let data = JSON.stringify(objData);
 
     // Let other end know its JSON
     let headers = new Headers();

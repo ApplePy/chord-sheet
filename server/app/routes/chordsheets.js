@@ -108,21 +108,36 @@ router.route('/')
                 }
 
                 // Save sheet
+                // NOTE: Don't worry about duplicates. User could change text, then change back.
                 var save = () => {
                     sheet.save(function(err, save){
                         if (!err) res.send({success: true});
                         else res.status(500).send({success: false, reason: err});
                     })};
 
+                // TODO: This entire post is UGLY. Fix.
+
+                var checkDuplicate = nextFunc => {
+                    ChordSheet.findOne({owner: user.username, songtitle: sanitize(req.body.songtitle)}, function(err, result) {
+
+                        // Check for errors and songs that already exist under that name
+                        if (err) return res.status(500).send(err);
+                        if (result && result.length != 0) return res.status(409).send({success: false, reason: "Songtitle already in use"});
+
+                        // Trigger next function
+                        nextFunc();
+                    });
+                };
+
 
                 // Check if this is an update, and update other docs in the set otherwise
                 // TODO: Break out updates to its own API POST?
-                if (req.body.oldSongtitle || typeof (req.body.oldPrivate) == "boolean") {
+                if (typeof (req.body.oldSongtitle) == "string" || typeof (req.body.oldPrivate) == "boolean") {
                     var findObject = {owner: user.username};
                     var updateObject = {};
 
                     // If the variable exists and differs from the new value, mark add to list of fields to update
-                    if (sanitize(req.body.oldSongtitle) != sanitize(req.body.songtitle)) {
+                    if (typeof (req.body.oldSongtitle) == "string" && sanitize(req.body.oldSongtitle) != sanitize(req.body.songtitle)) {
                         findObject.songtitle = sanitize(req.body.oldSongtitle);
                         updateObject.songtitle = sanitize(req.body.songtitle);
                     }
@@ -146,13 +161,13 @@ router.route('/')
 
                             // Check for errors and songs that already exist under that name
                             if (err) return res.status(500).send(err);
-                            if (!result || result.length == 0) return res.status(409).send({success: false, reason: "Songtitle already in use"});
+                            if (result && result.length != 0) return res.status(409).send({success: false, reason: "Songtitle already in use"});
 
-                            // Trigger update
-                            updateAndSave();
+                            // Check for duplicate, and updateAndSave on success
+                            checkDuplicate(updateAndSave);
                         });
                     } else updateAndSave();
-                } else save();
+                } else checkDuplicate(save);
             },
             err => res.status(401).send({success: false, reason: "Invalid or expired token."})
         );
