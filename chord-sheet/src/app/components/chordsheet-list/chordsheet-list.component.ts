@@ -82,9 +82,6 @@ export class ChordsheetListComponent implements OnInit {
       this.chordsheetSerivce.deleteChordSheet(this.chordsheets[this.meIndex].result.songtitle)
         .subscribe(
           res => {
-            // Reset meIndex
-            this.meIndex = null;
-
             // Remove from list
             if (res.success) {
               this.chordsheets.splice(this.meIndex, 1);
@@ -93,6 +90,9 @@ export class ChordsheetListComponent implements OnInit {
 
             // Notify of failure
             else displayError(res.reason);
+
+            // Reset meIndex
+            this.meIndex = null;
           },
           err => {
             // Reset meIndex
