@@ -170,7 +170,7 @@ router.route('/:songtitle')
         );
     });
 
-router.route('/:username/:songtitle')
+router.route('/:songtitle/:username')
     //Get a single chordsheet from a single user
     .get(function(req, res, next) {
         var username = sanitize(req.params.username);

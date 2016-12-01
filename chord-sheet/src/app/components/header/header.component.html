@@ -4,7 +4,7 @@
     <!-- Left Menu -->
     <div class="left menu">
       <a class="header item" [routerLink]="['/']">Home</a>
-      <a class="item" *ngIf="user.isLoggedIn()" [routerLink]="['/edit']">Create Chord Sheet</a> <!-- TODO: This should be restricted, and link is bad. Fix. -->
+      <a class="item" *ngIf="user.isLoggedIn()" [routerLink]="['/create']">Create Chord Sheet</a> <!-- TODO: This should be restricted, and link is bad. Fix. -->
     </div>
 
     <!-- Right Menu -->

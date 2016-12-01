@@ -1,31 +1,70 @@
 import { Injectable } from '@angular/core';
-import {Http, Headers, Response} from'@angular/http';
+import {Http, Headers} from'@angular/http';
+import { Router, Resolve, ActivatedRouteSnapshot } from "@angular/router";
 import 'rxjs/add/operator/map';
 import {Observable} from "rxjs";
 import Chordsheet = APIResponse.Chordsheet;
 import ChordsheetElements = APIResponse.ChordsheetElements;
 import Results = APIResponse.Results;
+import {UserService} from "../user/user.service";
 
 @Injectable()
-export class ChordsheetService {
+export class ChordsheetService implements Resolve<ChordsheetElements.result>{
 
-  constructor(private http: Http) { }
+  constructor(private http: Http, private user: UserService, private router: Router) { }
+
+  /** Pre-load data from songtitle before loading edit page.
+   *
+   * @param route   The route requested
+   * @returns {Observable<ChordsheetElements.result>|Observable<{}>}
+   */
+  resolve(route: ActivatedRouteSnapshot): Observable<ChordsheetElements.result>|Observable<{}> {
+    // Leave to back to sanitize since the non-idempotent sanitize function
+    // lives back there, just be careful with it.
+    if (route.params) {
+      let songtitle = route.params['songtitle'];
+
+      // Resolver was called on the proper routes
+      if (songtitle)
+        // Get chordsheet and return them, or catch the error and go to the main page
+        return this.retrieveChordSheets(true, songtitle, this.user.username)
+          .map(result => result[0]);
+          // .catch(err => {
+          //   console.error("Fetching chord sheet " + songtitle + " failed.");
+          //   console.error(err);
+          //   return this.router.navigate(['/'])
+          // });
+    }
+
+    // Why is the route attached to a bad url?
+    return Observable.range(0,1).map(num=>"");  // TODO: Find a better masking
+  }
 
   /** Returns all the chordsheets available to the user.
    *
    * @param latestOnly          Retrieve only the latest revisions of each chordsheet.
+   * @param songtitle           Only retrieve tracks with the given song title.
+   * @param username            Only retrieve tracks with the following username. Songtitle must be specified when using this parameter.
    * @returns {Observable<ChordsheetElements.result[]>}
    */
-  retrieveChordSheets(latestOnly: boolean = false): Observable<ChordsheetElements.result[]> {
+  retrieveChordSheets(latestOnly: boolean = false, songtitle: string = "", username: string = ""): Observable<ChordsheetElements.result[]> {
     // Set postProcessMode
-    let postProcess = (latestOnly) ? ChordsheetService.postProcessRevisionsLatest : ChordsheetService.postProcessRevisions;
+    let postProcess = (latestOnly) ? this.postProcessRevisionsLatest.bind(this) : this.postProcessRevisions.bind(this);
+
+    // Configure URL appends
+    let append = "";
+    if (username) {
+      if (songtitle) append = '/' + songtitle + '/' + username;
+      else return Observable.throw(new Error("Songtitle missing with username."));
+    }
+    else if (songtitle) append = "/" + songtitle;
 
     // Let other end know its JSON
     let headers = new Headers();
     headers.append('Content-Type', 'application/json');
 
     // Send request, and store result as logged-in variable.
-    return this.http.get("/api/chordsheets", {headers: headers})
+    return this.http.get("/api/chordsheets" + append, {headers: headers})
       .map(res => postProcess(res.json()));
   }
 
@@ -35,7 +74,7 @@ export class ChordsheetService {
    * @param allMeta       All the metadata returned from the back.
    * @returns {ChordsheetElements.metadata}
    */
-  private static findMatchingMeta(revision: ChordsheetElements.result,
+  private findMatchingMeta(revision: ChordsheetElements.result,
                                   allMeta: ChordsheetElements.metadata[]): ChordsheetElements.metadata {
     // Find metadata entry
     let metaEntry: ChordsheetElements.metadata;
@@ -58,14 +97,14 @@ export class ChordsheetService {
    * @param data  The JSON object returned from the backend.
    * @returns {ChordsheetElements.result[]}
    */
-  private static postProcessRevisionsLatest(data: Chordsheet): ChordsheetElements.result[] {
+  private postProcessRevisionsLatest(data: Chordsheet): ChordsheetElements.result[] {
     // Iterate through results, fixing revision numbers
     let results: ChordsheetElements.result[] = [];
 
     for (let revision of data.results) {
 
       // Find metadata entry
-      let metaEntry = ChordsheetService.findMatchingMeta(revision, data.metadata);
+      let metaEntry = this.findMatchingMeta(revision, data.metadata);
 
       // If the revision number matches the latest revision, add to results
       if (revision.revision == metaEntry.latestRevision) {
@@ -85,7 +124,7 @@ export class ChordsheetService {
    * @param data  The JSON object returned from the backend.
    * @returns {ChordsheetElements.result[]}
    */
-  private static postProcessRevisions (data: Chordsheet): ChordsheetElements.result[] {
+  private postProcessRevisions (data: Chordsheet): ChordsheetElements.result[] {
     let sortByRevision = (a: ChordsheetElements.result,
                           b: ChordsheetElements.result): number => b.revision - a.revision;
 
@@ -96,7 +135,7 @@ export class ChordsheetService {
     for (let revision of data.results) {
 
       // Find metadata entry
-      let metaEntry = ChordsheetService.findMatchingMeta(revision, data.metadata);
+      let metaEntry = this.findMatchingMeta(revision, data.metadata);
 
       // Set revision number to remaining number of unfixed revisions, then decrement
       revision.revision = metaEntry.revisionCount--;
