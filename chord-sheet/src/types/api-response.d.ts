@@ -22,17 +22,17 @@ declare namespace APIResponse {
   /**
    * Declares the elements of the JSON object returned from the Chordsheets backend.
    */
-  interface Chordsheet {
-    metadata: ChordsheetElements.metadata[],
-    results: ChordsheetElements.result[]
+  interface ChordsheetPackage {
+    metadata: CsElements.Metadata[],
+    results: CsElements.Chordsheet[]
   }
-  namespace ChordsheetElements{
-    interface metadata {
+  namespace CsElements{
+    interface Metadata {
       _id: {owner: string, songtitle: string},
       latestRevision: number,
       revisionCount: number
     }
-    interface result {
+    interface Chordsheet {
       _id: string,
       revision: number,
       contents: string,

@@ -4,6 +4,7 @@ import {UserService} from "../../services/user/user.service";
 import {ModalComponent} from "../common/modal/modal.component";
 import {ErrorMessageComponent} from "../common/error-message/error-message.component";
 import {Observable, Subscription} from "rxjs";
+import Chordsheet = APIResponse.CsElements.Chordsheet;
 
 @Component({
   selector: 'app-chordsheet-list',
@@ -22,7 +23,7 @@ export class ChordsheetListComponent implements OnInit {
 
   // Data, modals
   meIndex: number = null;
-  chordsheets: {result: APIResponse.ChordsheetElements.result, secondaryState: boolean}[] = [];
+  chordsheets: {result: Chordsheet, secondaryState: boolean}[] = [];
 
   constructor(private user: UserService, private chordsheetSerivce: ChordsheetService) { }
 
@@ -32,9 +33,9 @@ export class ChordsheetListComponent implements OnInit {
     let requestData = () => this.chordsheetSerivce.retrieveChordSheets(true)
       .subscribe(
         data => this.chordsheets = data.map(  // Add a secondary state to all the chordsheets
-          (element: APIResponse.ChordsheetElements.result,
+          (element: Chordsheet,
            index: number,
-           data: APIResponse.ChordsheetElements.result[])=>{return {result: element, secondaryState: false}}),
+           data: Chordsheet[])=>{return {result: element, secondaryState: false}}),
         err => console.log(err));
 
     // Get initial tracks

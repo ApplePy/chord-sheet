@@ -3,22 +3,23 @@ import {Http, Headers} from'@angular/http';
 import { Router, Resolve, ActivatedRouteSnapshot } from "@angular/router";
 import 'rxjs/add/operator/map';
 import {Observable} from "rxjs";
-import Chordsheet = APIResponse.Chordsheet;
-import ChordsheetElements = APIResponse.ChordsheetElements;
+import ChordsheetPackage = APIResponse.ChordsheetPackage;
+import Chordsheet = APIResponse.CsElements.Chordsheet;
+import Metadata = APIResponse.CsElements.Metadata;
 import Results = APIResponse.Results;
 import {UserService} from "../user/user.service";
 
 @Injectable()
-export class ChordsheetService implements Resolve<ChordsheetElements.result>{
+export class ChordsheetService implements Resolve<Chordsheet>{
 
   constructor(private http: Http, private user: UserService, private router: Router) { }
 
   /** Pre-load data from songtitle before loading edit page.
    *
    * @param route   The route requested
-   * @returns {Observable<ChordsheetElements.result>|Observable<{}>}
+   * @returns {Observable<Chordsheet>|Observable<{}>}
    */
-  resolve(route: ActivatedRouteSnapshot): Observable<ChordsheetElements.result>|Observable<{}> {
+  resolve(route: ActivatedRouteSnapshot): Observable<Chordsheet>|Observable<{}> {
     // Leave to back to sanitize since the non-idempotent sanitize function
     // lives back there, just be careful with it.
     if (route.params) {
@@ -45,9 +46,9 @@ export class ChordsheetService implements Resolve<ChordsheetElements.result>{
    * @param latestOnly          Retrieve only the latest revisions of each chordsheet.
    * @param songtitle           Only retrieve tracks with the given song title.
    * @param username            Only retrieve tracks with the following username. Songtitle must be specified when using this parameter.
-   * @returns {Observable<ChordsheetElements.result[]>}
+   * @returns {Observable<Chordsheet[]>}
    */
-  retrieveChordSheets(latestOnly: boolean = false, songtitle: string = "", username: string = ""): Observable<ChordsheetElements.result[]> {
+  retrieveChordSheets(latestOnly: boolean = false, songtitle: string = "", username: string = ""): Observable<Chordsheet[]> {
     // Set postProcessMode
     let postProcess = (latestOnly) ? this.postProcessRevisionsLatest.bind(this) : this.postProcessRevisions.bind(this);
 
@@ -72,12 +73,11 @@ export class ChordsheetService implements Resolve<ChordsheetElements.result>{
    *
    * @param revision      The chordhsheet revision.
    * @param allMeta       All the metadata returned from the back.
-   * @returns {ChordsheetElements.metadata}
+   * @returns {Metadata}
    */
-  private findMatchingMeta(revision: ChordsheetElements.result,
-                                  allMeta: ChordsheetElements.metadata[]): ChordsheetElements.metadata {
-    // Find metadata entry
-    let metaEntry: ChordsheetElements.metadata;
+  private findMatchingMeta(revision: Chordsheet,
+                                  allMeta: Metadata[]): Metadata {
+    let metaEntry: Metadata;
     for (let entry of allMeta) {
       if (revision.owner == entry._id.owner && revision.songtitle == entry._id.songtitle) {
         // Found entry, save and stop search
@@ -95,11 +95,11 @@ export class ChordsheetService implements Resolve<ChordsheetElements.result>{
   /** Get only the latest revision of each chordsheet.
    *
    * @param data  The JSON object returned from the backend.
-   * @returns {ChordsheetElements.result[]}
+   * @returns {Chordsheet[]}
    */
-  private postProcessRevisionsLatest(data: Chordsheet): ChordsheetElements.result[] {
+  private postProcessRevisionsLatest(data: ChordsheetPackage): Chordsheet[] {
     // Iterate through results, fixing revision numbers
-    let results: ChordsheetElements.result[] = [];
+    let results: Chordsheet[] = [];
 
     for (let revision of data.results) {
 
@@ -122,11 +122,11 @@ export class ChordsheetService implements Resolve<ChordsheetElements.result>{
   /** Get all revisions of each chordsheet, updating the revision number to its relative (e.g. 1,5,9 => 1,2,3).
    *
    * @param data  The JSON object returned from the backend.
-   * @returns {ChordsheetElements.result[]}
+   * @returns {Chordsheet[]}
    */
-  private postProcessRevisions (data: Chordsheet): ChordsheetElements.result[] {
-    let sortByRevision = (a: ChordsheetElements.result,
-                          b: ChordsheetElements.result): number => b.revision - a.revision;
+  private postProcessRevisions (data: ChordsheetPackage): Chordsheet[] {
+    let sortByRevision = (a: Chordsheet,
+                          b: Chordsheet): number => b.revision - a.revision;
 
     // Sort in order
     data.results.sort(sortByRevision);

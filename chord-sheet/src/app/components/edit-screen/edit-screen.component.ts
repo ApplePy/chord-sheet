@@ -3,6 +3,7 @@ import {ChordproValidatorService} from "../../services/chordpro-validator/chordp
 import {MessageInfo} from "../../models/message-info";
 import { ChordsheetService } from "../../services/chordsheet/chordsheet.service";
 import { Router, ActivatedRoute } from "@angular/router";
+import Chordsheet = APIResponse.CsElements.Chordsheet;
 
 @Component({
   selector: 'app-edit-screen',
@@ -39,10 +40,10 @@ export class EditScreenComponent implements OnInit {
   ngOnInit() {
     this.route.data
       .subscribe(
-        (res: {data: APIResponse.ChordsheetElements.result | string | undefined }) => {
+        (res: {data: Chordsheet | string | undefined }) => {
           // Check for bad values
           if (res.data && res.data != "create") {
-            let data = <APIResponse.ChordsheetElements.result> res.data;
+            let data = <Chordsheet> res.data;
             this._initial_title = data.songtitle;
             this._initial_manual_input = data.contents;
             this._initial_private = data.private;
