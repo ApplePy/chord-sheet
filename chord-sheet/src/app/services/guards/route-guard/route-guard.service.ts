@@ -9,10 +9,7 @@ export class RouteGuardService implements CanActivate {
   constructor(private user: UserService, private router: Router) { }
 
   canActivate() {
-    if (this.user.isLoggedIn()) return true;
-
-    this.router.navigate(['/']);
-    return false;
+    return this.user.isLoggedInAsync().map(result=>{if (!result) this.router.navigate(['/']); return result;})
   }
 
 }
