@@ -9,7 +9,8 @@
 
   <!-- Header with editable title -->
   <h1 class="ui header">
-    Edit
+    <span *ngIf="!isCreate">Edit</span>
+    <span *ngIf="isCreate">Create</span>
     <span class="ui transparent input">
       <input name="title" title="title" id="title" type="text" [(ngModel)]="title" [placeholder]="placeholder"/>
     </span>

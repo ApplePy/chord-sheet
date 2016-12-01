@@ -2,7 +2,8 @@ import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import {ChordproValidatorService} from "../../services/chordpro-validator/chordpro-validator.service";
 import {MessageInfo} from "../../models/message-info";
 import { ChordsheetService } from "../../services/chordsheet/chordsheet.service";
-import { Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
+import {Location} from "@angular/common";
 
 @Component({
   selector: 'app-edit-screen',
@@ -12,32 +13,48 @@ import { Router } from "@angular/router";
 export class EditScreenComponent implements OnInit {
   @ViewChild("uploadform") uploadform: ElementRef;  // Reference to the form
 
-  _initial_title: string;                           // The title that the form initially started with
-  placeholder: string = "Chord Sheet Name";         // Placeholder text for the title
-  title: string;                                    // Title of the new sheet
-  is_private: boolean = false;
+  // Specifies if this edit screen is editing an existing document
+  get isCreate(): boolean {
+    return (this._initial_title.length == 0 && this._initial_manual_input.length == 0);
+  };
+  _initial_title: string = "";                        // The title that the form initially started with
+  _initial_private: boolean = false;                  // The privacy that the form initially started with
+  _initial_manual_input: string = "";                 // The contents that the form initially started with
 
-  file_contents: string = "";                       // Contents of the uploaded sheet
-  manual_input: string = "";                        // Contents of manual data entry
+  readonly placeholder: string = "Chord Sheet Name";  // Placeholder text for the title
+  title: string = "";                                 // Title of the new sheet
+  is_private: boolean = false;                        // The privacy of the new sheet
+  file_contents: string = "";                         // Contents of the uploaded sheet
+  manual_input: string = "";                          // Contents of manual data entry
 
   // Errors and warnings
   error: MessageInfo = new MessageInfo();
   warning: MessageInfo = new MessageInfo();
 
-  constructor(private validator: ChordproValidatorService, private sender: ChordsheetService, private router: Router) { }
+  constructor(private validator: ChordproValidatorService,
+              private sender: ChordsheetService,
+              private route: ActivatedRoute,
+              private location: Location) { }
+
+  /** Set up title if supplied */
+  ngOnInit() {
+    this.route.data
+      .subscribe(
+        (res: {data: APIResponse.ChordsheetElements.result}) => {
+          // Check for bad values
+          if (res && res.data) {
+            this._initial_title = res.data.songtitle;
+            this._initial_manual_input = res.data.contents;
+            this._initial_private = res.data.private;
+            this.triggerReset();
+          }
+        }, err=>{console.log(err);this.location.back();});
+  }
 
   /** Clear all error messages */
   private clearMessages(){
     this.error.deactivate();
     this.warning.deactivate();
-  }
-
-  /** Set up title if supplied */
-  ngOnInit(initial_title: string = "") {
-    if (!initial_title) {
-      this.title = initial_title;
-      this._initial_title = initial_title;
-    }
   }
 
   /** When file is selected for upload */
@@ -82,9 +99,11 @@ export class EditScreenComponent implements OnInit {
   /** Trigger the page's actual reset */
   triggerReset(){
     this.uploadform.nativeElement.reset();
-    this.file_contents = '';
     this.clearMessages();
+    this.file_contents = '';
     this.title = this._initial_title;
+    this.manual_input = this._initial_manual_input;
+    this.is_private = this._initial_private;
   }
 
   /** Check response from the modal. */
@@ -132,16 +151,16 @@ export class EditScreenComponent implements OnInit {
    * @param event   The DOM event created by triggering a form submit.
    */
   submit(event: Event) {
+    event.preventDefault();
 
     let contents = (this.file_contents.length > 0) ? this.file_contents : this.manual_input;
 
     if (this.validate(contents)) {
       // No errors, upload
       this.sender.uploadChordSheet(this.title, this.is_private, contents).subscribe(res=>{
-        if (res.success) this.router.navigate(["/"]);
+        if (res.success) this.location.back();
         else this.error.setMessage("Upload Error", "The following message was returned from the server: " + res.reason);
       }, err => this.error.setMessage("Upload Error", "The following message was returned from the server: " + err.json().reason));
     }
-    event.preventDefault();
   }
 }
