@@ -2,8 +2,7 @@ import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import {ChordproValidatorService} from "../../services/chordpro-validator/chordpro-validator.service";
 import {MessageInfo} from "../../models/message-info";
 import { ChordsheetService } from "../../services/chordsheet/chordsheet.service";
-import { ActivatedRoute } from "@angular/router";
-import {Location} from "@angular/common";
+import { Router, ActivatedRoute } from "@angular/router";
 
 @Component({
   selector: 'app-edit-screen',
@@ -34,21 +33,29 @@ export class EditScreenComponent implements OnInit {
   constructor(private validator: ChordproValidatorService,
               private sender: ChordsheetService,
               private route: ActivatedRoute,
-              private location: Location) { }
+              private router: Router) { }
 
   /** Set up title if supplied */
   ngOnInit() {
     this.route.data
       .subscribe(
-        (res: {data: APIResponse.ChordsheetElements.result}) => {
+        (res: {data: APIResponse.ChordsheetElements.result | string | undefined }) => {
           // Check for bad values
-          if (res && res.data) {
-            this._initial_title = res.data.songtitle;
-            this._initial_manual_input = res.data.contents;
-            this._initial_private = res.data.private;
+          if (res.data && res.data != "create") {
+            let data = <APIResponse.ChordsheetElements.result> res.data;
+            this._initial_title = data.songtitle;
+            this._initial_manual_input = data.contents;
+            this._initial_private = data.private;
             this.triggerReset();
+          } else if (res.data == "create") {
+            // Its create, do nothing TODO: Make this better.
           }
-        }, err=>{console.log(err);this.location.back();});
+          else {
+            // TODO: This happens during invalid access. Find something better!
+            console.log("Denied access.");
+            this.router.navigate(['/']);
+          }
+        }, err=>{console.log(err);this.router.navigate(['/']);}); // TODO: Make this all better
   }
 
   /** Clear all error messages */
@@ -158,7 +165,7 @@ export class EditScreenComponent implements OnInit {
     if (this.validate(contents)) {
       // No errors, upload
       this.sender.uploadChordSheet(this.title, this.is_private, contents).subscribe(res=>{
-        if (res.success) this.location.back();
+        if (res.success) this.router.navigate(['/']);
         else this.error.setMessage("Upload Error", "The following message was returned from the server: " + res.reason);
       }, err => this.error.setMessage("Upload Error", "The following message was returned from the server: " + err.json().reason));
     }

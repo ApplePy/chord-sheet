@@ -28,7 +28,7 @@ export class ChordsheetService implements Resolve<ChordsheetElements.result>{
       if (songtitle)
         // Get chordsheet and return them, or catch the error and go to the main page
         return this.retrieveChordSheets(true, songtitle, this.user.username)
-          .map(result => result[0]);
+          .map(result => result[0]);                  // TODO: On access to disallowed resource, it returns undefined. MAKE BETTER.
           // .catch(err => {
           //   console.error("Fetching chord sheet " + songtitle + " failed.");
           //   console.error(err);
@@ -37,7 +37,7 @@ export class ChordsheetService implements Resolve<ChordsheetElements.result>{
     }
 
     // Why is the route attached to a bad url?
-    return Observable.range(0,1).map(num=>"");  // TODO: Find a better masking
+    return Observable.range(0,1).map(num=>"create");  // TODO: This is just masking a problem. MAKE BETTER.
   }
 
   /** Returns all the chordsheets available to the user.
