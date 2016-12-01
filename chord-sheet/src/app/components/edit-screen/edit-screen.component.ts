@@ -162,10 +162,13 @@ export class EditScreenComponent implements OnInit {
     event.preventDefault();
 
     let contents = (this.file_contents.length > 0) ? this.file_contents : this.manual_input;
+    let old_info = null;
+    if (this._initial_title && this._initial_manual_input)
+      old_info = {oldSongtitle: this._initial_title, oldPrivate: this._initial_private, oldContents: this._initial_manual_input};
 
     if (this.validate(contents)) {
       // No errors, upload
-      this.sender.uploadChordSheet(this.title, this.is_private, contents).subscribe(res=>{
+      this.sender.uploadChordSheet(this.title, this.is_private, contents, old_info).subscribe(res=>{
         if (res.success) this.router.navigate(['/']);
         else this.error.setMessage("Upload Error", "The following message was returned from the server: " + res.reason);
       }, err => this.error.setMessage("Upload Error", "The following message was returned from the server: " + err.json().reason));
