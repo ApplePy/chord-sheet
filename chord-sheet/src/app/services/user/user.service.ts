@@ -180,7 +180,10 @@ export class UserService {
     return this.http.post("/api/users", creds, {headers: headers})
       .map(res => {
         let result = res.json();
-        this.loggedIn = result.success;
+        this._username  = username;
+        this._firstname = firstname;
+        this._lastname  = lastname;
+        this.loggedIn   = result.success;
         return result;
       });
   }

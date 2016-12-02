@@ -9,6 +9,7 @@
 
     <!-- Right Menu -->
     <div class="right menu">
+      <span class="item" *ngIf="user.isLoggedIn()"><i class="user icon"></i>Welcome, {{user.firstname}} {{user.lastname}}</span>
       <div [ngSwitch]="user.isLoggedIn()">
         <a class="item" *ngSwitchCase="true" (click)="user.logout()">Logout</a>
         <a class="item" *ngSwitchCase="false" [routerLink]="['/login']">Login/Sign Up</a>
