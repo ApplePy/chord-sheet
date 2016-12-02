@@ -18,9 +18,20 @@ export class ModalComponent implements OnInit {
   ngOnInit() {
   }
 
+  ngOnDestroy() {
+    $('.ui.dimmer').remove(); // Prevent angular caching from making a mess of things.
+  }
+
   /** Displays the modal. */
   show() {
-    $('.ui.basic.modal').modal('show');
+    $('.ui.basic.modal')
+      .modal({
+        blurring: true
+      })
+      .modal('setting', 'observeChanges', true)
+      .modal('setting', 'closable', false)
+      .modal('show')
+      .modal('refresh');
   }
 
 }

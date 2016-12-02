@@ -41,13 +41,8 @@ export class ViewChordsheetComponent implements OnInit {
         }, err=>{console.log(err);this.router.navigate(['/']);}); // TODO: Make this all better
   }
 
-  /** Trigger the modal to warn about the delete.
-   *
-   * @param id  The ID of the element that was requested to be deleted.
-   */
+  /** Trigger the modal to warn about the delete. */
   deleteModal() {
-    // TODO: Multiple modals happen oddly. Destroy modals after navigating away.
-
     // Set up modal
     this.modal.title = "Delete " + this.chordsheet.songtitle + " ?";
     this.modal.message = "Are you sure you want to delete " + this.chordsheet.songtitle + " ?";
@@ -59,18 +54,14 @@ export class ViewChordsheetComponent implements OnInit {
    * @param $event  The response returned from the modal.
    */
   modalResponse($event: boolean) {
-    let displayError = errMsg => {
-      console.error("Delete failed.");
-      console.log(errMsg);
+    if ($event == true) {
 
-      this.chordservice.deleteChordSheet()
-
-      // TODO: User display error
-      //this.displayInvalid = true;
-      //this.errorMsg.messages = [errMsg,];
-
-      this.router.navigate(['/']);
-    };
+      // Delete and navigate to main page on success, console.error any errors.
+      this.chordservice.deleteChordSheet(this.chordsheet.songtitle).subscribe(res=> {
+        if (res.success) this.router.navigate(['/']);
+        else console.error(res.reason);
+        }, err=>{if (err && err.json() && err.json().reason) console.error(err.reason); else console.error(err);});
+    }
   }
 
 }
