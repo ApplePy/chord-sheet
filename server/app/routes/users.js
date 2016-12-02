@@ -7,6 +7,7 @@ var express     = require('express');
 var router      = express.Router({ mergeParams: true });
 var bcrypt      = require('bcrypt');
 var sanitize    = require('../chord_api').sanitize;
+var Validator   = require('validatorjs');
 
 // Setup db models
 var User        = require('./../models/user-model');
@@ -40,6 +41,9 @@ router.post("/login", function(req, res, next) {
 
     // Login by user/pass
     else if (username && password) {
+
+        // Emails only
+        if (new Validator({username: username}, {username: 'required|email'}).fails()) return res.send({success: false, reason: "Valid email address for username required."});
 
         var compareFunc = function(users) {
             // Make sure a user was returned
@@ -104,6 +108,17 @@ router.post('/', function(req, res, next) {
             });
         }
     };
+
+    // Emails only
+    if (new Validator({username: req.body.username}, {username: 'required|email'}).fails(result=>{
+            console.log(result);
+    return res.send({success: false, reason: "Valid email address for username required."});
+}))
+    {
+        console.log('ok');
+        console
+        return res.send({success: false, reason: "Valid email address for username required."});
+    }
 
     // Create user and set up initial info
     var user = new User();

@@ -1,7 +1,7 @@
 <form class="ui form" accept-charset="UTF-8" [class.error]="invalid">
   <!-- Error message block -->
   <div class="field">
-    <app-error-message [title]="'Failed Login'" [messages]="['The supplied username or password was incorrect.']" (click)="invalid = false"></app-error-message>
+    <app-error-message [title]="'Failed Login'" [messages]="[msg]" (click)="invalid = false"></app-error-message>
   </div>
 
   <div class="field">

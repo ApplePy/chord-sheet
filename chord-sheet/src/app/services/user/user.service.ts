@@ -5,6 +5,7 @@ import {Observable} from "rxjs";
 import 'rxjs/add/operator/map';
 import Results = APIResponse.Results;
 import Login = APIResponse.Login;
+const Validator = require('validatorjs');
 
 @Injectable()
 export class UserService {
@@ -97,6 +98,10 @@ export class UserService {
         observer.complete();
       });
 
+    // Make sure valid email
+    if (new Validator({email: username}, {email: 'required|email'}).fails())
+      return Observable.create(observer=>{observer.next({success: false, reason: "Provide a valid email for username."}); observer.complete();});
+
     // Setup credentials for sending
     let creds = JSON.stringify({username: username, password: password});
 
@@ -134,9 +139,7 @@ export class UserService {
 
   }
 
-  /** Logs out the user.
-   *
-   */
+  /** Logs out the user. */
   logout() {
     let logoutFunc = ()=>{
       this.loggedIn = false;
@@ -168,6 +171,10 @@ export class UserService {
         observer.next({success: false, reason: "Requester is already logged in."});
         observer.complete();
       });
+
+    // Make sure valid email
+    if (new Validator({email: username}, {email: 'required|email'}).fails())
+      return Observable.create(observer=>{observer.next({success: false, reason: "Provide a valid email for username."}); observer.complete();});
 
     // Setup credentials for sending
     let creds = JSON.stringify({firstname: firstname, lastname: lastname, username: username, password: password});
