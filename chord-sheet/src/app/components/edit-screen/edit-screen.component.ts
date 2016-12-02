@@ -139,7 +139,7 @@ export class EditScreenComponent implements OnInit {
     let results = this.validator.validate(contents);
 
     // Set errors if exist
-    if(results.containsIssues()) {
+    if(results.containsErrors()) {
       if (results.errors.length) this.error.setMessages("Parse Errors", results.errors);
       if (results.warnings.length) this.warning.setMessages("Parse Warnings", results.warnings);
       return false;

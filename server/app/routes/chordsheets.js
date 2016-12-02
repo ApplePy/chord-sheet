@@ -98,7 +98,7 @@ router.route('/')
                 var results = validator.validate(sheet.contents);
 
                 // Stop if errors found
-                if (results.errors.length > 0) {
+                if (results.containsErrors()) {
                     res.status(400).send({success: false,
                         reason: "Invalid ChordPro format.",
                         errors: results.errors,
