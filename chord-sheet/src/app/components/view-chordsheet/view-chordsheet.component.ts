@@ -4,6 +4,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import Chordsheet = APIResponse.CsElements.Chordsheet;
 import {UserService} from "../../services/user/user.service";
 import {ModalComponent} from "../common/modal/modal.component";
+require('datejs');
 
 @Component({
   selector: 'app-view-chordsheet',
@@ -64,4 +65,11 @@ export class ViewChordsheetComponent implements OnInit {
     }
   }
 
+  /** Converts the chordsheet modified date into a human-friendly format.
+   *
+   * @param inDate  The date string to be parsed.
+   */
+  convertDate(inDate: string): string {
+    return (<any>Date).parse(inDate).toString("dd MMMM yyyy, h:mm:sstt");
+  }
 }

@@ -108,6 +108,8 @@ export class ChordsheetListComponent implements OnInit {
     }
   }
 
+
+  // TODO: Refactor with view-chordsheet
   /** Converts the chordsheet modified date into a human-friendly format.
    *
    * @param inDate  The date string to be parsed.
