@@ -2,14 +2,19 @@
  * Created by darryl on 2016-11-24.
  */
 
-var mongoose        = require('mongoose');
-var autoIncrement   = require('mongoose-auto-increment');
-var connection      = require('../chord_api').mongoose;
-var Schema          = mongoose.Schema;
+
+// ---- REQUIRES ---- //
+
+let mongoose        = require('mongoose');
+let autoIncrement   = require('mongoose-auto-increment');
+let connection      = require('../chord_api').mongoose;
+let Schema          = mongoose.Schema;
+
+
+// ---- SETUP ---- //
 
 // Increment initialization
 autoIncrement.initialize(connection);
-
 
 // TODO: Store contents/date as a list in the collection instead of separate docs?
 var ChordSheetSchema = new Schema({

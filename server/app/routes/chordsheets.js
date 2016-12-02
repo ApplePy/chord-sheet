@@ -3,21 +3,22 @@
  */
 
 // ---- REQUIRES ---- //
-var express             = require('express');
-var router              = express.Router({ mergeParams: true });
-var getTokenOwner       = require('./users').getTokenOwner;
-var sanitize            = require('../chord_api').sanitize;
-var ChordproValid       = require('../models/chordpro-validation/chordpro-validator.service');
-var isNullOrUndefined   = require('util').isNullOrUndefined;
+
+let express         = require('express');
+let router          = express.Router({ mergeParams: true });
+let getTokenOwner   = require('./users').getTokenOwner;
+let sanitize        = require('../chord_api').sanitize;
+let ChordproValid   = require('../models/chordpro-validation/chordpro-validator.service');
+let Validator       = require('validatorjs');
 
 // Setup db models
-var ChordSheet  = require('./../models/chordsheet-model');
+let ChordSheet  = require('./../models/chordsheet-model');
 
 
 // ---- HELPERS ---- //
 
-// Consutructs the data and returns results to client
-var matchFuncBase = function (req, res, next) {
+/** Consutructs the data and returns results to client. */
+let matchFuncBase = function (req, res, next) {
     return function (matchParam) {
         // Find chord sheet stats
         ChordSheet.aggregate([
@@ -50,8 +51,8 @@ router.route('/')
     // Get all chordsheets
     .get(function(req, res, next) {
 
-        var token = req.signedCookies.token;
-        var matchFunc = matchFuncBase(req,res,next);
+        let token = req.signedCookies.token;
+        let matchFunc = matchFuncBase(req,res,next);
 
         // Change behaviour if the user is logged in or not
         if (token) {
@@ -69,7 +70,7 @@ router.route('/')
 
     // Create new chordsheet/upload revision
     .post(function(req, res, next) {
-        var token = req.signedCookies.token;
+        let token = req.signedCookies.token;
 
         // Chordsheets can't be made if you're not logged in.
         if (!token) {
@@ -87,15 +88,15 @@ router.route('/')
                 }
 
                 // Create new sheet and populate with data
-                var sheet       = new ChordSheet();
+                let sheet       = new ChordSheet();
                 sheet.songtitle = sanitize(req.body.songtitle);
                 sheet.private   = Boolean(req.body.private);
                 sheet.owner     = sanitize(user.username);
                 sheet.contents  = sanitize(req.body.contents);
 
                 // Validate user chordsheet
-                var validator = new ChordproValid.ChordproValidatorService();
-                var results = validator.validate(sheet.contents);
+                let validator = new ChordproValid.ChordproValidatorService();
+                let results = validator.validate(sheet.contents);
 
                 // Stop if errors found
                 if (results.containsErrors()) {
@@ -109,7 +110,7 @@ router.route('/')
 
                 // Save sheet
                 // NOTE: Don't worry about duplicates. User could change text, then change back.
-                var save = () => {
+                let save = () => {
                     sheet.save(function(err, save){
                         if (!err) res.send({success: true});
                         else res.status(500).send({success: false, reason: err});
@@ -117,7 +118,7 @@ router.route('/')
 
                 // TODO: This entire post is UGLY. Fix.
 
-                var checkDuplicate = nextFunc => {
+                let checkDuplicate = nextFunc => {
                     ChordSheet.findOne({owner: user.username, songtitle: sanitize(req.body.songtitle)}, function(err, result) {
 
                         // Check for errors and songs that already exist under that name
@@ -133,10 +134,10 @@ router.route('/')
                 // Check if this is an update, and update other docs in the set otherwise
                 // TODO: Break out updates to its own API POST?
                 if (typeof (req.body.oldSongtitle) == "string" || typeof (req.body.oldPrivate) == "boolean") {
-                    var findObject = {owner: user.username};
-                    var updateObject = {};
+                    let findObject = {owner: user.username};
+                    let updateObject = {};
 
-                    // If the variable exists and differs from the new value, mark add to list of fields to update
+                    // If the letiable exists and differs from the new value, mark add to list of fields to update
                     if (typeof (req.body.oldSongtitle) == "string" && sanitize(req.body.oldSongtitle) != sanitize(req.body.songtitle)) {
                         findObject.songtitle = sanitize(req.body.oldSongtitle);
                         updateObject.songtitle = sanitize(req.body.songtitle);
@@ -147,7 +148,7 @@ router.route('/')
                     }
 
                     // Update objects
-                    var updateAndSave = () => {
+                    let updateAndSave = () => {
                         ChordSheet.update(findObject, updateObject, { multi: true }, function(err, raw) {
                             if (err) return res.status(500).send({success: false, reason: err});
 
@@ -176,9 +177,9 @@ router.route('/')
 router.route('/:songtitle')
     // Get a single collection of chordsheets.
     .get(function(req, res, next) {
-        var songtitle = sanitize(req.params.songtitle);
-        var token = req.signedCookies.token;
-        var matchFunc = matchFuncBase(req,res,next);
+        let songtitle = sanitize(req.params.songtitle);
+        let token = req.signedCookies.token;
+        let matchFunc = matchFuncBase(req,res,next);
 
         // Change behaviour if the user is logged in or not
         if (token) {
@@ -196,8 +197,8 @@ router.route('/:songtitle')
 
     // Delete a chordsheet and all revisions.
     .delete(function(req, res, next) {
-        var songtitle = sanitize(req.params.songtitle);
-        var token = req.signedCookies.token;
+        let songtitle = sanitize(req.params.songtitle);
+        let token = req.signedCookies.token;
 
         // Chordsheets can't be made if you're not logged in.
         if (!token) {
@@ -229,10 +230,10 @@ router.route('/:songtitle')
 router.route('/:songtitle/:username')
     //Get a single chordsheet from a single user
     .get(function(req, res, next) {
-        var username = sanitize(req.params.username);
-        var songtitle = sanitize(req.params.songtitle);
-        var token = req.signedCookies.token;
-        var matchFunc = matchFuncBase(req,res,next);
+        let username = sanitize(req.params.username);
+        let songtitle = sanitize(req.params.songtitle);
+        let token = req.signedCookies.token;
+        let matchFunc = matchFuncBase(req,res,next);
 
         // Change behaviour if the user is logged in or not
         if (token) {
