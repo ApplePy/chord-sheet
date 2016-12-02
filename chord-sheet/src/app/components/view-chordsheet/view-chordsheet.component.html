@@ -6,8 +6,8 @@
   </div>
 </h1>
 
-<div class="ui basic segment">
-  <app-chord-display></app-chord-display>
+<div class="ui teal tall stacked segment">
+  <app-chord-display [content]="chordsheet.contents"></app-chord-display>
 </div>
 
 <div *ngIf="user.isLoggedIn() && chordsheet.owner == user.username">
