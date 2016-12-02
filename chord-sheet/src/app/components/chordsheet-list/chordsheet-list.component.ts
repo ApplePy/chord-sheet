@@ -4,6 +4,7 @@ import {UserService} from "../../services/user/user.service";
 import {ModalComponent} from "../common/modal/modal.component";
 import {ErrorMessageComponent} from "../common/error-message/error-message.component";
 import {Observable, Subscription} from "rxjs";
+require('datejs');
 import Chordsheet = APIResponse.CsElements.Chordsheet;
 
 @Component({
@@ -107,4 +108,11 @@ export class ChordsheetListComponent implements OnInit {
     }
   }
 
+  /** Converts the chordsheet modified date into a human-friendly format.
+   *
+   * @param inDate  The date string to be parsed.
+   */
+  convertDate(inDate: string): string {
+    return (<any>Date).parse(inDate).toString("dd MMMM yyyy, h:mm:sstt");
+  }
 }
