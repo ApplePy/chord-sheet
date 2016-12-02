@@ -12,40 +12,41 @@ let ChordproValid   = require('../models/chordpro-validation/chordpro-validator.
 let Validator       = require('validatorjs');
 
 // Setup db models
-let ChordSheet  = require('./../models/chordsheet-model');
+let ChordSheet      = require('./../models/chordsheet-model');
 
 
 // ---- HELPERS ---- //
 
-/** Consutructs the data and returns results to client. */
+/** Constructs the data and returns results to client.
+ *
+ *  Returns a {metadata: [], results: []} object on success, error string otherwise.
+ */
 let matchFuncBase = function (req, res, next) {
     return function (matchParam) {
         // Find chord sheet stats
         ChordSheet.aggregate([
-            {
-                $match: matchParam
-            },
-            {
-                $group: {
+            {$match: matchParam},
+            {$group:
+                {
                     _id: {owner: "$owner", songtitle: "$songtitle"},
                     latestRevision: {$max: "$revision"},
                     revisionCount: {$sum: 1},
                 }
             }
-        ]).then(stats => {
-            // Find chord sheets
-            ChordSheet.aggregate([{$match: matchParam}]).then(
-                // Send stats and results
-                results => res.send({metadata: stats, results: results}),
-                err => res.status(500).send(err));
-        }, err => res.status(500).send(err));
+            ]).then(stats => {
+                // Find chord sheets
+                ChordSheet.aggregate([{$match: matchParam}])
+                    .then(
+                        // Send stats and results
+                        results => res.send({metadata: stats, results: results}),
+                        // Send error
+                        err => res.status(500).send(err));
+            }, err => res.status(500).send(err));
     }
 };
 
 
 // ---- ROUTES ---- //
-
-// TODO: Downloading the entire chordsheet database sounds like a *BAD* idea. Limit/pagination/some caching???
 
 router.route('/')
     // Get all chordsheets
