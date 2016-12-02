@@ -22,6 +22,7 @@ import { ModalComponent } from './components/common/modal/modal.component';
 import { SignupComponent } from './components/login-signup/signup/signup.component';
 import { LoginSignupComponent } from './components/login-signup/login-signup.component';
 import {RouteGuardService} from "./services/guards/route-guard/route-guard.service";
+import { ViewChordsheetComponent } from './components/view-chordsheet/view-chordsheet.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import {RouteGuardService} from "./services/guards/route-guard/route-guard.servi
     ErrorMessageComponent,
     ModalComponent,
     SignupComponent,
-    LoginSignupComponent
+    LoginSignupComponent,
+    ViewChordsheetComponent
   ],
   imports: [
     BrowserModule,

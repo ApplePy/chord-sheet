@@ -1,0 +1,24 @@
+<h1 class="ui header">
+  <i class="sticky note icon"></i>
+  <div class="content">
+    {{chordsheet.songtitle}}
+    <div class="sub header">By: {{chordsheet.owner}}</div>
+  </div>
+</h1>
+
+<div class="ui basic segment">
+  <app-chord-display></app-chord-display>
+</div>
+
+<div *ngIf="user.isLoggedIn() && chordsheet.owner == user.username">
+  <button class="ui button" name="Edit" [routerLink]="['/edit', chordsheet.songtitle]">
+    <i class="write square icon"></i>
+    Edit
+  </button>
+  <button class="ui button negative" name="Delete" (click)="deleteModal();">
+    <i class="trash icon"></i>
+    Delete
+  </button>
+</div>
+
+<app-modal (response)="modalResponse($event)"></app-modal>

@@ -8,12 +8,14 @@ import {MainScreenComponent} from "./components/main-screen/main-screen.componen
 import {NotFoundComponent} from "./components/not-found/not-found.component";
 import {RouteGuardService} from "./services/guards/route-guard/route-guard.service";
 import {ChordsheetService} from "./services/chordsheet/chordsheet.service";
+import {ViewChordsheetComponent} from "./components/view-chordsheet/view-chordsheet.component";
 
 const routes: Routes = [
   { path: "login", component: LoginSignupComponent },
   { path: "privacy-policy", component: PrivacyComponent },
   { path: "create", component: EditScreenComponent, canActivate: [RouteGuardService], resolve: {data: ChordsheetService} },
   { path: "edit/:songtitle", component: EditScreenComponent, canActivate: [RouteGuardService], resolve: {data: ChordsheetService} },
+  { path: "view/:songtitle/:username", component: ViewChordsheetComponent, resolve: {data: ChordsheetService} },
   { path: "", component: MainScreenComponent },
   { path: "404", component: NotFoundComponent },
   { path: '**', redirectTo: '/404' }

@@ -26,7 +26,7 @@
             <div class="ui right floated buttons">
               <!-- Secondary flips to counter the click event trigger on the parent div -->
               <button class="ui grey button"
-                      [routerLink]="['/view/' + entry.result.songtitle]"
+                      [routerLink]="['/view/' + entry.result.songtitle + '/' + entry.result.owner]"
                       (click)="entry.secondaryState = !entry.secondaryState">View</button>
               <button class="ui teal button"
                       [routerLink]="['/edit/' + entry.result.songtitle]"
@@ -46,7 +46,7 @@
             <div class="ui buttons">
               <!-- Secondary flips to counter the click event trigger on the parent div -->
               <button class="ui grey button"
-                      [routerLink]="['/view/' + entry.result.songtitle]"
+                      [routerLink]="['/view/' + entry.result.songtitle + '/' + entry.result.owner]"
                       (click)="entry.secondaryState = !entry.secondaryState">View</button>
               <button class="ui teal button"
                       [routerLink]="['/edit/' + entry.result.songtitle]"
@@ -64,7 +64,7 @@
 
     <!-- Comments and posting -->
     <div #secondary class="ui bottom attached secondary segment" *ngIf="entry.secondaryState">
-      <p>test</p>
+      <p>Last Modified: {{entry.date}}</p>
     </div>
 
   </div>
