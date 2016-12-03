@@ -42,4 +42,9 @@ declare namespace APIResponse {
       date: string
     }
   }
+
+  interface ChordsheetErrors extends Results {
+    errors: string[],
+    warnings: string[]
+  }
 }

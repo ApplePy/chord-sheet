@@ -16,7 +16,7 @@ let mongoose    = require('mongoose');
 
 /** Sets up sanitize function that will be used by sub-routers (MUST occur before setup)
  *
- * @param str          The string to be sanitized
+ * @param str           The string to be sanitized
  * @returns {string}    The sanitized string
  */
 module.exports.sanitize = function (str) {
