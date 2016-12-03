@@ -16,7 +16,8 @@ declare namespace APIResponse {
   interface Login extends Results {
     "username": string,
     "firstname": string,
-    "lastname": string
+    "lastname": string,
+    "admin": boolean
   }
 
   /**

@@ -31,18 +31,9 @@ router.post("/login", function (req, res, next) {
     let password = req.body.password;   // Don't sanitize, will get only get hashed anyways
 
 
-    // Common callbacks
-    let badLogin = function () {
-        res.send({success: false})
-    };
-    let goodLogin = function (user) {
-        res.send({success: true, username: user.username, firstname: user.firstname, lastname: user.lastname})
-    };
-
-
     // Login by token
     if (loggedin)
-        goodLogin(req.session.user);
+        goodLogin(req, res);
 
     // Login by user/pass
     else if (typeof username === "string" && typeof password === "string") {
@@ -54,7 +45,7 @@ router.post("/login", function (req, res, next) {
         getUserInfo(username, true).then(users => {
             // Make sure a user was returned
             if (users.length == 0)
-                return badLogin();
+                return badLogin(req,res);
 
             let user = users[0];
 
@@ -63,18 +54,12 @@ router.post("/login", function (req, res, next) {
                 if (bRes == true) {
 
                     // Set the session variables before sending the success response
-                    req.session.loggedin = true;
-                    req.session.user = {
-                        username: user.username,
-                        firstname: user.firstname,
-                        lastname: user.lastname
-                    };
-
-                    goodLogin(req.session.user);
+                    setSession(req, user);
+                    goodLogin(req, res);
                 }
                 else res.send({success: false});
             });
-        }, badLogin);
+        }, ()=>badLogin(req,res));
     }
 
     // Bad form, reject
@@ -93,6 +78,8 @@ router.get("/logout", function(req, res, next) {
 
 /** Create new user */
 router.post('/', function (req, res, next) {
+
+    // NOTE: Cannot create admin users.
 
     // Make sure all info was received
     if (typeof (req.body.username) !== "string" ||
@@ -129,14 +116,8 @@ router.post('/', function (req, res, next) {
                 user.save().then(
                     results => {
                         // Set the session variables before sending the success response
-                        req.session.loggedin = true;
-                        req.session.user = {
-                            username: user.username,
-                            firstname: user.firstname,
-                            lastname: user.lastname
-                        };
-
-                        res.send({success: true});
+                        setSession(req, user);
+                        goodLogin(req, res);
                     }, err => res.status(500).send({success: false, reason: "Error saving new user."})
                 );
             });
@@ -177,7 +158,7 @@ router.route('/:username')
         // Only update your own information when logged in
         if (!req.session.loggedin)
             return res.status(401).send({success: false, reason: "Unauthorized."});
-        if (req.session.user.username !== username)
+        if (req.session.user.username !== username && !req.session.user.admin)
             return res.status(403).send({success: false, reason: "You cannot change the details of another user."});
 
         // Update the user data and re-input
@@ -193,7 +174,11 @@ router.route('/:username')
 
                 // Save the modified user
                 user.save().then(
-                    result => res.send({success: true}),
+                    result => {
+                        // Set new session variables and then send the new information back
+                        setSession(req, user);
+                        goodLogin(req, res);
+                    },
                     err => res.status(500).send({success: false, reason: "DB update failed."})
                 );
             },
@@ -206,7 +191,7 @@ router.route('/:username')
         let username = sanitize(req.params.username);
 
         // Prevent deleting someone else's account.
-        if (req.session.username != username)
+        if (req.session.user.username != username && !req.session.user.admin)
             return res.status(403).send({success: false, reason: "You cannot delete another user."});
 
         // Delete all user sessions, user entry, and chordsheets
@@ -286,5 +271,26 @@ let getUserInfo = function (username, addpass, returnQueryObj) {
 let validateEmail = function(emailAddress) {
     return /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/.test(emailAddress);
 };
+
+
+// Common callbacks
+let badLogin = (req, res) => res.send({success: false});
+let goodLogin = (req, res) => res.send({
+    success: true,
+    username: req.session.user.username,
+    firstname: req.session.user.firstname,
+    lastname: req.session.user.lastname,
+    admin: req.session.user.admin
+});
+let setSession = (req, user) => {
+    req.session.loggedin = true;
+    req.session.user = {
+        username: user.username,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        admin: user.admin
+    }
+};
+
 
 module.exports.router = router;

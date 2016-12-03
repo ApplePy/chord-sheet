@@ -26,9 +26,11 @@ export class UserService {
   private _username: string = "";
   private _firstname: string = "";
   private _lastname: string = "";
+  private _admin: boolean = false;
   get username(): string { return this._username }
   get firstname(): string { return this._firstname }
   get lastname(): string { return this._lastname }
+  get admin(): boolean { return this._admin }
 
 
   // Set up login state change observers
@@ -56,6 +58,16 @@ export class UserService {
     // If there's already a request in-flight, don't duplicate work
     if (this.requestInProgress) return this.requestInProgress;
 
+    // If the user is already logged in, or there is no token to login with, then send an observable with the login state.
+    if (this.loggedIn)
+      return Observable.of({
+        success: this.loggedIn,
+        username: this.username,
+        firstname: this.firstname,
+        lastname: this.lastname,
+        admin: this.admin
+      }).first();
+
     // Let other end know its JSON
     let headers = new Headers();
     headers.append('Content-Type', 'application/json');
@@ -68,6 +80,7 @@ export class UserService {
         this._username = result.username;
         this._firstname = result.firstname;
         this._lastname = result.lastname;
+        this._admin = result.admin;
         this.requestInProgress = null;    // Clean up in-progress marker
         return result;
       });
@@ -81,14 +94,6 @@ export class UserService {
    * @returns {Observable<Results>}
    */
   logintoken(): Observable<Results> {
-    // If the user is already logged in, or there is no token to login with, then send an observable with the login state.
-    if (this.loggedIn)
-      return Observable.of({
-        success: this.loggedIn,
-        username: this.username,
-        firstname: this.firstname,
-        lastname: this.lastname
-      });
 
     // Setup credentials for sending (mostly to satisfy loginCommon)
     let creds = JSON.stringify({token: true});
@@ -105,22 +110,9 @@ export class UserService {
    */
   login(username: string, password: string): Observable<Results> {
 
-    // If the user is already logged in,then send an observable with the login state.
-    if (this.loggedIn)
-      return Observable.of({
-        success: this.loggedIn,
-        username: this.username,
-        firstname: this.firstname,
-        lastname: this.lastname
-      });
-
-
     // Make sure valid email
     if (!this.validateEmail(username))
-      return Observable.create(observer => {
-        observer.next({success: false, reason: "Provide a valid email for username."});
-        observer.complete();
-      }).first();
+      return Observable.of({success: false, reason: "Provide a valid email for username."}).first();
 
     // Setup credentials for sending
     let creds = JSON.stringify({username: username, password: password});
@@ -162,6 +154,7 @@ export class UserService {
       this._username = "";
       this._firstname = "";
       this._lastname = "";
+      this._admin = false;
 
       // Redirect to current page to trigger route-guard
       this.router.navigate(['/']);
@@ -183,11 +176,11 @@ export class UserService {
   signUp(firstname: string, lastname: string, username: string, password: string): Observable<Results> {
     // Prevent sign-up if user is already logged in
     if (this.loggedIn)
-      return Observable.of({success: false, reason: "Requester is already logged in."});
+      return Observable.of({success: false, reason: "Requester is already logged in."}).first();
 
     // Make sure valid email
     if (!this.validateEmail(username))
-      return Observable.of({success: false, reason: "Provide a valid email for username."});
+      return Observable.of({success: false, reason: "Provide a valid email for username."}).first();
 
     // Setup credentials for sending
     let creds = JSON.stringify({firstname: firstname, lastname: lastname, username: username, password: password});
@@ -200,9 +193,10 @@ export class UserService {
     return this.http.post("/api/users", creds, {headers: headers})
       .map(res => {
         let result = res.json();
-        this._username  = username;
-        this._firstname = firstname;
-        this._lastname  = lastname;
+        this._username  = result.username;
+        this._firstname = result.firstname;
+        this._lastname  = result.lastname;
+        this._admin     = result.admin;
         this.loggedIn   = result.success;
         return result;
       });

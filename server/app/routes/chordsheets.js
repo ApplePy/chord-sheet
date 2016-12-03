@@ -59,7 +59,7 @@ router.route('/')
         // Change behaviour if the user is logged in or not
         if (loggedin)
             // Find chord sheets that the user owns or are public, along with stats
-            matchFunc({$or: [{'owner': user.username}, {'private': false}]})
+            matchFunc({$or: [{'owner': user.username}, {'private': false}]});
 
         // Find public chord sheets
         else

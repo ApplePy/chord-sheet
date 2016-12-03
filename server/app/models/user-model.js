@@ -16,7 +16,8 @@ let UserSchema   = new Schema({
     username: {type: String, unique: true},
     firstname: String,
     lastname: String,
-    password: String
+    password: String,
+    admin: {type: Boolean, default: false}
 });
 
 
