@@ -30,7 +30,6 @@ export class ChordsheetListComponent implements OnInit {
 
   ngOnInit() {
     // Refresh ChordSheets when user logs out
-    // TODO: retrieveChordSheets unsubscribe
     let requestData = () => this.chordsheetSerivce.retrieveChordSheets(true)
       .subscribe(
         data => this.chordsheets = data.map(  // Add a secondary state to all the chordsheets
