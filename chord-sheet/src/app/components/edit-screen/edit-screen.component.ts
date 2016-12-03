@@ -57,7 +57,7 @@ export class EditScreenComponent implements OnInit {
               this.router.navigate(['/']);
             }
           }
-          // If you reach here, then it's a create page
+          // If you reach here without hitting any blocks of code above, then it's a create page
         });
   }
 

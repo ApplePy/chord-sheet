@@ -26,24 +26,25 @@ export class ViewChordsheetComponent implements OnInit {
 
   /** Set up title if supplied */
   ngOnInit() {
-    // TODO: Fix the copy-pasta
     this.route.data
       .subscribe(
-        (res: {data: Chordsheet[] | string | undefined }) => {
-          // Check for bad values
-          if (res.data && res.data != "create") {
-            this.chordsheet = <Chordsheet>((<Chordsheet[]>res.data)[0]);
-            (<Chordsheet[]>res.data).splice(0,1); // Splice out first entry
-            this.previousRevisions = <Chordsheet[]>res.data;
-          } else if (res.data == "create") {
-            // Its create, do nothing TODO: Make this better.
+        (res: {data: any}) => {
+          // Check for bad values (null for create page, [...] for results, [] for denied access)
+          if (res.data !== null) {
+            if (res.data.length > 0) {
+              // Get chordsheet data from back into place
+              this.chordsheet = res.data[0];      // Put the first one in the box
+              res.data.splice(0, 1);              // Cut out the first one
+              this.previousRevisions = res.data;  // Put the remainder as previous revisions
+            }
+            else {
+              // This happens during invalid access.
+              console.warn("Access Denied.");
+              this.router.navigate(['/']);
+            }
           }
-          else {
-            // TODO: This happens during invalid access. Find something better!
-            console.log("Denied access.");
-            this.router.navigate(['/']);
-          }
-        }, err=>{console.log(err);this.router.navigate(['/']);}); // TODO: Make this all better
+          // If you reach here without hitting any blocks of code above, then it's a create page
+        }, err=>{console.log(err);this.router.navigate(['/']);});
   }
 
   /** Trigger the modal to warn about the delete. */
