@@ -3,7 +3,7 @@ import { Http, Headers } from'@angular/http';
 import {Router, ActivatedRoute, UrlSegment} from "@angular/router";
 import {Observable} from "rxjs";
 import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/of';
+import 'rxjs/add/observable/of';
 import Results = APIResponse.Results;
 import Login = APIResponse.Login;
 
