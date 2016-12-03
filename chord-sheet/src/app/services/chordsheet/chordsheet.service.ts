@@ -34,16 +34,11 @@ export class ChordsheetService implements Resolve<Chordsheet>{
       if (songtitle)
         // Get chordsheet and return them, or catch the error and go to the main page
         return this.retrieveChordSheets(true, songtitle, username)
-          .map(result => result[0]);                  // TODO: On access to disallowed resource, it returns undefined. MAKE BETTER.
-          // .catch(err => {
-          //   console.error("Fetching chord sheet " + songtitle + " failed.");
-          //   console.error(err);
-          //   return this.router.navigate(['/'])
-          // });
+          .map(result => result[0]);  // On access to disallowed resource, it returns undefined.
     }
 
     // Why is the route attached to a bad url?
-    return Observable.range(0,1).map(num=>"create");  // TODO: This is just masking a problem. MAKE BETTER.
+    return Observable.of(null);
   }
 
 

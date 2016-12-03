@@ -38,25 +38,24 @@ export class EditScreenComponent implements OnInit {
 
   /** Set up title if supplied */
   ngOnInit() {
-    this.route.data
-      .subscribe(
-        (res: {data: Chordsheet | string | undefined }) => {
-          // Check for bad values
-          if (res.data && res.data != "create") {
+      this.route.data
+        .subscribe(
+        (res: {data: any}) => {
+          // Check for bad values (null for create page, other object for results, undefined for denied access)
+          if (res.data !== "null" && res.data) {
+            // Get chordsheet data from back into place and reset form
             let data = <Chordsheet> res.data;
             this._initial_title = data.songtitle;
             this._initial_manual_input = data.contents;
             this._initial_private = data.private;
             this.triggerReset();
-          } else if (res.data == "create") {
-            // Its create, do nothing TODO: Make this better.
           }
-          else {
-            // TODO: This happens during invalid access. Find something better!
+          else if (typeof (res.data) === "undefined") {
+            // This happens during invalid access.
             console.log("Denied access.");
             this.router.navigate(['/']);
           }
-        }, err=>{console.log(err);this.router.navigate(['/']);}); // TODO: Make this all better
+        });
   }
 
   /** Clear all error messages */
