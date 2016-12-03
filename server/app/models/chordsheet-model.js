@@ -1,18 +1,23 @@
+"use strict";
 /**
  * Created by darryl on 2016-11-24.
  */
 
-var mongoose        = require('mongoose');
-var autoIncrement   = require('mongoose-auto-increment');
-var connection      = require('../chord_api').mongoose;
-var Schema          = mongoose.Schema;
+
+// ---- REQUIRES ---- //
+
+let mongoose        = require('mongoose');
+let autoIncrement   = require('mongoose-auto-increment');
+let connection      = require('../chord_api').mongoose;
+let Schema          = mongoose.Schema;
+
+
+// ---- SETUP ---- //
 
 // Increment initialization
 autoIncrement.initialize(connection);
 
-
-// TODO: Store contents/date as a list in the collection instead of separate docs?
-var ChordSheetSchema = new Schema({
+let ChordSheetSchema = new Schema({
     songtitle: String,
     private: Boolean,
     owner: String,
@@ -20,6 +25,9 @@ var ChordSheetSchema = new Schema({
     date: {type: Date, default: Date.now}
 });
 
-
 ChordSheetSchema.plugin(autoIncrement.plugin, {model: 'ChordSheet', field: 'revision'});
+
+
+// ---- EXPORTS ---- //
+
 module.exports = mongoose.model('ChordSheet', ChordSheetSchema);

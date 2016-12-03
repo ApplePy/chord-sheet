@@ -1,29 +1,30 @@
+"use strict";
 /**
  * Created by darryl on 2016-11-24.
  */
 
 // ---- REQUIRES ---- //
-var express             = require('express');
-var router              = express.Router({ mergeParams: true });
-var getTokenOwner       = require('./users').getTokenOwner;
-var sanitize            = require('../chord_api').sanitize;
-var ChordproValid       = require('../models/chordpro-validation/chordpro-validator.service');
-var isNullOrUndefined   = require('util').isNullOrUndefined;
+
+let express         = require('express');
+let router          = express.Router({ mergeParams: true });
+let sanitize        = require('../chord_api').sanitize;
+let ChordproValid   = require('../models/chordpro-validation/chordpro-validator.service');
 
 // Setup db models
-var ChordSheet  = require('./../models/chordsheet-model');
+let ChordSheet      = require('./../models/chordsheet-model');
 
 
 // ---- HELPERS ---- //
 
-// Consutructs the data and returns results to client
-var matchFuncBase = function (req, res, next) {
+/** Constructs the data and returns results to client.
+ *
+ *  Returns a {metadata: [], results: []} object on success, error string otherwise.
+ */
+let matchFuncBase = function (req, res, next) {
     return function (matchParam) {
         // Find chord sheet stats
         ChordSheet.aggregate([
-            {
-                $match: matchParam
-            },
+            {$match: matchParam},
             {
                 $group: {
                     _id: {owner: "$owner", songtitle: "$songtitle"},
@@ -33,10 +34,12 @@ var matchFuncBase = function (req, res, next) {
             }
         ]).then(stats => {
             // Find chord sheets
-            ChordSheet.aggregate([{$match: matchParam}]).then(
-                // Send stats and results
-                results => res.send({metadata: stats, results: results}),
-                err => res.status(500).send(err));
+            ChordSheet.aggregate([{$match: matchParam}])
+                .then(
+                    // Send stats and results
+                    results => res.send({metadata: stats, results: results}),
+                    // Send error
+                    err => res.status(500).send(err));
         }, err => res.status(500).send(err));
     }
 };
@@ -44,208 +47,216 @@ var matchFuncBase = function (req, res, next) {
 
 // ---- ROUTES ---- //
 
-// TODO: Downloading the entire chordsheet database sounds like a *BAD* idea. Limit/pagination/some caching???
-
 router.route('/')
-    // Get all chordsheets
+
+    /** Get all chordsheets */
     .get(function(req, res, next) {
 
-        var token = req.signedCookies.token;
-        var matchFunc = matchFuncBase(req,res,next);
+        let loggedin = req.session.loggedin;
+        let user = req.session.user;
+        let matchFunc = matchFuncBase(req,res,next);
 
         // Change behaviour if the user is logged in or not
-        if (token) {
-            getTokenOwner(token)
-                .then(
-                    // Find chord sheets that the user owns or are public, along with stats
-                    user => matchFunc({$or: [{'owner': user.username}, {'private': false}]}),
-                    err => res.status(500).send(err.message)
-                );
-        } else {
-            // Find public chord sheets
+        if (loggedin)
+            // Find chord sheets that the user owns or are public, along with stats
+            matchFunc({$or: [{'owner': user.username}, {'private': false}]})
+
+        // Find public chord sheets
+        else
             matchFunc({private: false});
-        }
     })
 
-    // Create new chordsheet/upload revision
+
+    /** Create new chordsheet/upload revision. */
     .post(function(req, res, next) {
-        var token = req.signedCookies.token;
+        let loggedin = req.session.loggedin;
+        let user = req.session.user;
 
         // Chordsheets can't be made if you're not logged in.
-        if (!token) {
-            res.status(401).send({success: false, reason: "Unauthorized"});
-            return;
-        }
+        if (loggedin)
+            return res.status(401).send({success: false, reason: "Unauthorized."});
 
-        // Get requesting user info
-        getTokenOwner(token).then(
-            function(user) {
-                // Ensure that all necessary data exists
-                if (!req.body.songtitle || typeof (req.body.private) != "boolean" || !req.body.contents) {
-                    res.status(400).send({success: false, reason: "Missing mandatory parameter."});
-                    return;
-                }
 
-                // Create new sheet and populate with data
-                var sheet       = new ChordSheet();
-                sheet.songtitle = sanitize(req.body.songtitle);
-                sheet.private   = Boolean(req.body.private);
-                sheet.owner     = sanitize(user.username);
-                sheet.contents  = sanitize(req.body.contents);
+        // ---- POST-VALIDATION CALLBACKS ---- //
 
-                // Validate user chordsheet
-                var validator = new ChordproValid.ChordproValidatorService();
-                var results = validator.validate(sheet.contents);
+        /** Save the posted sheet. */
+        let save = () => {
 
-                // Stop if errors found
-                if (results.containsErrors()) {
-                    res.status(400).send({success: false,
-                        reason: "Invalid ChordPro format.",
-                        errors: results.errors,
-                        warnings: results.warnings
-                    });
-                    return;
-                }
+            // ---- CREATE AND SAVE SHEET ---- //
 
-                // Save sheet
-                // NOTE: Don't worry about duplicates. User could change text, then change back.
-                var save = () => {
-                    sheet.save(function(err, save){
-                        if (!err) res.send({success: true});
-                        else res.status(500).send({success: false, reason: err});
-                    })};
+            // Create new sheet and populate with data
+            let sheet       = new ChordSheet();
+            sheet.songtitle = sanitize(req.body.songtitle);
+            sheet.private   = Boolean(req.body.private);
+            sheet.owner     = sanitize(user.username);
+            sheet.contents  = sanitize(req.body.contents);
 
-                // TODO: This entire post is UGLY. Fix.
 
-                var checkDuplicate = nextFunc => {
-                    ChordSheet.findOne({owner: user.username, songtitle: sanitize(req.body.songtitle)}, function(err, result) {
+            // Save sheet callback
+            sheet.save().then(
+                result => res.send({success: true}),
+                err => res.status(500).send({success: false, reason: err})
+            );
+        };
 
-                        // Check for errors and songs that already exist under that name
-                        if (err) return res.status(500).send(err);
-                        if (result && result.length != 0) return res.status(409).send({success: false, reason: "Songtitle already in use"});
+        /** Save the posted sheet, and update other sheets if critical control data has changed. */
+        let updateAndSave = () => {
 
-                        // Trigger next function
-                        nextFunc();
-                    });
+            // Check if this is an update that updates control data, and update other docs in the set
+            if (typeof (req.body.oldversion) === "object" && (
+                    sanitize(req.body.oldversion.songtitle) != sanitize(req.body.songtitle) ||
+                    Boolean(req.body.oldversion.private) != Boolean(req.body.private)
+                )) {
+
+                // Construct find and replace objects
+                let findObject = {
+                    owner: user.username,
+                    songtitle: sanitize(req.body.oldversion.songtitle),
+                    private: Boolean(req.body.oldversion.songtitle)
+                };
+                let updateObject = {
+                    songtitle: sanitize(req.body.songtitle),
+                    private: Boolean(req.body.songtitle)
                 };
 
+                // Update objects
+                ChordSheet.update(findObject, updateObject, {multi: true}).then(
+                    result => save(),
+                    err => res.status(500).send({success: false, reason: err})
+                );
+            } else save();
+        };
 
-                // Check if this is an update, and update other docs in the set otherwise
-                // TODO: Break out updates to its own API POST?
-                if (typeof (req.body.oldSongtitle) == "string" || typeof (req.body.oldPrivate) == "boolean") {
-                    var findObject = {owner: user.username};
-                    var updateObject = {};
 
-                    // If the variable exists and differs from the new value, mark add to list of fields to update
-                    if (typeof (req.body.oldSongtitle) == "string" && sanitize(req.body.oldSongtitle) != sanitize(req.body.songtitle)) {
-                        findObject.songtitle = sanitize(req.body.oldSongtitle);
-                        updateObject.songtitle = sanitize(req.body.songtitle);
-                    }
-                    if (typeof (req.body.oldPrivate) == "boolean" && req.body.oldPrivate != req.body.private) {
-                        findObject.private = req.body.oldPrivate;
-                        updateObject.private = req.body.private;
-                    }
+        // ---- VALIDATE INPUT ---- //
 
-                    // Update objects
-                    var updateAndSave = () => {
-                        ChordSheet.update(findObject, updateObject, { multi: true }, function(err, raw) {
-                            if (err) return res.status(500).send({success: false, reason: err});
+        // Ensure that all necessary data exists
+        if (!req.body.songtitle || typeof (req.body.private) != "boolean" || !req.body.contents)
+            return res.status(400).send({success: false, reason: "Missing mandatory parameter."});
 
-                            save();
-                        })
-                    };
+        // Validate user chordsheet
+        let validator = new ChordproValid.ChordproValidatorService();
+        let results = validator.validate(sanitize(req.body.contents));
 
-                    // Make sure user isn't trying to change the name to a songtitle that already exists in their uploads
-                    if (sanitize(req.body.oldSongtitle) != sanitize(req.body.songtitle)) {
-                        ChordSheet.findOne({owner: user.username, songtitle: sanitize(req.body.songtitle)}, function(err, result) {
+        // Stop if errors found
+        if (results.containsErrors())
+            return res.status(400).send({
+                success: false,
+                reason: "Invalid ChordPro format.",
+                errors: results.errors,
+                warnings: results.warnings
+            });
 
-                            // Check for errors and songs that already exist under that name
-                            if (err) return res.status(500).send(err);
-                            if (result && result.length != 0) return res.status(409).send({success: false, reason: "Songtitle already in use"});
+        // Verify that an exact copy of the old version isn't being saved,
+        if (typeof (req.body.oldversion) === "object") {
 
-                            // Check for duplicate, and updateAndSave on success
-                            checkDuplicate(updateAndSave);
-                        });
-                    } else updateAndSave();
-                } else checkDuplicate(save);
-            },
-            err => res.status(401).send({success: false, reason: "Invalid or expired token."})
-        );
+            // Check to make sure all the sub-objects are there (owner doesn't matter, ownership isn't changing.
+            if (typeof (req.body.oldversion.songtitle) !== "string" ||
+                typeof (req.body.oldversion.private) !== "boolean" ||
+                typeof (req.body.oldversion.contents) !== "string")
+                return res.status(400).send({success: false, reason: "Missing parameter from oldVersion."});
+
+            // If the contents are the exact same, don't save
+            if (req.body.oldversion.songtitle === req.body.songtitle &&
+                req.body.oldversion.private === req.body.private &&
+                req.body.oldversion.contents === req.body.contents)
+                return res.send({success: true, reason: "No change detected. Not saving."});
+
+            // Make sure they are not updating the songtitle to one that they already have
+            if (sanitize(req.body.oldversion.songtitle) != sanitize(req.body.songtitle)) {
+                return ChordSheet.findOne({owner: user.username, songtitle: sanitize(req.body.songtitle)}).then(
+                    result => {
+                        // If something was found, reject
+                        if (result.length != 0)
+                            return res.status(409).send({
+                                success: false,
+                                reason: "Songtitle already in use."
+                            });
+
+                        // Data is good, start saving
+                        updateAndSave();
+                    },
+                    err => res.status(500).send(err)
+                );
+            }
+        }
+
+        // Save the posted sheet
+        updateAndSave();
     });
+
+
 
 router.route('/:songtitle')
-    // Get a single collection of chordsheets.
+
+    /** Get a single collection of chordsheets. */
     .get(function(req, res, next) {
-        var songtitle = sanitize(req.params.songtitle);
-        var token = req.signedCookies.token;
-        var matchFunc = matchFuncBase(req,res,next);
+        let matchFunc = matchFuncBase(req,res,next);    // Specialize matchFuncBase
+        let songtitle = sanitize(req.params.songtitle);
+        let loggedin = req.session.loggedin;
+        let user = req.session.user;
 
         // Change behaviour if the user is logged in or not
-        if (token) {
-            getTokenOwner(token)
-                .then(
-                    // Find chord sheets that the user owns or are public, along with stats
-                    user => matchFunc({songtitle: songtitle, $or: [{'owner': user.username}, {'private': false}]}),
-                    err => res.status(500).send(err.message)
-                );
-        } else {
-            // Find public chord sheets
-            matchFunc({songtitle: songtitle, private: false});
-        }
+        if (loggedin)
+            // Find chord sheets that the user owns or are public, along with stats
+            matchFunc({songtitle: songtitle, $or: [{'owner': user.username}, {'private': false}]});
+
+        // Find public chord sheets
+        else matchFunc({songtitle: songtitle, private: false});
     })
 
-    // Delete a chordsheet and all revisions.
+
+    /** Delete a chordsheet and all revisions. */
     .delete(function(req, res, next) {
-        var songtitle = sanitize(req.params.songtitle);
-        var token = req.signedCookies.token;
+        let songtitle = sanitize(req.params.songtitle);
+        let loggedin = req.session.loggedin;
+        let user = req.session.user;
 
         // Chordsheets can't be made if you're not logged in.
-        if (!token) {
-            res.status(401).send({success: false, reason: "Unauthorized"});
-            return;
-        }
+        if (!loggedin)
+            return res.status(401).send({success: false, reason: "Unauthorized."});
 
-        // Get requesting user info
-        getTokenOwner(token).then(
-            function(user) {
-                // Delete matching songs
-                ChordSheet
-                    .find({owner: sanitize(user.username), songtitle: sanitize(songtitle)})
-                    .remove()
-                    .exec(function(err, result) {
-                        // Tell user success
-                        if (!err && result.result.n > 0)
-                            res.send({success: true});
-                        else if (!err && result.result.n == 0)
-                            res.send({success: false, reason: "Chordsheet " + sanitize(songtitle) + " not found or does not belong to you."});
-                        else
-                            res.status(500).send({success: false, reason: err.message});
-                    });
-            },
-            err => res.status(401).send({success: false, reason: "Invalid or expired token."})
-        );
+        // Delete matching songs
+        ChordSheet
+            .find({owner: sanitize(user.username), songtitle: sanitize(songtitle)})
+            .remove()
+            .then(
+                result => {
+                    // If items were deleted
+                    if (result.result.n > 0)
+                        res.send({success: true});
+                    else
+                        res.send({success: false, reason: "Chordsheet not found or does not belong to you."});
+                },
+                err => res.status(500).send({success: false, reason: err})
+            );
     });
+
+
 
 router.route('/:songtitle/:username')
-    //Get a single chordsheet from a single user
+
+    /** Get a single chordsheet from a single user. */
     .get(function(req, res, next) {
-        var username = sanitize(req.params.username);
-        var songtitle = sanitize(req.params.songtitle);
-        var token = req.signedCookies.token;
-        var matchFunc = matchFuncBase(req,res,next);
+        let matchFunc = matchFuncBase(req,res,next);    // Specialize matchFuncBase
+        let username = sanitize(req.params.username);
+        let songtitle = sanitize(req.params.songtitle);
+        let loggedin = req.session.loggedin;
+        let user = req.session.user;
 
         // Change behaviour if the user is logged in or not
-        if (token) {
-            getTokenOwner(token)
-                .then(
-                    // Find chord sheets that the user owns or are public, along with stats
-                    user => matchFunc({owner: username, songtitle: songtitle, $or: [{'owner': user.username}, {'private': false}]}),
-                    err => res.status(500).send(err.message)
-                );
-        } else {
-            // Find public chord sheets
-            matchFunc({owner: username, songtitle: songtitle, private: false});
-        }
+        if (loggedin)
+            // Find chord sheets that the user owns or are public, along with stats
+            matchFunc({
+                owner: username,
+                songtitle: songtitle,
+                $or: [{'owner': user.username}, {'private': false}]
+            });
+
+        // Find public chord sheets
+        else matchFunc({owner: username, songtitle: songtitle, private: false});
     });
 
+
+// ---- EXPORTS ---- //
 module.exports = router;
