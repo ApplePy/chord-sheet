@@ -73,7 +73,7 @@ router.route('/')
         let user = req.session.user;
 
         // Chordsheets can't be made if you're not logged in.
-        if (loggedin)
+        if (!loggedin)
             return res.status(401).send({success: false, reason: "Unauthorized."});
 
 
