@@ -1,18 +1,23 @@
 import { Injectable } from '@angular/core';
 import {Http, Headers} from'@angular/http';
 import { Router, Resolve, ActivatedRouteSnapshot } from "@angular/router";
+import {UserService} from "../user/user.service";
 import 'rxjs/add/operator/map';
 import {Observable} from "rxjs";
 import ChordsheetPackage = APIResponse.ChordsheetPackage;
 import Chordsheet = APIResponse.CsElements.Chordsheet;
 import Metadata = APIResponse.CsElements.Metadata;
 import Results = APIResponse.Results;
-import {UserService} from "../user/user.service";
+
 
 @Injectable()
 export class ChordsheetService implements Resolve<Chordsheet>{
 
+
+  // ---- METHODS ---- //
+
   constructor(private http: Http, private user: UserService, private router: Router) { }
+
 
   /** Pre-load data from songtitle before loading edit page.
    *
@@ -20,8 +25,7 @@ export class ChordsheetService implements Resolve<Chordsheet>{
    * @returns {Observable<Chordsheet>|Observable<{}>}
    */
   resolve(route: ActivatedRouteSnapshot): Observable<Chordsheet>|Observable<{}> {
-    // Leave to back to sanitize since the non-idempotent sanitize function
-    // lives back there, just be careful with it.
+    // Leave to back to sanitize.
     if (route.params) {
       let songtitle = route.params['songtitle'];
       let username = (route.params['username']) ? route.params['username'] : this.user.username;
@@ -41,6 +45,7 @@ export class ChordsheetService implements Resolve<Chordsheet>{
     // Why is the route attached to a bad url?
     return Observable.range(0,1).map(num=>"create");  // TODO: This is just masking a problem. MAKE BETTER.
   }
+
 
   /** Returns all the chordsheets available to the user.
    *
@@ -70,6 +75,7 @@ export class ChordsheetService implements Resolve<Chordsheet>{
       .map(res => postProcess(res.json()));
   }
 
+
   /** Finds the metadata entry corresponding to a doc revision.
    *
    * @param revision      The chordhsheet revision.
@@ -92,6 +98,7 @@ export class ChordsheetService implements Resolve<Chordsheet>{
 
     return metaEntry;
   }
+
 
   /** Get only the latest revision of each chordsheet.
    *
@@ -120,6 +127,7 @@ export class ChordsheetService implements Resolve<Chordsheet>{
     return data.results;
   }
 
+
   /** Get all revisions of each chordsheet, updating the revision number to its relative (e.g. 1,5,9 => 1,2,3).
    *
    * @param data  The JSON object returned from the backend.
@@ -145,6 +153,7 @@ export class ChordsheetService implements Resolve<Chordsheet>{
     return data.results;
   }
 
+
   /** Upload a chordsheet to the backend.
    *
    * @param songtitle     The songtitle for the sheet.
@@ -153,16 +162,14 @@ export class ChordsheetService implements Resolve<Chordsheet>{
    * @param oldContents   For page updates, contains the old state of the page to help the back identify the edited song.
    * @returns {Observable<Results>}
    */
-  uploadChordSheet(songtitle: string, not_public: boolean, contents: string, oldContents?: any): Observable<Results> {
+  uploadChordSheet(songtitle: string, not_public: boolean, contents: string, oldContents?: Chordsheet): Observable<Results> {
     let objData: any = {songtitle: songtitle, "private": not_public, contents: contents};
 
     // Add old data to objData if exists
-    if (oldContents) {
-      objData.oldSongtitle = oldContents.oldSongtitle;
-      objData.oldPrivate = oldContents.oldPrivate;
-      objData.oldContents = oldContents.oldContents;
-    }
+    if (oldContents)
+      objData.oldversion = oldContents;
 
+    // Convert data for transport
     let data = JSON.stringify(objData);
 
     // Let other end know its JSON
@@ -173,6 +180,7 @@ export class ChordsheetService implements Resolve<Chordsheet>{
     return this.http.post("/api/chordsheets", data, {headers: headers})
       .map(res => res.json());
   }
+
 
   /** Deletes a chordsheet.
    *
