@@ -120,7 +120,7 @@ export class UserService {
       return Observable.create(observer => {
         observer.next({success: false, reason: "Provide a valid email for username."});
         observer.complete();
-      });
+      }).first();
 
     // Setup credentials for sending
     let creds = JSON.stringify({username: username, password: password});
