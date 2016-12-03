@@ -9,7 +9,6 @@ const chordpro = require('chordprojs');
 export class ChordDisplayComponent implements OnInit {
 
   @Input() set content(inStr: string) {
-    console.log('test');
     this.renderedContent = chordpro.format(inStr).html;
   }
 
