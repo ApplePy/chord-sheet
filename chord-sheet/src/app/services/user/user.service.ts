@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers } from'@angular/http';
-import {Router, ActivatedRoute, UrlSegment} from "@angular/router";
+import {Router} from "@angular/router";
 import {Observable} from "rxjs";
 import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/of';
@@ -43,7 +43,7 @@ export class UserService {
 
   // ---- METHODS ---- //
 
-  constructor(private http: Http, private router: Router, private activatedRoute: ActivatedRoute) { }
+  constructor(private http: Http, private router: Router) { }
 
 
   /** Make the HTTP requests for credentials with pre-serialized data.
@@ -164,9 +164,7 @@ export class UserService {
       this._lastname = "";
 
       // Redirect to current page to trigger route-guard
-      this.activatedRoute.url.subscribe(
-        (url: UrlSegment[])=>{this.router.navigate([url.toString(),])},
-        ()=>this.router.navigate(['/']));
+      this.router.navigate(['/']);
     };
 
     // Send request to backend to delete token
