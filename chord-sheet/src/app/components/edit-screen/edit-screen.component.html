@@ -19,7 +19,7 @@
   <!-- Upload file capability -->
   <div class="field">
     <label>Upload ChordPro Track:</label>
-    <input type="file" (change)="fileUpload($event)"/>
+    <input type="file" accept="text/plain" (change)="fileUpload($event)"/>
   </div>
 
   <h3 *ngIf="file_contents.length == 0">OR</h3>

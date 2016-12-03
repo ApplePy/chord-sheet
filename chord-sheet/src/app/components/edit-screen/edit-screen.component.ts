@@ -85,6 +85,13 @@ export class EditScreenComponent implements OnInit {
       let file = files[0];
       let reader = new FileReader();
 
+      if (file.type != "text/plain") {
+        this.error.setMessage("Invalid File", "The supplied file is not plain text.");
+        this.file_contents = "";
+        target.value = "";
+        return;
+      }
+
       // Check file limits
       if(file.size >= Math.pow(1024, 2)) {
         this.file_contents = "";
