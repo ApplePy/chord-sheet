@@ -2,28 +2,44 @@
  * Created by darryl on 2016-11-23.
  */
 
+// ---- REQUIRES ---- //
+
 // Handling the chord_api
-var express     = require('express');
-var router      = express.Router({ mergeParams: true });
-var bcrypt      = require('bcrypt');
-var mongoose    = require('mongoose');
+let express     = require('express');
+let router      = express.Router({ mergeParams: true });
+let bcrypt      = require('bcrypt');
+let mongoose    = require('mongoose');
 
-// Setup mongo connection
-mongoose.Promise = Promise;     // Just use JavaScript promises.
-module.exports.mongoose = mongoose.connect('mongodb://localhost:27017/chordpro'); // connect to our database
 
-// Set up exported functions that will be used by sub-routers
-// htmlEscape Source: http://stackoverflow.com/questions/1219860/html-encoding-in-javascript-jquery
+// ---- EXPORTS ---- //
+
+/** Sets up sanitize function that will be used by sub-routers (MUST occur before setup)
+ *
+ * @param str          The string to be sanitized
+ * @returns {string}    The sanitized string
+ */
 module.exports.sanitize = function (str) {
+    // htmlEscape Source: http://stackoverflow.com/questions/1219860/html-encoding-in-javascript-jquery
     if (typeof str != "string") return str;
     return str
-        .replace(/&/g, '&amp;')     // TODO: this function is not idempotent because of this line. Fix.
+        .replace(/&(?!amp;)/g, '&amp;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/\//g, '&#x2F;');
 };
+
+
+// ---- SETUP ---- //
+
+// Setup mongo connection
+mongoose.Promise = Promise;     // Just use JavaScript promises.
+module.exports.mongoose = mongoose.connect('mongodb://localhost:27017/chordpro'); // connect to our database
+
+// Import sub-routers
+let user_api    = require('./routes/users').router;
+let chord_api   = require('./routes/chordsheets');
 
 // Set up no-caching middleware
 router.use(function (req, res, next) {
@@ -32,10 +48,6 @@ router.use(function (req, res, next) {
     res.header('Pragma', 'no-cache');
     next();
 });
-
-// Import sub-routers
-var user_api    = require('./routes/users').router;
-var chord_api   = require('./routes/chordsheets');
 
 // Wire up sub-routers
 router.use('/users', user_api);
