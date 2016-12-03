@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Created by darryl on 2016-11-24.
  */
@@ -24,6 +25,9 @@ let ChordSheetSchema = new Schema({
     date: {type: Date, default: Date.now}
 });
 
-
 ChordSheetSchema.plugin(autoIncrement.plugin, {model: 'ChordSheet', field: 'revision'});
+
+
+// ---- EXPORTS ---- //
+
 module.exports = mongoose.model('ChordSheet', ChordSheetSchema);

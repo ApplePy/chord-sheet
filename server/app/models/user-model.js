@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Created by darryl on 2016-11-24.
  */
@@ -17,5 +18,8 @@ let UserSchema   = new Schema({
     lastname: String,
     password: String
 });
+
+
+// ---- EXPORTS ---- //
 
 module.exports = mongoose.model('User', UserSchema);
