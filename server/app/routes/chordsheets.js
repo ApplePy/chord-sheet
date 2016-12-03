@@ -154,7 +154,7 @@ router.route('/')
             if (typeof (req.body.oldversion.songtitle) !== "string" ||
                 typeof (req.body.oldversion.private) !== "boolean" ||
                 typeof (req.body.oldversion.contents) !== "string")
-                return res.status(400).send({success: false, reason: "Missing parameter from oldVersion."});
+                return res.status(400).send({success: false, reason: "Missing parameter from oldversion."});
 
             // If the contents are the exact same, don't save
             if (req.body.oldversion.songtitle === req.body.songtitle &&

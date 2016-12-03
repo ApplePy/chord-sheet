@@ -163,7 +163,7 @@ export class EditScreenComponent implements OnInit {
     let contents = (this.file_contents.length > 0) ? this.file_contents : this.manual_input;
     let old_info = null;
     if (this._initial_title && this._initial_manual_input)
-      old_info = {oldSongtitle: this._initial_title, oldPrivate: this._initial_private, oldContents: this._initial_manual_input};
+      old_info = {songtitle: this._initial_title, private: this._initial_private, contents: this._initial_manual_input};
 
     if (this.validate(contents)) {
       // No errors, upload
