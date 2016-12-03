@@ -44,7 +44,7 @@ export class EditScreenComponent implements OnInit {
           // Check for bad values (null for create page, other object for results, undefined for denied access)
           if (res.data !== "null" && res.data) {
             // Get chordsheet data from back into place and reset form
-            let data = <Chordsheet> res.data;
+            let data = <Chordsheet> res.data[0];
             this._initial_title = data.songtitle;
             this._initial_manual_input = data.contents;
             this._initial_private = data.private;

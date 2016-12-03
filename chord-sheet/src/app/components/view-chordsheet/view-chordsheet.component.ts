@@ -4,6 +4,7 @@ import {ActivatedRoute, Router, UrlSegment} from "@angular/router";
 import Chordsheet = APIResponse.CsElements.Chordsheet;
 import {UserService} from "../../services/user/user.service";
 import {ModalComponent} from "../common/modal/modal.component";
+import {Observable} from "rxjs";
 require('datejs');
 
 @Component({
@@ -79,8 +80,11 @@ export class ViewChordsheetComponent implements OnInit {
   restoreRevision(version: Chordsheet) {
     // Navigate to same page to reload content (lazy)
     this.chordservice.uploadChordSheet(version.songtitle, version.private, version.contents)
-      .subscribe(()=>{this.route.url.subscribe(
-        (url: UrlSegment[])=>{this.router.navigate([url.toString(),])},
-        ()=>this.router.navigate(['/']));})
+      .subscribe(()=>{});
+
+    // Reconfigure the front-end
+    this.previousRevisions = [this.chordsheet].concat(this.previousRevisions);
+    this.chordsheet = version;
+    this.chordsheet.date = new Date(Date.now()).toString();
   }
 }
