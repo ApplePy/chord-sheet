@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ChordsheetService} from "../../services/chordsheet/chordsheet.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Router, UrlSegment} from "@angular/router";
 import Chordsheet = APIResponse.CsElements.Chordsheet;
 import {UserService} from "../../services/user/user.service";
 import {ModalComponent} from "../common/modal/modal.component";
@@ -16,6 +16,7 @@ export class ViewChordsheetComponent implements OnInit {
   @ViewChild(ModalComponent) modal: ModalComponent;
 
   chordsheet: Chordsheet;
+  previousRevisions: Chordsheet[];
 
   constructor(private sender: ChordsheetService,
               private route: ActivatedRoute,
@@ -27,10 +28,12 @@ export class ViewChordsheetComponent implements OnInit {
     // TODO: Fix the copy-pasta
     this.route.data
       .subscribe(
-        (res: {data: Chordsheet | string | undefined }) => {
+        (res: {data: Chordsheet[] | string | undefined }) => {
           // Check for bad values
           if (res.data && res.data != "create") {
-            this.chordsheet = <Chordsheet> res.data;
+            this.chordsheet = <Chordsheet>((<Chordsheet[]>res.data)[0]);
+            (<Chordsheet[]>res.data).splice(0,1); // Splice out first entry
+            this.previousRevisions = <Chordsheet[]>res.data;
           } else if (res.data == "create") {
             // Its create, do nothing TODO: Make this better.
           }
@@ -71,5 +74,13 @@ export class ViewChordsheetComponent implements OnInit {
    */
   convertDate(inDate: string): string {
     return (<any>Date).parse(inDate).toString("dd MMMM yyyy, h:mm:sstt");
+  }
+
+  restoreRevision(version: Chordsheet) {
+    // Navigate to same page to reload content (lazy)
+    this.chordservice.uploadChordSheet(version.songtitle, version.private, version.contents)
+      .subscribe(()=>{this.route.url.subscribe(
+        (url: UrlSegment[])=>{this.router.navigate([url.toString(),])},
+        ()=>this.router.navigate(['/']));})
   }
 }

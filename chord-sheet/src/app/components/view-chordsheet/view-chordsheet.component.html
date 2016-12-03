@@ -22,4 +22,12 @@
   </button>
 </div>
 
+<div class="ui basic segment" *ngIf="user.isLoggedIn() && chordsheet.owner == user.username">
+  <h3>Other Versions</h3>
+  <div class="ui raised segment" *ngFor="let version of previousRevisions">
+    <app-chord-display [content]="version.contents"></app-chord-display>
+    <button class="ui button" (click)="restoreRevision(version)">Restore</button>
+  </div>
+</div>
+
 <app-modal (response)="modalResponse($event)"></app-modal>
