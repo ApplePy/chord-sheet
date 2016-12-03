@@ -34,7 +34,7 @@ let matchFuncBase = function (req, res, next) {
             }
         ]).then(stats => {
             // Find chord sheets
-            ChordSheet.aggregate([{$match: matchParam}])
+            ChordSheet.aggregate([{$match: matchParam}, {$sort: {date: -1}}])
                 .then(
                     // Send stats and results
                     results => res.send({metadata: stats, results: results}),
