@@ -33,7 +33,7 @@ export class ChordsheetService implements Resolve<Chordsheet>{
       // Resolver was called on the proper routes
       if (songtitle)
         // Get chordsheet and return them, or catch the error and go to the main page
-        return this.retrieveChordSheets(false, songtitle, username);  // On access to disallowed resource, it returns undefined.
+        return this.retrieveChordSheets(false, songtitle, username);  // On access to disallowed resource, it returns [].
     }
 
     // Why is the route attached to a bad url?
