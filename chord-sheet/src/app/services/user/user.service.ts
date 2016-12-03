@@ -97,6 +97,10 @@ export class UserService {
         observer.complete();
       });
 
+    // Make sure valid email
+    if (!this.validateEmail(username))
+      return Observable.create(observer=>{observer.next({success: false, reason: "Provide a valid email for username."}); observer.complete();});
+
     // Setup credentials for sending
     let creds = JSON.stringify({username: username, password: password});
 
@@ -134,9 +138,7 @@ export class UserService {
 
   }
 
-  /** Logs out the user.
-   *
-   */
+  /** Logs out the user. */
   logout() {
     let logoutFunc = ()=>{
       this.loggedIn = false;
@@ -168,6 +170,10 @@ export class UserService {
         observer.next({success: false, reason: "Requester is already logged in."});
         observer.complete();
       });
+
+    // Make sure valid email
+    if (!this.validateEmail(username))
+      return Observable.create(observer=>{observer.next({success: false, reason: "Provide a valid email for username."}); observer.complete();});
 
     // Setup credentials for sending
     let creds = JSON.stringify({firstname: firstname, lastname: lastname, username: username, password: password});
@@ -202,5 +208,9 @@ export class UserService {
     });
 
     return this.loggedInChangeObserver;
+  }
+
+  validateEmail(inStr: string): boolean {
+    return /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/.test(inStr);
   }
 }

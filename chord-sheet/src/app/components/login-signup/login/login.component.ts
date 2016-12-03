@@ -13,6 +13,8 @@ export class LoginComponent implements OnInit {
 
   // State
   invalid: boolean = false;
+  readonly initMsg: string = "The supplied username or password was incorrect.";
+  msg: string = "The supplied username or password was incorrect.";
 
   // Data
   username: string;
@@ -29,8 +31,11 @@ export class LoginComponent implements OnInit {
     this.invalid = false;
     this.user.login(this.username, this.password).subscribe(result => {
       if (result.success == true) this.location.back();
-      else this.invalid = true;
-    }, err => this.invalid = true);
+      else {
+        this.invalid = true;
+        this.msg = (result.reason) ? result.reason : this.initMsg;
+      }
+    }, err => {this.invalid = true; this.msg = (err.reason) ? err.reason : this.initMsg;});
     $event.preventDefault();
   }
 

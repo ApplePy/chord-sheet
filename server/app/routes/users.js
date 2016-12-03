@@ -41,6 +41,9 @@ router.post("/login", function(req, res, next) {
     // Login by user/pass
     else if (username && password) {
 
+        // Emails only
+        if (!validateEmail(username)) return res.send({success: false, reason: "Valid email address for username required."});
+
         var compareFunc = function(users) {
             // Make sure a user was returned
             if(users.length == 0) badToken();
@@ -104,6 +107,9 @@ router.post('/', function(req, res, next) {
             });
         }
     };
+
+    // Emails only
+    if (!validateEmail(req.body.username)) return res.send({success: false, reason: "Valid email address for username required."});
 
     // Create user and set up initial info
     var user = new User();
@@ -273,6 +279,11 @@ var getRandomInt = function () {
     min = 0;
     max = 9999999999;
     return Math.floor(Math.random() * (max - min)) + min;
+};
+
+
+var validateEmail = function(inStr) {
+    return /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/.test(inStr);
 };
 
 module.exports.router = router;
