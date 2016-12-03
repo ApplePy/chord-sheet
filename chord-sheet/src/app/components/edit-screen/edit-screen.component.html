@@ -46,7 +46,7 @@
 
         <!-- Output preview -->
         <div class="right floated column">
-          <app-chord-display [content]="chordbox.value"></app-chord-display>
+          <app-chord-display [content]="sanitize(chordbox.value)"></app-chord-display>
         </div>
 
       </div>

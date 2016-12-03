@@ -22,7 +22,7 @@
   </button>
 </div>
 
-<div class="ui basic segment" *ngIf="user.isLoggedIn() && chordsheet.owner == user.username">
+<div class="ui basic segment" *ngIf="user.isLoggedIn() && chordsheet.owner == user.username && previousRevisions.length > 0">
   <h3>Other Versions</h3>
   <div class="ui raised segment" *ngFor="let version of previousRevisions">
     <p><em>Saved: {{convertDate(version.date)}}</em></p>

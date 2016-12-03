@@ -109,7 +109,7 @@ export class EditScreenComponent implements OnInit {
     this.clearMessages();
     this.file_contents = '';
     this.title = this._initial_title;
-    this.manual_input = this._initial_manual_input;
+    this.manual_input = this.unsanitize(this._initial_manual_input);  // Unsanitize so users don't see the HTML escaping
     this.is_private = this._initial_private;
   }
 
@@ -172,5 +172,37 @@ export class EditScreenComponent implements OnInit {
         else this.error.setMessage("Upload Error", "The following message was returned from the server: " + res.reason);
       }, err => this.error.setMessage("Upload Error", "The following message was returned from the server: " + err.json().reason));
     }
+  }
+
+
+  /** Removes all the HTML escaping from text, for proper display in textarea.
+   *
+   * @param inStr       The string to unsanitize.
+   * @returns {string}
+   */
+  unsanitize(inStr: string): string {
+    return inStr
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, '\'')
+      .replace(/&lt;/g, ',')
+      .replace(/&gt;/g, '.')
+      .replace(/&#x2F;/g, '\/');
+  }
+
+
+  /** Escapes all unsafe characters from text.
+   *
+   * @param str         The string to sanitize.
+   * @returns {string}
+   */
+  sanitize(str: string): string {
+    return str
+      .replace(/&(?!amp;)/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\//g, '&#x2F;');
   }
 }
