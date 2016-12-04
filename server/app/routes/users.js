@@ -190,7 +190,12 @@ router.route('/:username')
 
         let username = sanitize(req.params.username);
 
+        // You must be logged in
+        if (!req.session.loggedin)
+            return res.status(401).send({success: false, reason: "Unauthorized."});
+
         // Prevent deleting someone else's account.
+        console.log(req.session);
         if (req.session.user.username != username && !req.session.user.admin)
             return res.status(403).send({success: false, reason: "You cannot delete another user."});
 
@@ -213,10 +218,6 @@ router.route('/:username')
                             () => {
                                 ChordSheet.find({owner: username}).remove().then(
                                     () => {
-
-                                        // Destroy session
-                                        req.session.destroy();
-
                                         // Tell user success
                                         res.send({success: true});
                                     },
@@ -243,7 +244,7 @@ router.route('/:username')
  * @returns {Promise|Query} Returns Promise, or Query when returnQueryObj == true
  */
 let getUserInfo = function (username, addpass, returnQueryObj) {
-    let selectStmt = (addpass) ? "username firstname lastname password" : "username firstname lastname";
+    let selectStmt = (addpass) ? "username firstname lastname password admin" : "username firstname lastname admin";
 
     let query = User.find({username: username})
         .limit(1)
