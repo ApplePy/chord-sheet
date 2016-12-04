@@ -25,6 +25,7 @@ import {RouteGuardService} from "./services/guards/route-guard/route-guard.servi
 import { ViewChordsheetComponent } from './components/view-chordsheet/view-chordsheet.component';
 import { DmcaComponent } from './components/dmca/dmca.component';
 import { DmcaPolicyComponent } from './components/dmca/dmca-policy/dmca-policy.component';
+import {AdminGuardService} from "./services/guards/admin-guard/admin-guard.service";
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { DmcaPolicyComponent } from './components/dmca/dmca-policy/dmca-policy.c
     AppRoutingModule
   ],
   providers: [
+    AdminGuardService,
     RouteGuardService,
     ChordsheetService,
     UserService,

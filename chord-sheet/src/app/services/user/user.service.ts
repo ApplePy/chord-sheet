@@ -123,22 +123,24 @@ export class UserService {
 
   /** Returns the current login state of the user. For binding on the template.
    *
+   * @param asAdmin     Specifies if the user must be an admin as well. Defaults to false.
    * @returns {boolean}
    */
-  isLoggedIn(): boolean {
-    return this.loggedIn;
+  isLoggedIn(asAdmin: boolean = false): boolean {
+    return this.loggedIn && (this.admin || !asAdmin);
   }
 
 
   /** Returns the current login state of the user. If there is a login request in progress, it will wrap the request and return.
    *
+   * @param asAdmin     Specifies if the user must be an admin as well. Defaults to false.
    * @returns {Observable<boolean>}
    */
-  isLoggedInAsync(): Observable<boolean> {
+  isLoggedInAsync(asAdmin: boolean = false): Observable<boolean> {
 
     // If a request is in progress, wrap and send that
     if (this.requestInProgress)
-      return this.requestInProgress.map((result: Results) => result.success);
+      return this.requestInProgress.map((result: Login) => result.success  && (result.admin || !asAdmin));
 
     // No request in-flight, send the existing results.
     return Observable.of(this.loggedIn);

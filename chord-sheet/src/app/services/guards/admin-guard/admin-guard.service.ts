@@ -4,12 +4,12 @@ import { UserService } from "../../user/user.service";
 
 
 @Injectable()
-export class RouteGuardService implements CanActivate, CanActivateChild {
+export class AdminGuardService implements CanActivate, CanActivateChild {
 
   constructor(private user: UserService, private router: Router) { }
 
   canActivate() {
-    return this.user.isLoggedInAsync().map(result=>{if (!result) this.router.navigate(['/']); return result;})
+    return this.user.isLoggedInAsync(true).map(result=>{if (!result) this.router.navigate(['/']); return result;})
   }
 
   canActivateChild() {
