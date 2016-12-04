@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { ResponsiveModule } from 'ng2-responsive';
 
 import { AppComponent } from './app.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -21,11 +22,12 @@ import { ErrorMessageComponent } from './components/common/error-message/error-m
 import { ModalComponent } from './components/common/modal/modal.component';
 import { SignupComponent } from './components/login-signup/signup/signup.component';
 import { LoginSignupComponent } from './components/login-signup/login-signup.component';
-import {RouteGuardService} from "./services/guards/route-guard/route-guard.service";
+import { RouteGuardService } from "./services/guards/route-guard/route-guard.service";
 import { ViewChordsheetComponent } from './components/view-chordsheet/view-chordsheet.component';
 import { DmcaComponent } from './components/dmca/dmca.component';
 import { DmcaPolicyComponent } from './components/dmca/dmca-policy/dmca-policy.component';
-import {AdminGuardService} from "./services/guards/admin-guard/admin-guard.service";
+import { AdminGuardService } from "./services/guards/admin-guard/admin-guard.service";
+
 
 @NgModule({
   declarations: [
@@ -48,6 +50,7 @@ import {AdminGuardService} from "./services/guards/admin-guard/admin-guard.servi
     DmcaPolicyComponent
   ],
   imports: [
+    ResponsiveModule,
     BrowserModule,
     FormsModule,
     HttpModule,

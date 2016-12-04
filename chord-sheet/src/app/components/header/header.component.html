@@ -4,12 +4,25 @@
     <!-- Left Menu -->
     <div class="left menu">
       <a class="header item" [routerLink]="['/']">Home</a>
-      <a class="item" *ngIf="user.isLoggedIn()" [routerLink]="['/create']">Create Chord Sheet</a>
+      <div *hideItBootstrap="['xs']">
+        <a class="item" *ngIf="user.isLoggedIn()" [routerLink]="['/create']">Create Chord Sheet</a>
+      </div>
+      <div *xs>
+        <a class="item" *ngIf="user.isLoggedIn()" [routerLink]="['/create']">Create</a>
+      </div>
+      <div *hideItBootstrap="['xs']">
+        <a class="item" *ngIf="user.isLoggedIn(true)" [routerLink]="['/dmca/admin']">DMCA Control Panel</a>
+      </div>
+      <div *xs>
+        <a class="item" *ngIf="user.isLoggedIn(true)" [routerLink]="['/dmca/admin']">DMCA</a>
+      </div>
     </div>
 
     <!-- Right Menu -->
     <div class="right menu">
-      <span class="item" *ngIf="user.isLoggedIn()"><i class="user icon"></i>Welcome, {{user.firstname}} {{user.lastname}}</span>
+      <div *hideItBootstrap="['xs']">
+        <span class="item" *ngIf="user.isLoggedIn()"><i class="user icon"></i>Welcome, {{user.firstname}} {{user.lastname}}</span>
+      </div>
       <div [ngSwitch]="user.isLoggedIn()">
         <a class="item" *ngSwitchCase="true" (click)="user.logout()">Logout</a>
         <a class="item" *ngSwitchCase="false" [routerLink]="['/login']">Login/Sign Up</a>
