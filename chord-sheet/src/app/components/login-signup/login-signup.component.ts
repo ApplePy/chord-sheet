@@ -7,9 +7,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginSignupComponent implements OnInit {
 
+  private display: boolean = false;
+
   constructor() { }
 
   ngOnInit() {
+  }
+
+  showSignUp() {
+    this.display = true;
   }
 
 }

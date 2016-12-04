@@ -9,7 +9,14 @@
 <div class="ui horizontal section divider"><strong>OR</strong></div>
 
 <!-- Sign Up Form -->
-<div class="ui segment">
-  <label><strong>Sign Up</strong></label>
-  <app-signup></app-signup>
+<div class="ui segment" [ngSwitch]="display">
+
+  <div class="ui center aligned basic fitted segment" *ngSwitchCase="false">
+    <button class="ui button positive" (click)="showSignUp()">Create New Account</button>
+  </div>
+
+  <div *ngSwitchCase="true">
+    <label><strong>Sign Up</strong></label>
+    <app-signup></app-signup>
+  </div>
 </div>
