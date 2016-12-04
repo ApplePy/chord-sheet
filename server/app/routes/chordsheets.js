@@ -285,5 +285,33 @@ router.route('/:songtitle/:username')
     });
 
 
+
+router.route('/:songtitle/:username/infringing/:state')
+
+    /** Get infringement state. */
+    .get(function(req, res, next) {
+       res.redirect('../..');
+    })
+
+    /** Set infringement state. */
+    .put(function(req, res, next) {
+        // Function only accessible to the administrator
+        if (!req.session.loggedin || !req.session.user.admin)
+            return res.status(401).send({success: false, reason: "Unauthorized."});
+
+        // Sanitize everything
+        let songtitle   = sanitize(req.params.songtitle);
+        let username    = sanitize(req.params.username);
+        let state       = Boolean(req.params.state.toString().toLowerCase() === "true");
+
+        // Update the matching sheets with the infringement state.
+        ChordSheet.update({owner: username, songtitle: songtitle}, {$set: {infringing: state}})
+            .then(
+                result => res.send({success: true}),
+                err => res.status(500).send({success: false, reason: err})
+            );
+    });
+
+
 // ---- EXPORTS ---- //
 module.exports = router;
