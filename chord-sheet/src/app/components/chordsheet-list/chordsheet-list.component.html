@@ -17,7 +17,9 @@
 
           <!-- Sheet Info -->
           <div class="column">
-            <p><strong>{{entry.result.songtitle}}</strong></p>
+            <a [routerLink]="['/view/' + entry.result.songtitle + '/' + entry.result.owner]">
+              <strong>{{entry.result.songtitle}}</strong>
+            </a>
             <p><em>By: {{entry.result.owner}}</em></p>
           </div>
 
@@ -41,8 +43,8 @@
         </div>
 
         <!-- Sheet Controls - Mobile -->
-        <div class="row">
-          <div class="mobile only column">
+        <div class="mobile only row">
+          <div class="column">
             <div class="ui buttons">
               <!-- Secondary flips to counter the click event trigger on the parent div -->
               <button class="ui grey button"
