@@ -11,6 +11,7 @@ import {ChordsheetService} from "./services/chordsheet/chordsheet.service";
 import {ViewChordsheetComponent} from "./components/view-chordsheet/view-chordsheet.component";
 import {DmcaComponent} from "./components/dmca/dmca.component";
 import {DmcaPolicyComponent} from "./components/dmca/dmca-policy/dmca-policy.component";
+import {ChordDisplayComponent} from "./components/chord-display/chord-display.component";
 
 const routes: Routes = [
   { path: "login", component: LoginSignupComponent },
@@ -18,6 +19,7 @@ const routes: Routes = [
   { path: "create", component: EditScreenComponent, canActivate: [RouteGuardService], resolve: {data: ChordsheetService} },
   { path: "edit/:songtitle", component: EditScreenComponent, canActivate: [RouteGuardService], resolve: {data: ChordsheetService} },
   { path: "view/:songtitle/:username", component: ViewChordsheetComponent, resolve: {data: ChordsheetService} },
+  { path: "view/:songtitle/:username/full", component: ChordDisplayComponent, resolve: {data: ChordsheetService} },
   { path: "dmca", component: DmcaComponent,
     children: [
       {path: "", redirectTo: 'policy'},

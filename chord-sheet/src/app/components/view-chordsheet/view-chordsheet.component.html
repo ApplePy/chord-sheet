@@ -11,11 +11,13 @@
   <app-chord-display [content]="chordsheet.contents"></app-chord-display>
 </div>
 
+
+<button class="ui button" name="FullView" [routerLink]="['/view', chordsheet.songtitle, chordsheet.owner, 'full']">
+  <i class="search icon"></i>
+  Fullscreen
+</button>
+
 <div *ngIf="user.isLoggedIn() && chordsheet.owner == user.username">
-  <button class="ui button" name="FullView" [routerLink]="['/view', chordsheet.songtitle, chordsheet.owner, 'full']">
-    <i class="search icon"></i>
-    Fullscreen
-  </button>
   <button class="ui button" name="Edit" [routerLink]="['/edit', chordsheet.songtitle]">
     <i class="write square icon"></i>
     Edit
