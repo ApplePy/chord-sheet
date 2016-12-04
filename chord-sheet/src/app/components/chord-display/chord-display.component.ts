@@ -1,7 +1,8 @@
 import {Component, OnInit, Input} from '@angular/core';
+import {Location} from '@angular/common';
+import {Router, ActivatedRoute, UrlSegment} from "@angular/router";
 import {FullscreenService} from "../../services/fullscreen/fullscreen.service";
 import Chordsheet = APIResponse.CsElements.Chordsheet;
-import {Router, ActivatedRoute, UrlSegment} from "@angular/router";
 const chordpro = require('chordprojs');
 
 @Component({
@@ -22,7 +23,8 @@ export class ChordDisplayComponent implements OnInit {
 
   constructor(private fullscreenService: FullscreenService,
               private route: ActivatedRoute,
-              private router: Router) { }
+              private router: Router,
+              private location: Location) { }
 
 
   /** If initiated as a full view, get data and trigger fullscreen. */
@@ -64,6 +66,10 @@ export class ChordDisplayComponent implements OnInit {
     // Notify leaving fullscreen
     if (this.fullscreen)
       this.fullscreenService.notify(false);
+  }
+
+  goBack() {
+    this.location.back();
   }
 
 }
