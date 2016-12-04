@@ -12,6 +12,7 @@ import {ViewChordsheetComponent} from "./components/view-chordsheet/view-chordsh
 import {DmcaComponent} from "./components/dmca/dmca.component";
 import {DmcaPolicyComponent} from "./components/dmca/dmca-policy/dmca-policy.component";
 import {ChordDisplayComponent} from "./components/chord-display/chord-display.component";
+import {AdminGuardService} from "./services/guards/admin-guard/admin-guard.service";
 
 const routes: Routes = [
   { path: "login", component: LoginSignupComponent },
@@ -22,8 +23,15 @@ const routes: Routes = [
   { path: "view/:songtitle/:username/full", component: ChordDisplayComponent, resolve: {data: ChordsheetService} },
   { path: "dmca", component: DmcaComponent,
     children: [
-      {path: "", redirectTo: 'policy'},
-      {path: "policy", component: DmcaPolicyComponent}
+      { path: "", redirectTo: 'policy' },
+      { path: "policy", component: DmcaPolicyComponent },
+      { path: "admin", canActivateChild: [AdminGuardService],
+        children: [
+          { path: "", component: NotFoundComponent },
+          { path: "pending_requests", component: NotFoundComponent },
+          { path: "notices", component: NotFoundComponent },
+          { path: "disputes", component: NotFoundComponent }
+        ] }
     ]},
   { path: "", pathMatch: 'full', component: MainScreenComponent },
   { path: "404", component: NotFoundComponent },
