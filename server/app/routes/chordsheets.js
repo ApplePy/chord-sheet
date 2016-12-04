@@ -76,6 +76,16 @@ router.route('/')
         if (!loggedin)
             return res.status(401).send({success: false, reason: "Unauthorized."});
 
+        // Sanitize right at the beginning
+        req.body.songtitle              = sanitize(req.body.songtitle);
+        req.body.contents               = sanitize(req.body.contents);
+        req.body.private                = Boolean(req.body.private);
+        if (req.body.oldversion) {
+            req.body.oldversion.songtitle = sanitize(req.body.oldversion.songtitle);
+            req.body.oldversion.contents = sanitize(req.body.oldversion.contents);
+            req.body.oldversion.private = Boolean(req.body.oldversion.private);
+        }
+
 
         // ---- POST-VALIDATION CALLBACKS ---- //
 
@@ -86,10 +96,10 @@ router.route('/')
 
             // Create new sheet and populate with data
             let sheet       = new ChordSheet();
-            sheet.songtitle = sanitize(req.body.songtitle);
-            sheet.private   = Boolean(req.body.private);
-            sheet.owner     = sanitize(user.username);
-            sheet.contents  = sanitize(req.body.contents);
+            sheet.songtitle = req.body.songtitle;
+            sheet.private   = req.body.private;
+            sheet.owner     = user.username;
+            sheet.contents  = req.body.contents;
 
 
             // Save sheet callback
@@ -102,29 +112,36 @@ router.route('/')
         /** Save the posted sheet, and update other sheets if critical control data has changed. */
         let updateAndSave = () => {
 
+            let beforeSave = () => {
+                // Check to make sure privacy isn't the only thing being saved
+                if (req.body.oldversion.contents === req.body.contents)
+                    return res.send({success: true, reason: "Only privacy or title change detected. Not saving."});
+                save();
+            };
+
             // Check if this is an update that updates control data, and update other docs in the set
             if (typeof (req.body.oldversion) === "object" && (
-                    sanitize(req.body.oldversion.songtitle) != sanitize(req.body.songtitle) ||
-                    Boolean(req.body.oldversion.private) != Boolean(req.body.private)
+                    req.body.oldversion.songtitle != req.body.songtitle ||
+                    req.body.oldversion.private != req.body.private
                 )) {
 
                 // Construct find and replace objects
                 let findObject = {
                     owner: user.username,
-                    songtitle: sanitize(req.body.oldversion.songtitle),
-                    private: Boolean(req.body.oldversion.songtitle)
+                    songtitle: req.body.oldversion.songtitle
                 };
                 let updateObject = {
-                    songtitle: sanitize(req.body.songtitle),
-                    private: Boolean(req.body.songtitle)
+                    owner: user.username,
+                    songtitle: req.body.songtitle,
+                    private: req.body.private
                 };
 
                 // Update objects
                 ChordSheet.update(findObject, updateObject, {multi: true}).then(
-                    result => save(),
+                    result => beforeSave(),
                     err => res.status(500).send({success: false, reason: err})
                 );
-            } else save();
+            } else beforeSave();
         };
 
 
@@ -136,7 +153,7 @@ router.route('/')
 
         // Validate user chordsheet
         let validator = new ChordproValid.ChordproValidatorService();
-        let results = validator.validate(sanitize(req.body.contents));
+        let results = validator.validate(req.body.contents);
 
         // Stop if errors found
         if (results.containsErrors())
@@ -163,11 +180,11 @@ router.route('/')
                 return res.send({success: true, reason: "No change detected. Not saving."});
 
             // Make sure they are not updating the songtitle to one that they already have
-            if (sanitize(req.body.oldversion.songtitle) != sanitize(req.body.songtitle)) {
-                return ChordSheet.findOne({owner: user.username, songtitle: sanitize(req.body.songtitle)}).then(
+            if (req.body.oldversion.songtitle != req.body.songtitle) {
+                return ChordSheet.findOne({owner: user.username, songtitle: req.body.songtitle}).then(
                     result => {
                         // If something was found, reject
-                        if (result.length != 0)
+                        if (result != null)
                             return res.status(409).send({
                                 success: false,
                                 reason: "Songtitle already in use."
@@ -179,10 +196,12 @@ router.route('/')
                     err => res.status(500).send(err)
                 );
             }
+            // Save posted sheet after update
+            else updateAndSave()
         }
 
         // Save the posted sheet
-        updateAndSave();
+        save();
     });
 
 
@@ -254,7 +273,7 @@ router.route('/:songtitle/:username')
             });
 
         // Find public chord sheets
-        else matchFunc({owner: username, songtitle: songtitle, private: false});
+        else matchFunc({owner: username, songtitle: songtitle, 'private': false});
     });
 
 

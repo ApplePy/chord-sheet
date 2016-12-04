@@ -208,7 +208,7 @@ export class EditScreenComponent implements OnInit {
    */
   sanitize(str: string): string {
     return str
-      .replace(/&(?!amp;)/g, '&amp;')
+      .replace(/&(?![A-Za-z0-9#]{2,4};)/g, '&amp;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;')
       .replace(/</g, '&lt;')

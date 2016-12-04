@@ -23,7 +23,7 @@ module.exports.sanitize = function (str) {
     // htmlEscape Source: http://stackoverflow.com/questions/1219860/html-encoding-in-javascript-jquery
     if (typeof str != "string") return str;
     return str
-        .replace(/&(?!amp;)/g, '&amp;')
+        .replace(/&(?![A-Za-z0-9#]{2,4};)/g, '&amp;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;')
         .replace(/</g, '&lt;')
