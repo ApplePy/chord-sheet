@@ -105,6 +105,7 @@ export class EditScreenComponent implements OnInit {
       reader.onload = function (evt: any) {
           this.file_contents = evt.target.result;
           this.clearMessages();
+          this.validate(this.file_contents);
         }.bind(this);
 
       reader.onerror = function(evt: any) {
