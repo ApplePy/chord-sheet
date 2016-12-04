@@ -27,6 +27,7 @@ import { ViewChordsheetComponent } from './components/view-chordsheet/view-chord
 import { DmcaComponent } from './components/dmca/dmca.component';
 import { DmcaPolicyComponent } from './components/dmca/dmca-policy/dmca-policy.component';
 import { AdminGuardService } from "./services/guards/admin-guard/admin-guard.service";
+import { FullscreenService } from "./services/fullscreen/fullscreen.service";
 
 
 @NgModule({
@@ -57,6 +58,7 @@ import { AdminGuardService } from "./services/guards/admin-guard/admin-guard.ser
     AppRoutingModule
   ],
   providers: [
+    FullscreenService,
     AdminGuardService,
     RouteGuardService,
     ChordsheetService,
