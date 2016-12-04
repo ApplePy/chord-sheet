@@ -6,7 +6,6 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['main-screen.component.css']
 })
 export class MainScreenComponent implements OnInit {
-  private title: string = "ChordSheet";
 
   constructor() { }
 

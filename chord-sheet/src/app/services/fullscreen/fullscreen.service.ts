@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from "rxjs";
+import { Observable, Subscriber } from "rxjs";
 
 @Injectable()
 export class FullscreenService {
@@ -7,6 +7,7 @@ export class FullscreenService {
   constructor() { }
 
   private observable: Observable<boolean>;
+  private observers: Subscriber<boolean>[] = [];
 
   trigger = (status: boolean)=>{};
 
@@ -31,7 +32,20 @@ export class FullscreenService {
       return this.observable;
 
     this.observable = Observable.create(observer => {
-      this.trigger = (status: boolean) => observer.next(status);
+
+      // Add observer to list of observers
+      if (this.observers.indexOf(observer) === -1)
+        this.observers.push(observer);
+
+      // Iterates through the observers, calling all of their next functions
+      this.trigger = (status: boolean) => {
+        for (let obr of this.observers)
+          obr.next(status);
+      };
+
+      // Adds a lambda to be executed when the Observer un-subscribes from your Observable
+      observer.add(Subscriber.create((test: boolean)=>this.observers.slice(this.observers.indexOf(observer), 1)));
+
     });
 
     return this.observable;
