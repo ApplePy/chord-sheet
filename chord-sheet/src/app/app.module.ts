@@ -23,6 +23,8 @@ import { SignupComponent } from './components/login-signup/signup/signup.compone
 import { LoginSignupComponent } from './components/login-signup/login-signup.component';
 import {RouteGuardService} from "./services/guards/route-guard/route-guard.service";
 import { ViewChordsheetComponent } from './components/view-chordsheet/view-chordsheet.component';
+import { DmcaComponent } from './components/dmca/dmca.component';
+import { DmcaPolicyComponent } from './components/dmca/dmca-policy/dmca-policy.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +42,9 @@ import { ViewChordsheetComponent } from './components/view-chordsheet/view-chord
     ModalComponent,
     SignupComponent,
     LoginSignupComponent,
-    ViewChordsheetComponent
+    ViewChordsheetComponent,
+    DmcaComponent,
+    DmcaPolicyComponent
   ],
   imports: [
     BrowserModule,
