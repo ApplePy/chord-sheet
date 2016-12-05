@@ -35,6 +35,7 @@ export class SignupComponent implements OnInit {
     if (!this.firstname || !this.lastname || !this.username || !this.password) {
       this.serverErrorMessage = "Missing information.";
       this.invalid = true;
+      return;
     }
 
     this.user.signUp(this.firstname, this.lastname, this.username, this.password).subscribe(result => {
