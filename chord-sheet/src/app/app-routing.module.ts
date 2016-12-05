@@ -26,13 +26,9 @@ const routes: Routes = [
     children: [
       { path: "", redirectTo: 'policy' },
       { path: "policy", component: DmcaPolicyComponent },
-      { path: "admin", canActivateChild: [AdminGuardService],
-        children: [
-          { path: "", redirectTo: 'requests' },
-          { path: "requests", component: DmcaRequestsComponent },
-          { path: "notices", component: NotFoundComponent },
-          { path: "disputes", component: NotFoundComponent }
-        ] }
+      { path: "requests", redirectTo: '/404' },
+      { path: "disputes/:id", redirectTo: '/404' },
+      { path: "admin", component: DmcaRequestsComponent, canActivate: [AdminGuardService] }
     ]},
   { path: "", pathMatch: 'full', component: MainScreenComponent },
   { path: "404", component: NotFoundComponent },
