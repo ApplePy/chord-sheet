@@ -53,7 +53,4 @@ export class DmcaRequestFormComponent implements OnInit {
       }
     );
   }
-
-
-
 }

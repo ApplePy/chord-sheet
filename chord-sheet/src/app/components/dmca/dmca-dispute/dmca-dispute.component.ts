@@ -2,6 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {ErrorMessageComponent} from "../../common/error-message/error-message.component";
 import {DmcaService} from "../../../services/dmca/dmca.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {ModalComponent} from "../../common/modal/modal.component";
 
 @Component({
   selector: 'app-dmca-dispute',
@@ -12,6 +13,7 @@ export class DmcaDisputeComponent implements OnInit {
 
   // HTML page binds
   @ViewChild("error") error: ErrorMessageComponent;
+  @ViewChild('modal') modal: ModalComponent;
 
   // Contains dispute text
   dispute: string = "";
@@ -55,7 +57,14 @@ export class DmcaDisputeComponent implements OnInit {
 
     // Send dispute, redirect to home if successful, display error otherwise.
     this.dmca.fileDispute(this.id, this.dispute).subscribe(
-      result => this.router.navigate(['/']),
+      result => {
+        this.modal.title    = 'Form Successful';
+        this.modal.message  = 'Message submitted';
+        this.modal.negative = 'Close';
+        this.modal.positive = 'Ok';
+        this.modal.show();
+        this.modal.response.subscribe(()=>setTimeout(()=>this.router.navigate(['/']), 1000));
+      },
       err => {
         this.invalid = true;
         this.error.title = "Invalid Dispute";
