@@ -30,6 +30,7 @@ import { AdminGuardService } from "./services/guards/admin-guard/admin-guard.ser
 import { FullscreenService } from "./services/fullscreen/fullscreen.service";
 import { DmcaService } from "./services/dmca/dmca.service";
 import { DmcaRequestsComponent } from './components/dmca/dmca-requests/dmca-requests.component';
+import { DmcaDisputeComponent } from './components/dmca/dmca-dispute/dmca-dispute.component';
 
 
 @NgModule({
@@ -51,7 +52,8 @@ import { DmcaRequestsComponent } from './components/dmca/dmca-requests/dmca-requ
     ViewChordsheetComponent,
     DmcaComponent,
     DmcaPolicyComponent,
-    DmcaRequestsComponent
+    DmcaRequestsComponent,
+    DmcaDisputeComponent
   ],
   imports: [
     ResponsiveModule,

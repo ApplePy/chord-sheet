@@ -37,6 +37,14 @@ export class DmcaService {
     return this.http.get("/api/dmca").map(res => res.json());
   }
 
+  /** Get specific DMCA request.
+   *
+   * @returns {Observable<DMCA>}
+   */
+  getOneDmca(id: string): Observable<DMCA> {
+    return this.http.get("/api/dmca/" + id).map(res => res.json());
+  }
+
 
   /** Disable the active state of a DMCA request.
    *
@@ -47,6 +55,22 @@ export class DmcaService {
     return this.http.delete("/api/dmca/" + req._id).map(res => res.json());
   }
 
+
+  /** Log a dispute to a DMCA request.
+   *
+   * @param id        The ID of the DMCA request.
+   * @param dispute   The dispute text to log.
+   * @returns {Observable<Results>}
+   */
+  fileDispute(id: string, dispute: string): Observable<Results> {
+
+    // Let other end know its JSON
+    let headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+
+    return this.http.post("/api/dmca/" + id + '/dispute',{dispute: dispute}, {headers: headers})
+      .map(res => res.json());
+  }
 
 
 

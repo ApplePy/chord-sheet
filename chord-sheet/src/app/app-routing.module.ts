@@ -14,6 +14,7 @@ import {DmcaPolicyComponent} from "./components/dmca/dmca-policy/dmca-policy.com
 import {ChordDisplayComponent} from "./components/chord-display/chord-display.component";
 import {AdminGuardService} from "./services/guards/admin-guard/admin-guard.service";
 import {DmcaRequestsComponent} from "./components/dmca/dmca-requests/dmca-requests.component";
+import {DmcaDisputeComponent} from "./components/dmca/dmca-dispute/dmca-dispute.component";
 
 const routes: Routes = [
   { path: "login", component: LoginSignupComponent },
@@ -27,7 +28,7 @@ const routes: Routes = [
       { path: "", redirectTo: 'policy' },
       { path: "policy", component: DmcaPolicyComponent },
       { path: "requests", redirectTo: '/404' },
-      { path: "disputes/:id", redirectTo: '/404' },
+      { path: "dispute/:id", component:DmcaDisputeComponent },
       { path: "admin", component: DmcaRequestsComponent, canActivate: [AdminGuardService] }
     ]},
   { path: "", pathMatch: 'full', component: MainScreenComponent },

@@ -1,0 +1,32 @@
+<h2 class="ui header">File Dispute</h2>
+
+<form #disputeform
+      id="dispute_form"
+      class="ui form"
+      accept-charset="UTF-8"
+      [class.error]="invalid"
+      (ngSubmit)="submit($event)">
+
+  <!-- Error box -->
+  <app-error-message #error (click)="invalid = false"></app-error-message>
+
+  <!-- Dispute Area -->
+  <div class="field">
+  <label>Dispute Text</label>
+      <textarea
+        #disputebox
+        title="dispute"
+        name="dispute"
+        form="dispute_form"
+        autocomplete="off"
+        placeholder="Enter dispute here..."
+        [(ngModel)]="dispute"></textarea>
+  </div>
+
+  <!-- Form Control -->
+  <div class="field">
+    <button class="ui button" type="reset">Clear</button>
+    <button class="ui button green" type="submit">Submit</button>
+  </div>
+
+</form>
