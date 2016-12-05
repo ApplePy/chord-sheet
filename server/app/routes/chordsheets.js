@@ -305,7 +305,7 @@ router.route('/:songtitle/:username/infringing/:state')
         let state       = Boolean(req.params.state.toString().toLowerCase() === "true");
 
         // Update the matching sheets with the infringement state.
-        ChordSheet.update({owner: username, songtitle: songtitle}, {$set: {infringing: state}})
+        ChordSheet.update({owner: username, songtitle: songtitle}, {$set: {infringing: state}}, {multi: true})
             .then(
                 result => res.send({success: true}),
                 err => res.status(500).send({success: false, reason: err})
