@@ -28,6 +28,7 @@ import { DmcaComponent } from './components/dmca/dmca.component';
 import { DmcaPolicyComponent } from './components/dmca/dmca-policy/dmca-policy.component';
 import { AdminGuardService } from "./services/guards/admin-guard/admin-guard.service";
 import { FullscreenService } from "./services/fullscreen/fullscreen.service";
+import { DmcaService } from "./services/dmca/dmca.service";
 
 
 @NgModule({
@@ -58,6 +59,7 @@ import { FullscreenService } from "./services/fullscreen/fullscreen.service";
     AppRoutingModule
   ],
   providers: [
+    DmcaService,
     FullscreenService,
     AdminGuardService,
     RouteGuardService,
