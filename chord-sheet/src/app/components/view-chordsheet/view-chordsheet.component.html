@@ -11,7 +11,7 @@
   <app-chord-display [content]="chordsheet.contents"></app-chord-display>
 </div>
 
-<div *ngIf="user.isLoggedIn() && chordsheet.owner == user.username">
+<div>
   <button class="ui button" name="FullView" [routerLink]="['/view', chordsheet.songtitle, chordsheet.owner, 'full']">
     <i class="search icon"></i>
     Fullscreen
