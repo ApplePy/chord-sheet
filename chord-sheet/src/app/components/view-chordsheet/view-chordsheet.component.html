@@ -3,7 +3,9 @@
   <div class="content">
     {{chordsheet?.songtitle}}
     <div class="sub header">By: {{chordsheet?.owner}}</div>
+    <div class="sub header">Version: {{chordsheet?.revision}}</div>
     <div class="sub header">Last Modified: {{convertDate(chordsheet?.date)}}</div>
+    <div class="sub header" *ngIf="chordsheet?.private"><em>Private Chordsheet</em></div>
   </div>
 </h1>
 
@@ -38,6 +40,7 @@
 
   <div class="ui raised segment" [class.disabled]="chordsheet?.infringing" *ngFor="let version of previousRevisions">
 
+    <p><em>Version: {{version?.revision}}</em></p>
     <p><em>Saved: {{convertDate(version?.date)}}</em></p>
     <app-chord-display [content]="version?.contents"></app-chord-display>
 

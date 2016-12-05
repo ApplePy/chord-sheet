@@ -82,9 +82,10 @@ router.post('/', function (req, res, next) {
     // NOTE: Cannot create admin users.
 
     // Make sure all info was received
-    if (typeof (req.body.username) !== "string" ||
-        typeof (req.body.firstname) !== "string" ||
-        typeof (req.body.lastname) !== "string")
+    if (typeof (req.body.username) !== "string"  || req.body.username.length == 0 ||
+        typeof (req.body.password) !== "string"  || req.body.password.length == 0 ||
+        typeof (req.body.firstname) !== "string"  || req.body.firstname.length == 0 ||
+        typeof (req.body.lastname) !== "string"  || req.body.lastname.length == 0)
         return res.status(400).send({success: false, reason: "Missing parameter."});
 
     // Ensure user only creates a username that is an email
@@ -168,9 +169,9 @@ router.route('/:username')
                     return res.send({success: false, reason: "User not found."});
 
                 let user        = users[0];
-                user.password   = (typeof (password) !== "string" || bcrypt.compareSync(password, user.password)) ? user.password : bcrypt.hashSync(password, saltRound);
-                user.firstname  = (typeof (firstname) !== "string") ? user.firstname : firstname;
-                user.lastname   = (typeof (lastname) !== "string") ? user.lastname : lastname;
+                user.password   = (typeof (password) !== "string" || password.length == 0 || bcrypt.compareSync(password, user.password)) ? user.password : bcrypt.hashSync(password, saltRound);
+                user.firstname  = (typeof (firstname) !== "string" || firstname.length == 0) ? user.firstname : firstname;
+                user.lastname   = (typeof (lastname) !== "string" || lastname.length == 0) ? user.lastname : lastname;
 
                 // Save the modified user
                 user.save().then(
