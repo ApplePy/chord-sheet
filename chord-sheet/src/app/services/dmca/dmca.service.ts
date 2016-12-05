@@ -72,6 +72,20 @@ export class DmcaService {
       .map(res => res.json());
   }
 
+  /** Submit a takedown request form
+   *
+   * @param form    The form containing the information to be sent
+   */
+  fileRequest(form: any) {
 
+    let contents = JSON.stringify(form);
+
+    // Let other end know its JSON
+    let headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+
+    return this.http.post("/api/dmca/",contents, {headers: headers})
+      .map(res => res.json());
+  }
 
 }

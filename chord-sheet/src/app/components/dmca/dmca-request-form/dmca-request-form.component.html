@@ -1,0 +1,75 @@
+<h2 class="ui header">File Takedown Request</h2>
+
+<form [formGroup]="form"
+      class="ui form"
+      accept-charset="UTF-8"
+      [class.error]="invalid"
+      (ngSubmit)="submitForm(form.value)">
+
+  <!-- Error box -->
+  <app-error-message #error (click)="invalid = false"></app-error-message>
+
+  <!-- Request Area -->
+
+  <!-- Claimant Info -->
+  <div class="field">
+    <h3 class="ui header">Your Information</h3>
+
+    <div class="required field" [ngClass]="{'error':!form.controls['claimant'].valid && form.controls['claimant'].touched}">
+      <label>Claimant Name</label>
+      <input title="claimant" name="claimant" placeholder="Your Name" [formControl]="form.controls['claimant']"/>
+    </div>
+
+    <div class="required field" [ngClass]="{'error':!form.controls['originalWork'].valid && form.controls['originalWork'].touched}">
+      <label>Copyrighted Work</label>
+      <input title="originalWork" name="originalWork" placeholder="Name Of Original Work" [formControl]="form.controls['originalWork']"/>
+    </div>
+
+    <div class="required field" [ngClass]="{'error':!form.controls['contactInfo'].valid && form.controls['contactInfo'].touched}">
+      <label>Contact Email</label>
+      <input title="contactInfo" name="contactInfo" placeholder="Your Email here" [formControl]="form.controls['contactInfo']"/>
+    </div>
+  </div>
+
+  <!-- Infringing Content Info -->
+  <div class="field">
+    <h3 class="ui header">Infringing Content Information</h3>
+
+    <div class="required field" [ngClass]="{'error':!form.controls['iSongTitle'].valid && form.controls['iSongTitle'].touched}">
+      <label>Infringing Chord Sheet Title</label>
+      <input title="iSongTitle" name="iSongTitle" placeholder="Name Of Infringing Chord Sheet" [formControl]="form.controls['iSongTitle']"/>
+    </div>
+
+    <div class="required field" [ngClass]="{'error':!form.controls['iOwner'].valid && form.controls['iOwner'].touched}">
+      <label>Infringing Sheet Owner</label>
+      <input title="iOwner" name="iOwner" placeholder="Name Of Infringing Chord Sheet Owner" [formControl]="form.controls['iOwner']"/>
+    </div>
+  </div>
+
+  <!-- Declarations -->
+  <div class="field">
+    <div class="required inline field" [ngClass]="{'error':!form.controls['faith'].valid && form.controls['faith'].touched}">
+      <div class="ui checkbox">
+        <input title=faith type="checkbox" [formControl]="form.controls['faith']"/>
+        <label>I hereby certify that the following takedown notice was made in good faith belief
+          that use of the material in the manner complained of is not authorized by the copyright owner.</label>
+      </div>
+    </div>
+    <div class="required inline field" [ngClass]="{'error':!form.controls['accurate'].valid && form.controls['accurate'].touched}">
+      <div class="ui checkbox">
+        <input title=accurate type="checkbox" [formControl]="form.controls['accurate']"/>
+        <label>I hereby certify that that the information in the notification is accurate, and under
+          penalty of perjury, that the complaining party is authorized to act on behalf of the owner
+          of the copyright that is allegedly infringed.</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Control -->
+  <div class="field">
+    <button class="ui button" type="reset">Clear</button>
+    <button class="ui button green" type="submit" [disabled]="!form.valid">Submit</button>
+  </div>
+
+</form>
+<app-modal #modal></app-modal>

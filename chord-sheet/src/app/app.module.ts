@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { ResponsiveModule } from 'ng2-responsive';
 
@@ -31,6 +31,7 @@ import { FullscreenService } from "./services/fullscreen/fullscreen.service";
 import { DmcaService } from "./services/dmca/dmca.service";
 import { DmcaRequestsComponent } from './components/dmca/dmca-requests/dmca-requests.component';
 import { DmcaDisputeComponent } from './components/dmca/dmca-dispute/dmca-dispute.component';
+import { DmcaRequestFormComponent } from './components/dmca/dmca-request-form/dmca-request-form.component';
 
 
 @NgModule({
@@ -53,9 +54,11 @@ import { DmcaDisputeComponent } from './components/dmca/dmca-dispute/dmca-disput
     DmcaComponent,
     DmcaPolicyComponent,
     DmcaRequestsComponent,
-    DmcaDisputeComponent
+    DmcaDisputeComponent,
+    DmcaRequestFormComponent
   ],
   imports: [
+    ReactiveFormsModule,
     ResponsiveModule,
     BrowserModule,
     FormsModule,
