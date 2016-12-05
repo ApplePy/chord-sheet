@@ -32,6 +32,11 @@ export class SignupComponent implements OnInit {
   onSubmit($event: Event) {
     this.invalid = false;
 
+    if (!this.firstname || !this.lastname || !this.username || !this.password) {
+      this.serverErrorMessage = "Missing information.";
+      this.invalid = true;
+    }
+
     this.user.signUp(this.firstname, this.lastname, this.username, this.password).subscribe(result => {
       if (result.success == true) this.location.back();
       else this.invalid = true;
