@@ -22,6 +22,7 @@ let ChordSheetSchema = new Schema({
     private: Boolean,
     owner: String,
     contents: String,
+    infringing: {type: Boolean, default: false},
     date: {type: Date, default: Date.now}
 });
 

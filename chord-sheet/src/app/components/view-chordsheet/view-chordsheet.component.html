@@ -7,7 +7,7 @@
   </div>
 </h1>
 
-<div class="ui teal tall stacked segment">
+<div class="ui teal tall stacked segment" [class.disabled]="chordsheet?.infringing">
   <app-chord-display [content]="chordsheet?.contents"></app-chord-display>
 </div>
 
@@ -26,12 +26,17 @@
       Delete
     </button>
   </span>
+  <button class="ui orange button" name="Infringing" (click)="toggleInfringement();" *ngIf="user.admin">
+    <i class="copyright icon"></i>
+    <span *ngIf="!chordsheet?.infringing">Infringing</span>
+    <span *ngIf="chordsheet?.infringing">Not Infringing</span>
+  </button>
 </div>
 
 <div class="ui basic segment" *ngIf="previousRevisions?.length > 0">
   <h3>Other Versions</h3>
 
-  <div class="ui raised segment" *ngFor="let version of previousRevisions">
+  <div class="ui raised segment" [class.disabled]="chordsheet?.infringing" *ngFor="let version of previousRevisions">
 
     <p><em>Saved: {{convertDate(version?.date)}}</em></p>
     <app-chord-display [content]="version?.contents"></app-chord-display>

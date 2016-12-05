@@ -22,6 +22,11 @@ let ChordSheet      = require('./../models/chordsheet-model');
  */
 let matchFuncBase = function (req, res, next) {
     return function (matchParam) {
+
+        // Ignore infringing content if not admin
+        if (!req.session.loggedin || !req.session.user.admin)
+            matchParam.infringing = false;
+
         // Find chord sheet stats
         ChordSheet.aggregate([
             {$match: matchParam},
@@ -164,6 +169,10 @@ router.route('/')
                 warnings: results.warnings
             });
 
+        // Make sure they are not updating the songtitle to one that they already have, or aren't uploading to an infringement
+        let matchingParams = {owner: user.username, songtitle: req.body.songtitle};
+        let postMatch = save;
+
         // Verify that an exact copy of the old version isn't being saved,
         if (typeof (req.body.oldversion) === "object") {
 
@@ -179,29 +188,28 @@ router.route('/')
                 req.body.oldversion.contents === req.body.contents)
                 return res.send({success: true, reason: "No change detected. Not saving."});
 
-            // Make sure they are not updating the songtitle to one that they already have
-            if (req.body.oldversion.songtitle != req.body.songtitle) {
-                return ChordSheet.findOne({owner: user.username, songtitle: req.body.songtitle}).then(
-                    result => {
-                        // If something was found, reject
-                        if (result != null)
-                            return res.status(409).send({
-                                success: false,
-                                reason: "Songtitle already in use."
-                            });
+            // If the title is the same, check for infringement
+            if (req.body.oldversion.songtitle == req.body.songtitle)
+                matchingParams.infringing = true;
 
-                        // Data is good, start saving
-                        updateAndSave();
-                    },
-                    err => res.status(500).send(err)
-                );
-            }
-            // Save posted sheet after update
-            else updateAndSave()
+            postMatch = updateAndSave;
         }
 
-        // Save the posted sheet
-        save();
+        // New sheet, make sure another sheet with the same name does not already exist
+        return ChordSheet.findOne(matchingParams).then(
+            result => {
+                // If something was found, reject
+                if (result != null)
+                    return res.status(409).send({
+                        success: false,
+                        reason: "Songtitle already in use."
+                    });
+
+                // Data is good, start saving
+                postMatch();
+            },
+            err => res.status(500).send(err)
+        );
     });
 
 
@@ -274,6 +282,34 @@ router.route('/:songtitle/:username')
 
         // Find public chord sheets
         else matchFunc({owner: username, songtitle: songtitle, 'private': false});
+    });
+
+
+
+router.route('/:songtitle/:username/infringing/:state')
+
+    /** Get infringement state. */
+    .get(function(req, res, next) {
+       res.redirect('../..');
+    })
+
+    /** Set infringement state. */
+    .put(function(req, res, next) {
+        // Function only accessible to the administrator
+        if (!req.session.loggedin || !req.session.user.admin)
+            return res.status(401).send({success: false, reason: "Unauthorized."});
+
+        // Sanitize everything
+        let songtitle   = sanitize(req.params.songtitle);
+        let username    = sanitize(req.params.username);
+        let state       = Boolean(req.params.state.toString().toLowerCase() === "true");
+
+        // Update the matching sheets with the infringement state.
+        ChordSheet.update({owner: username, songtitle: songtitle}, {$set: {infringing: state}}, {multi: true})
+            .then(
+                result => res.send({success: true}),
+                err => res.status(500).send({success: false, reason: err})
+            );
     });
 
 

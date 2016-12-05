@@ -20,6 +20,21 @@ declare namespace APIResponse {
     "admin": boolean
   }
 
+  interface DMCAEdit extends Results {
+    id?: string
+  }
+
+  interface DMCA {
+    _id: string,
+    claimant: string,
+    originalWork: string,
+    iSongTitle: string,
+    iOwner: string,
+    contactInfo: string,
+    disputes: string[],
+    active: boolean
+  }
+
   /**
    * Declares the elements of the JSON object returned from the Chordsheets backend.
    */
@@ -40,7 +55,8 @@ declare namespace APIResponse {
       owner: string,
       private: boolean,
       songtitle: string,
-      date: string
+      date: string,
+      infringing: boolean
     }
   }
 

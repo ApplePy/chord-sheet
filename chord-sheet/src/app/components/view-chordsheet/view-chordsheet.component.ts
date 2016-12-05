@@ -1,10 +1,10 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ChordsheetService} from "../../services/chordsheet/chordsheet.service";
-import {ActivatedRoute, Router, UrlSegment} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import Chordsheet = APIResponse.CsElements.Chordsheet;
 import {UserService} from "../../services/user/user.service";
 import {ModalComponent} from "../common/modal/modal.component";
-import {Observable} from "rxjs";
+import {DmcaService} from "../../services/dmca/dmca.service";
 require('datejs');
 
 @Component({
@@ -19,10 +19,11 @@ export class ViewChordsheetComponent implements OnInit {
   chordsheet: Chordsheet;
   previousRevisions: Chordsheet[];
 
-  constructor(private sender: ChordsheetService,
-              private route: ActivatedRoute,
+  constructor(private route: ActivatedRoute,
               private router: Router,
-              private user: UserService, private chordservice: ChordsheetService) { }
+              private user: UserService,
+              private chordservice: ChordsheetService,
+              private dmca: DmcaService) { }
 
   /** Set up title if supplied */
   ngOnInit() {
@@ -40,7 +41,7 @@ export class ViewChordsheetComponent implements OnInit {
             else {
               // This happens during invalid access.
               console.warn("Access Denied.");
-              this.router.navigate(['/']);
+              this.router.navigate(['/404']);
             }
           }
           // If you reach here without hitting any blocks of code above, then it's a create page
@@ -90,5 +91,19 @@ export class ViewChordsheetComponent implements OnInit {
     this.previousRevisions = [this.chordsheet].concat(this.previousRevisions);
     this.chordsheet = version;
     this.chordsheet.date = new Date(Date.now()).toString();
+  }
+
+  toggleInfringement() {
+    this.dmca.toggleState(this.chordsheet.songtitle, this.chordsheet.owner, !this.chordsheet.infringing)
+      .subscribe(result => {
+          // If successful, set everything to the new state
+          this.chordsheet.infringing = !this.chordsheet.infringing;
+          for (let prevRevision of this.previousRevisions)
+            prevRevision.infringing = !this.chordsheet.infringing;
+        }, err => {
+          console.warn("Infringement state toggle failed. Error: " + err);
+          this.router.navigate(['/']);
+        }
+      );
   }
 }

@@ -12,6 +12,10 @@ import {ViewChordsheetComponent} from "./components/view-chordsheet/view-chordsh
 import {DmcaComponent} from "./components/dmca/dmca.component";
 import {DmcaPolicyComponent} from "./components/dmca/dmca-policy/dmca-policy.component";
 import {ChordDisplayComponent} from "./components/chord-display/chord-display.component";
+import {AdminGuardService} from "./services/guards/admin-guard/admin-guard.service";
+import {DmcaRequestsComponent} from "./components/dmca/dmca-requests/dmca-requests.component";
+import {DmcaDisputeComponent} from "./components/dmca/dmca-dispute/dmca-dispute.component";
+import {DmcaRequestFormComponent} from "./components/dmca/dmca-request-form/dmca-request-form.component";
 
 const routes: Routes = [
   { path: "login", component: LoginSignupComponent },
@@ -22,8 +26,11 @@ const routes: Routes = [
   { path: "view/:songtitle/:username/full", component: ChordDisplayComponent, resolve: {data: ChordsheetService} },
   { path: "dmca", component: DmcaComponent,
     children: [
-      {path: "", redirectTo: 'policy'},
-      {path: "policy", component: DmcaPolicyComponent}
+      { path: "", redirectTo: 'policy' },
+      { path: "policy", component: DmcaPolicyComponent },
+      { path: "requests", component: DmcaRequestFormComponent },
+      { path: "dispute/:id", component:DmcaDisputeComponent },
+      { path: "admin", component: DmcaRequestsComponent, canActivate: [AdminGuardService] }
     ]},
   { path: "", pathMatch: 'full', component: MainScreenComponent },
   { path: "404", component: NotFoundComponent },
