@@ -75,6 +75,9 @@ export class ViewChordsheetComponent implements OnInit {
    * @param inDate  The date string to be parsed.
    */
   convertDate(inDate: string): string {
+    if (!inDate)
+      return inDate;
+
     return (<any>Date).parse(inDate).toString("dd MMMM yyyy, h:mm:sstt");
   }
 
