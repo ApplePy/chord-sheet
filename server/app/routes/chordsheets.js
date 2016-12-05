@@ -24,7 +24,7 @@ let matchFuncBase = function (req, res, next) {
     return function (matchParam) {
 
         // Ignore infringing content if not admin
-        if (!req.session.user.admin)
+        if (!req.session.loggedin || !req.session.user.admin)
             matchParam.infringing = false;
 
         // Find chord sheet stats
