@@ -1,0 +1,56 @@
+<div class="ui basic segment" *ngIf="dmcaRequests.length == 0">
+  <p><em>No requests available.</em></p>
+</div>
+
+<div class="ui basic segment" *ngFor="let req of dmcaRequests">
+  <!-- Display Request Details -->
+  <div class="ui raised segment">
+    <div class="ui two column middle aligned grid">
+      <div class="row">
+
+        <!-- Sheet Info -->
+        <div class="column">
+          <div class="ui basic fitted segment" [class.disabled]="req.active">
+            <strong>{{req.claimant}}</strong>
+            <p><em>Original Work: {{req.originalWork}}</em></p>
+            <p><em>Infringement: <strong>{{req.iSongTitle}}</strong> by <strong>{{req.iOwner}}</strong></em></p>
+            <p><em>Contact Info: {{req.contactInfo}}</em></p>
+
+            <p *ngIf="req.disputes.length > 0">Disputes:</p>
+            <ul *ngIf="req.disputes.length > 0">
+              <li *ngFor="let dispute of req.disputes">{{dispute}}</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Sheet Controls - Computer/Tablet -->
+        <div class="computer only tablet only column">
+          <div class="ui right floated buttons">
+            <!-- Secondary flips to counter the click event trigger on the parent div -->
+            <button class="ui grey button"
+                    [routerLink]="'/view/' + req.iSongTitle + '/' + req.iOwner">View</button>
+            <button class="ui teal button" (click)="displayNotice(req)">Send Notice</button>
+            <button class="ui negative button" (click)="disableDmca(req)">Delete</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sheet Controls - Mobile -->
+      <div class="mobile only row">
+        <div class="column">
+          <div class="ui buttons">
+            <!-- Secondary flips to counter the click event trigger on the parent div -->
+            <button class="ui grey button"
+                    [routerLink]="'/view/' + req.iSongTitle + '/' + req.iOwner">View</button>
+            <button class="ui teal button" (click)="displayNotice(req)">Send Notice</button>
+            <button class="ui negative button" (click)="disableDmca(req)">Delete</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<app-modal #modal></app-modal>

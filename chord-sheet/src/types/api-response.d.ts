@@ -20,8 +20,19 @@ declare namespace APIResponse {
     "admin": boolean
   }
 
-  interface DMCA extends Results {
+  interface DMCAEdit extends Results {
     id?: string
+  }
+
+  interface DMCA {
+    _id: string,
+    claimant: string,
+    originalWork: string,
+    iSongTitle: string,
+    iOwner: string,
+    contactInfo: string,
+    disputes: string[],
+    active: boolean
   }
 
   /**

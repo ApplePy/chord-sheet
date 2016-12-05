@@ -13,6 +13,7 @@ import {DmcaComponent} from "./components/dmca/dmca.component";
 import {DmcaPolicyComponent} from "./components/dmca/dmca-policy/dmca-policy.component";
 import {ChordDisplayComponent} from "./components/chord-display/chord-display.component";
 import {AdminGuardService} from "./services/guards/admin-guard/admin-guard.service";
+import {DmcaRequestsComponent} from "./components/dmca/dmca-requests/dmca-requests.component";
 
 const routes: Routes = [
   { path: "login", component: LoginSignupComponent },
@@ -27,8 +28,8 @@ const routes: Routes = [
       { path: "policy", component: DmcaPolicyComponent },
       { path: "admin", canActivateChild: [AdminGuardService],
         children: [
-          { path: "", component: NotFoundComponent },
-          { path: "pending_requests", component: NotFoundComponent },
+          { path: "", redirectTo: 'requests' },
+          { path: "requests", component: DmcaRequestsComponent },
           { path: "notices", component: NotFoundComponent },
           { path: "disputes", component: NotFoundComponent }
         ] }
