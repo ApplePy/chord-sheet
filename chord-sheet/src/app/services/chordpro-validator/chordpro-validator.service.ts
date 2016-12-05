@@ -25,7 +25,7 @@ export class ChordproValidatorService {
 
   acceptableDirectives: DirectiveDefinition[] =
   [
-    new DirectiveDefinition(["new_song","ns"], false, null, true, ["new_song", "ns"]),
+    new DirectiveDefinition(["new_song","ns"], false, "Error: New song does not include a value.", true, ["new_song", "ns"]),
     new DirectiveDefinition(["title",  "t"], /.*/, "Error: Missing separator (“:”) or text for “title”, “subtitle”, “comment” or “define” directives.", true, false, false,
       // Stack Function
       function(stack: Directive[], definition: DirectiveDefinition, output: ChordProValidatorOutput) {
