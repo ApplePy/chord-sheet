@@ -41,6 +41,7 @@ module.exports.mongoose = mongoose.connect('mongodb://localhost:27017/chordpro')
 // Import sub-routers
 let user_api    = require('./routes/users').router;
 let chord_api   = require('./routes/chordsheets');
+let dmca_api    = require('./routes/dmca');
 
 // Set up no-caching middleware
 router.use(function (req, res, next) {
@@ -53,6 +54,7 @@ router.use(function (req, res, next) {
 // Wire up sub-routers
 router.use('/users', user_api);
 router.use('/chordsheets', chord_api);
+router.use('/dmca', dmca_api);
 
 
 // Catch-all
