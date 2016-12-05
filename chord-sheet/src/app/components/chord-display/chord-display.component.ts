@@ -54,7 +54,7 @@ export class ChordDisplayComponent implements OnInit {
             else {
               // This happens during invalid access.
               console.warn("Access Denied.");
-              this.router.navigate(['/']);
+              this.router.navigate(['/404']);
             }
           });
         });

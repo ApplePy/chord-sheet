@@ -41,7 +41,7 @@ export class ViewChordsheetComponent implements OnInit {
             else {
               // This happens during invalid access.
               console.warn("Access Denied.");
-              this.router.navigate(['/']);
+              this.router.navigate(['/404']);
             }
           }
           // If you reach here without hitting any blocks of code above, then it's a create page
