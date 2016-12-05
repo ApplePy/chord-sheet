@@ -21,7 +21,7 @@ router.route('/')
         if (!req.session.loggedin || !req.session.user.admin)
             return res.status(401).send({success: false, reason: "Unauthorized."});
 
-        Dmca.find({}).then(
+        Dmca.find({}).sort({active: -1}).then(
             results => res.send(results),
             err => res.status(500).send({success: false, reason: err})
         );

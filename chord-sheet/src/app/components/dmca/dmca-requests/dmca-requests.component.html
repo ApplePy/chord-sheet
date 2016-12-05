@@ -10,7 +10,7 @@
 
         <!-- Sheet Info -->
         <div class="column">
-          <div class="ui basic fitted segment" [class.disabled]="req.active">
+          <div class="ui basic fitted segment" [class.disabled]="!req.active">
             <strong>{{req.claimant}}</strong>
             <p><em>Original Work: {{req.originalWork}}</em></p>
             <p><em>Infringement: <strong>{{req.iSongTitle}}</strong> by <strong>{{req.iOwner}}</strong></em></p>
