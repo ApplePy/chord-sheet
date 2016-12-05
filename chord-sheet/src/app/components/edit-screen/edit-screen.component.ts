@@ -148,11 +148,17 @@ export class EditScreenComponent implements OnInit {
     // Check validity
     let results = this.validator.validate(contents);
 
-    // Set errors if exist
-    if(results.containsErrors()) {
+    // Set messages if exist
+    if(results.containsIssues()) {
       if (results.errors.length) this.error.setMessages("Parse Errors", results.errors);
+      else this.error.deactivate();
+
       if (results.warnings.length) this.warning.setMessages("Parse Warnings", results.warnings);
-      return false;
+      else this.warning.deactivate();
+
+      // If there are errors, stop the show.
+      if (results.containsErrors())
+        return false;
     }
     // No errors, clean old ones
     else {
